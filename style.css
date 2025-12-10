@@ -1,0 +1,204 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #83afde7e 0%, #6d8cad7e 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-container {
+  display: flex;
+  width: 900px;
+  height: 550px;
+  background: white;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* القسم الأيسر - الترحيب */
+.welcome-section {
+  flex: 1;
+  background: linear-gradient(135deg, #2c5364 0%, #203a43 50%, #0f2027 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.welcome-text {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 35px;
+  opacity: 0.9;
+  max-width: 280px;
+}
+
+.signin-btn {
+  padding: 12px 40px;
+  border: 2px solid white;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.signin-btn:hover {
+  background: white;
+  color: #2c5364;
+}
+
+/* القسم الأيمن - التسجيل */
+.form-section {
+  flex: 1;
+  padding: 50px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c5364;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.social-login {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 18px;
+  color: #666;
+}
+
+.social-icon:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.divider-text {
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 16px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 45px 14px 15px;
+  border: 2px solid #e0e0e0;
+  font-size: 14px;
+  transition: all 0.3s;
+  background: #f8f9fa;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+}
+
+.form-input::placeholder {
+  color: #aaa;
+}
+
+.forgot-password {
+  display: block;
+  text-align: left;
+  color: #667eea;
+  font-size: 13px;
+  text-decoration: none;
+  margin-bottom: 20px;
+  transition: color 0.3s;
+}
+
+.forgot-password:hover {
+  color: #764ba2;
+}
+
+.signup-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #5171927e 0%, #3b4f64 100%);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+}
+
+.signup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px #667eea66;
+}
+
+/* للشاشات الصغيرة */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    max-width: 450px;
+  }
+
+  .welcome-section {
+    padding: 40px;
+  }
+
+  .form-section {
+    padding: 40px 30px;
+  }
+}

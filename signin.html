@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - SafeComply</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <!-- Welcome Section (Left Side) -->
+      <div class="welcome-section">
+        <h1 class="welcome-title">Hello!</h1>
+        <p class="welcome-text">
+          Don't have an account?<br />Create one now to get started.
+        </p>
+        <button class="signin-btn" onclick="window.location.href='signup.html'">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Login Section (Right Side) -->
+      <div class="form-section">
+        <h2 class="form-title">Login</h2>
+
+        <form>
+          <div class="form-group">
+            <input
+              type="email"
+              class="form-input"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="password"
+              class="form-input"
+              placeholder="Password"
+              required
+            />
+          </div>
+
+          <a href="#" class="forgot-password">Forgot Password?</a>
+
+          <button type="submit" class="signup-btn">Login</button>
+        </form>
+      </div>
+
+      <script>
+        document
+          .querySelector(".signup-btn")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            alert("Login successful!");
+            window.location.href = "dashboard.html";
+          });
+      </script>
+    </div>
+  </body>
+</html>

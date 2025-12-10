@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account - SafeComply</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <!-- Welcome Section (Left Side) -->
+      <div class="welcome-section">
+        <h1 class="welcome-title">Welcome Back!</h1>
+        <p class="welcome-text">
+          Already have an account?<br />Log in to access your dashboard.
+        </p>
+        <button class="signin-btn" onclick="window.location.href='signin.html'">
+          Login
+        </button>
+      </div>
+
+      <!-- Signup Section (Right Side) -->
+      <div class="form-section">
+        <h2 class="form-title">Create Account</h2>
+
+        <form>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-input"
+              placeholder="Username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="email"
+              class="form-input"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="password"
+              class="form-input"
+              placeholder="Password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="signup-btn">Signup</button>
+        </form>
+      </div>
+
+      <script>
+        document
+          .querySelector(".signup-btn")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            alert("Account created successfully!");
+            window.location.href = "dashboard.html";
+          });
+      </script>
+    </div>
+  </body>
+</html>
