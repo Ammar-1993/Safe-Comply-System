@@ -33,6 +33,7 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         filename TEXT,
         uploaded_at TEXT,
+        uploaded_by TEXT,
         total INTEGER,
         valid INTEGER,
         invalid INTEGER,
@@ -498,8 +499,9 @@ def upload_excel():
         alerts, recommendations = generate_ai_analysis(results, len(results), current_score=overall_score, previous_score=previous_score)
 
         uploaded_at = datetime.utcnow().isoformat()
-        cur.execute('INSERT INTO reports (filename, uploaded_at, total, valid, invalid, overall_score) VALUES (?,?,?,?,?,?)',
-                    (file.filename, uploaded_at, len(results), valid_count, invalid_count, overall_score))
+        uploaded_by = request.user.get('sub', 'unknown')
+        cur.execute('INSERT INTO reports (filename, uploaded_at, uploaded_by, total, valid, invalid, overall_score) VALUES (?,?,?,?,?,?,?)',
+                    (file.filename, uploaded_at, uploaded_by, len(results), valid_count, invalid_count, overall_score))
         report_id = cur.lastrowid
 
         for r in results:
@@ -549,15 +551,24 @@ def health_check():
 @app.route('/reports', methods=['GET'])
 @require_auth(roles=['admin','auditor','user'])
 def list_reports():
+    role = request.user.get('role')
+    username = request.user.get('sub')
+    
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
-    cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score FROM reports ORDER BY uploaded_at DESC')
+    
+    if role in ['admin', 'auditor']:
+        cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score, uploaded_by FROM reports ORDER BY uploaded_at DESC')
+    else:
+        # Standard user sees only their own reports
+        cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score, uploaded_by FROM reports WHERE uploaded_by = ? ORDER BY uploaded_at DESC', (username,))
+        
     rows = cur.fetchall()
     conn.close()
     reports = []
     for r in rows:
         reports.append({
-            'id': r[0], 'filename': r[1], 'uploaded_at': r[2], 'total': r[3], 'valid': r[4], 'invalid': r[5], 'overall_score': r[6]
+            'id': r[0], 'filename': r[1], 'uploaded_at': r[2], 'total': r[3], 'valid': r[4], 'invalid': r[5], 'overall_score': r[6], 'uploaded_by': r[7] if len(r) > 7 else ''
         })
     return jsonify({'reports': reports}), 200
 
@@ -629,6 +640,35 @@ def index():
         return send_from_directory('.', 'signin.html')
     return redirect('/health')
 
+
+@app.route('/admin/users', methods=['GET'])
+@require_auth(roles=['admin'])
+def admin_list_users():
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute('SELECT id, username, role FROM accounts')
+    rows = cur.fetchall()
+    conn.close()
+    users = [{'id': r[0], 'username': r[1], 'role': r[2]} for r in rows]
+    return jsonify({'users': users}), 200
+
+@app.route('/admin/users/<username>', methods=['DELETE'])
+@require_auth(roles=['admin'])
+def admin_delete_user(username):
+    if username == 'admin':
+        return jsonify({'error': 'Cannot delete the main admin account'}), 400
+        
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute('DELETE FROM accounts WHERE username = ?', (username,))
+    deleted = cur.rowcount
+    conn.commit()
+    conn.close()
+    
+    if deleted == 0:
+        return jsonify({'error': 'User not found'}), 404
+        
+    return jsonify({'message': f'User {username} deleted successfully'}), 200
 
 @app.route('/<path:filename>')
 def serve_static_file(filename):
