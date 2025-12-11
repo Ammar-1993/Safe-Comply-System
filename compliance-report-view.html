@@ -313,27 +313,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1001</td>
-                                <td>ammar.user</td>
-                                <td>85%</td>
-                                <td><span class="status-pass">Active</span></td>
-                                <td><span class="status-pass">Compliant</span></td>
-                            </tr>
-                            <tr>
-                                <td>1002</td>
-                                <td>sarah.smith</td>
-                                <td>45%</td>
-                                <td><span class="status-fail">Failed</span></td>
-                                <td><span class="status-fail">Non-Compliant</span></td>
-                            </tr>
-                            <tr>
-                                <td>1003</td>
-                                <td>john.doe</td>
-                                <td>92%</td>
-                                <td><span class="status-pass">Active</span></td>
-                                <td><span class="status-pass">Compliant</span></td>
-                            </tr>
+                            <!-- Loaded via JS -->
                         </tbody>
                     </table>
                 </div>
@@ -347,6 +327,71 @@
             document.querySelector(".profile-name").textContent = username;
             document.querySelector(".profile-email").textContent = username + "@company.com";
         }
+
+        async function loadReport() {
+            const params = new URLSearchParams(window.location.search);
+            const reportId = params.get('id');
+
+            if (!reportId) {
+                document.querySelector('.card-title').textContent = 'Error: No Report ID specified';
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    window.location.href = 'signin.html';
+                    return;
+                }
+
+                const resp = await fetch(`http://localhost:5002/reports/${reportId}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (resp.status === 403) {
+                    alert("Unauthorized: You do not have permission to view this report.");
+                    window.location.href = "reports.html";
+                    return;
+                }
+
+                if (!resp.ok) {
+                    throw new Error('Failed to load report');
+                }
+
+                const data = await resp.json();
+                renderReport(data);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error loading report: ' + err.message);
+            }
+        }
+
+        function renderReport(data) {
+            document.querySelector('.card-title').textContent = `Detailed Report: ${data.filename} (${data.uploaded_at.split('T')[0]})`;
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+
+            data.results.forEach(user => {
+                const tr = document.createElement('tr');
+
+                const backupOk = Object.values(user.backup_checks || {}).every(v => v === true);
+                const backupStatus = backupOk ? '<span class="status-pass">Active</span>' : '<span class="status-fail">Failed</span>';
+
+                const resultStatus = user.isValid ? '<span class="status-pass">Compliant</span>' : '<span class="status-fail">Non-Compliant</span>';
+
+                tr.innerHTML = `
+                    <td>${user.row}</td>
+                    <td>${user.username}</td>
+                    <td>${user.strength}%</td>
+                    <td>${backupStatus}</td>
+                    <td>${resultStatus}</td>
+                 `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadReport);
 
         document.querySelector(".logout-btn").addEventListener("click", function () {
             if (confirm("Are you sure you want to logout?")) window.location.href = "signin.html";

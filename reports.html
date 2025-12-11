@@ -1002,6 +1002,7 @@
         }
 
         const data = await resp.json();
+        window.currentReportId = data.report_id;
 
         // Success: Finish animation quickly
         animParams.active = false; // Stop auto-advance
@@ -1116,7 +1117,12 @@
     }
 
     function viewDetails() {
-      window.location.href = "compliance-report-view.html";
+      if (window.currentReportId) {
+        window.location.href = "compliance-report-view.html?id=" + window.currentReportId;
+      } else {
+        // Fallback or alert
+        window.location.href = "compliance-report-view.html";
+      }
     }
 
     // Load User Details

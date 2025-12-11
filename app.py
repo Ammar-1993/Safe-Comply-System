@@ -519,7 +519,8 @@ def upload_excel():
             'alerts_detected': len(alerts),
             'non_compliant_users': invalid_count,
             'alerts': alerts,
-            'recommendations': recommendations
+            'recommendations': recommendations,
+            'report_id': report_id
         }), 200
         
     except Exception as e:
