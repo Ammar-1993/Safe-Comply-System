@@ -1119,6 +1119,13 @@
       window.location.href = "compliance-report-view.html";
     }
 
+    // Load User Details
+    const username = localStorage.getItem("username");
+    if (username) {
+      document.querySelector(".profile-name").textContent = username;
+      document.querySelector(".profile-email").textContent = username + "@company.com";
+    }
+
     document
       .querySelector(".logout-btn")
       .addEventListener("click", function () {

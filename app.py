@@ -283,7 +283,7 @@ def auth_login():
             return jsonify({'error': 'Invalid credentials'}), 401
 
         token = _generate_token(row[1], row[3])
-        return jsonify({'access_token': token, 'role': row[3]}), 200
+        return jsonify({'access_token': token, 'role': row[3], 'username': row[1]}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -343,8 +343,8 @@ def check_passwords_bulk():
             'message': 'حدث خطأ في المعالجة'
         }), 500
 
-def generate_ai_analysis(results, total):
-    """Generate alerts and recommendations based on analysis results."""
+def generate_ai_analysis(results, total, current_score=0, previous_score=None):
+    """Generate alerts and recommendations based on analysis results and historical trends."""
     
     pwd_weak_count = sum(1 for r in results if r.get('strength', 0) < 60)
     backup_ok_count = sum(1 for r in results if all(r.get('backup_checks', {}).values()))
@@ -353,6 +353,33 @@ def generate_ai_analysis(results, total):
     alerts = []
     recommendations = []
     
+    # Trend Analysis
+    if previous_score is not None:
+        diff = current_score - previous_score
+        if diff < -10:
+            alerts.append({
+                'severity': 'high',
+                'title': f'CRITICAL: Compliance Score Dropped by {abs(diff)}%',
+                'desc': f'Significant regression detected. Score fell from {previous_score}% to {current_score}%.'
+            })
+            recommendations.append({
+                'title': 'Immediate Audit Required',
+                'desc': 'Review recent changes or user onboarding processes that caused this drop.'
+            })
+        elif diff < -5:
+             alerts.append({
+                'severity': 'medium',
+                'title': f'Warning: Compliance Score Dropped by {abs(diff)}%',
+                'desc': f'Score fell from {previous_score}% to {current_score}%.'
+            })
+        elif diff > 5:
+            # We can use 'low' severity for positive news or add a new type if UI supports it
+            alerts.append({
+                'severity': 'low',
+                'title': f'Positive Trend: Score Improved by {diff}%',
+                'desc': f'Compliance rose from {previous_score}% to {current_score}%.'
+            })
+
     # Analyze Password Policy
     if total > 0 and (pwd_weak_count / total) >= 0.05:
         alerts.append({
@@ -460,12 +487,16 @@ def upload_excel():
         # count backup issues (any false in backup checks)
         backup_issues = sum(1 for r in results if any(not v for v in r.get('backup_checks', {}).values()))
 
-        # Generate AI Analysis
-        alerts, recommendations = generate_ai_analysis(results, len(results))
-
-        # persist report and rows into SQLite
+        # Get Previous Score for Trend Analysis
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
+        cur.execute('SELECT overall_score FROM reports ORDER BY uploaded_at DESC LIMIT 1')
+        prev_row = cur.fetchone()
+        previous_score = prev_row[0] if prev_row else None
+        
+        # Generate AI Analysis with Trend
+        alerts, recommendations = generate_ai_analysis(results, len(results), current_score=overall_score, previous_score=previous_score)
+
         uploaded_at = datetime.utcnow().isoformat()
         cur.execute('INSERT INTO reports (filename, uploaded_at, total, valid, invalid, overall_score) VALUES (?,?,?,?,?,?)',
                     (file.filename, uploaded_at, len(results), valid_count, invalid_count, overall_score))
@@ -531,7 +562,7 @@ def list_reports():
 
 
 @app.route('/dashboard-stats', methods=['GET'])
-# @require_auth(roles=['admin','auditor']) # Can be optional for dashboard overview
+@require_auth(roles=['admin','auditor','user'])
 def dashboard_stats():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()

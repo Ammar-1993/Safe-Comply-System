@@ -780,9 +780,23 @@
   <script>
     // Load Dashboard Stats
     async function loadDashboardStats() {
+      // Personalize Welcome Message
+      const username = localStorage.getItem("username");
+      if (username) {
+        document.querySelector(".profile-name").textContent = username;
+        document.querySelector(".profile-email").textContent = username + "@company.com";
+        document.querySelector(".welcome-text").textContent = "Welcome " + username + "!";
+      }
+
       try {
-        const resp = await fetch('http://localhost:5002/dashboard-stats');
-        if (!resp.ok) return;
+        const token = localStorage.getItem('authToken');
+        const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+
+        const resp = await fetch('http://localhost:5002/dashboard-stats', { headers });
+        if (!resp.ok) {
+          if (resp.status === 401) window.location.href = 'signin.html';
+          return;
+        }
         const data = await resp.json();
 
         // Update Overview Stats
