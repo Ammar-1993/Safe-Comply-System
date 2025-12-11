@@ -1,16 +1,28 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 import pandas as pd
 from io import BytesIO
 import sqlite3
 import json
 from datetime import datetime, timedelta
+import os
+import jwt
+from functools import wraps
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# JWT secret (use env var in production)
+SECRET_KEY = os.environ.get('SAFE_COMPLY_SECRET', 'change-this-secret')
+
 
 DB_PATH = 'safecomply.db'
 
 app = Flask(__name__)
-# For local development allow all origins; lock this down in production
-CORS(app)
+# Configure CORS: use SAFE_COMPLY_CORS env var (comma-separated origins) or allow all for dev
+cors_origins = os.environ.get('SAFE_COMPLY_CORS', '*')
+if cors_origins == '*' or cors_origins.strip() == '':
+    CORS(app)
+else:
+    CORS(app, origins=[o.strip() for o in cors_origins.split(',')])
 
 
 def init_db():
@@ -42,6 +54,20 @@ def init_db():
         FOREIGN KEY(report_id) REFERENCES reports(id)
     )
     ''')
+    # accounts table for authentication (separate from report 'users' table)
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS accounts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password_hash TEXT,
+        role TEXT
+    )
+    ''')
+    # seed a default admin account if not exists
+    cur.execute("SELECT COUNT(1) FROM accounts WHERE username = 'admin'")
+    if cur.fetchone()[0] == 0:
+        pw = generate_password_hash('Admin123!')
+        cur.execute('INSERT INTO accounts (username, password_hash, role) VALUES (?,?,?)', ('admin', pw, 'admin'))
     conn.commit()
     conn.close()
 
@@ -52,11 +78,13 @@ def check_password_policy(password):
     """فحص كلمة المرور حسب السياسة الأمنية"""
     if not isinstance(password, str):
         return False
-    length_ok = len(password) >= 8
+    # Align with policy: minimum length 12, require uppercase/lowercase/digit/special
+    length_ok = len(password) >= 12
     upper_ok = any(c.isupper() for c in password)
+    lower_ok = any(c.islower() for c in password)
     digit_ok = any(c.isdigit() for c in password)
     special_ok = any(c in "!@#$%^&*()-_=+[]{};:,.<>?" for c in password)
-    return length_ok and upper_ok and digit_ok and special_ok
+    return length_ok and upper_ok and lower_ok and digit_ok and special_ok
 
 def get_password_checks(password):
     """الحصول على تفاصيل فحص كلمة المرور"""
@@ -64,13 +92,15 @@ def get_password_checks(password):
         return {
             'length': False,
             'uppercase': False,
+            'lowercase': False,
             'digit': False,
             'special': False
         }
     
     return {
-        'length': len(password) >= 8,
+        'length': len(password) >= 12,
         'uppercase': any(c.isupper() for c in password),
+        'lowercase': any(c.islower() for c in password),
         'digit': any(c.isdigit() for c in password),
         'special': any(c in "!@#$%^&*()-_=+[]{};:,.<>?" for c in password)
     }
@@ -143,6 +173,40 @@ def evaluate_backup_policy(row):
         'retention_ok': bool(retention_ok)
     }
 
+
+def _generate_token(username, role):
+    exp = datetime.utcnow() + timedelta(hours=8)
+    payload = {
+        'sub': username,
+        'role': role,
+        'exp': int(exp.timestamp())
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+
+def require_auth(roles=None):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            auth = request.headers.get('Authorization', '')
+            if not auth or not auth.startswith('Bearer '):
+                return jsonify({'error': 'Unauthorized'}), 401
+            token = auth.split(None, 1)[1]
+            try:
+                payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            except Exception as e:
+                return jsonify({'error': 'Invalid token', 'message': str(e)}), 401
+            role = payload.get('role')
+            if roles:
+                allowed = roles if isinstance(roles, (list, tuple)) else [roles]
+                if role not in allowed:
+                    return jsonify({'error': 'Forbidden', 'message': 'insufficient role'}), 403
+            # attach user to request for handlers
+            request.user = payload
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
 @app.route('/check-password', methods=['POST'])
 def check_password():
     """فحص كلمة مرور واحدة"""
@@ -164,6 +228,34 @@ def check_password():
             'error': str(e),
             'message': 'حدث خطأ في المعالجة'
         }), 500
+
+
+@app.route('/auth/login', methods=['POST'])
+def auth_login():
+    try:
+        data = request.get_json() or {}
+        username = data.get('username')
+        password = data.get('password')
+        if not username or not password:
+            return jsonify({'error': 'Username and password required'}), 400
+
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('SELECT id, username, password_hash, role FROM accounts WHERE username = ?', (username,))
+        row = cur.fetchone()
+        conn.close()
+
+        if not row:
+            return jsonify({'error': 'Invalid credentials'}), 401
+
+        stored_hash = row[2]
+        if not check_password_hash(stored_hash, password):
+            return jsonify({'error': 'Invalid credentials'}), 401
+
+        token = _generate_token(row[1], row[3])
+        return jsonify({'access_token': token, 'role': row[3]}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/check-passwords-bulk', methods=['POST'])
 def check_passwords_bulk():
@@ -207,6 +299,14 @@ def check_passwords_bulk():
             'results': results,
             'total': len(results),
             'valid': valid_count,
+        if valid_count < len(results):
+            # Example bulk check recommendation
+            pass
+
+        return jsonify({
+            'results': results,
+            'total': len(results),
+            'valid': valid_count,
             'invalid': len(results) - valid_count
         }), 200
         
@@ -216,7 +316,65 @@ def check_passwords_bulk():
             'message': 'حدث خطأ في المعالجة'
         }), 500
 
+def generate_ai_analysis(results, total):
+    """Generate alerts and recommendations based on analysis results."""
+    
+    pwd_weak_count = sum(1 for r in results if r.get('strength', 0) < 60)
+    backup_ok_count = sum(1 for r in results if all(r.get('backup_checks', {}).values()))
+    backup_fail_count = total - backup_ok_count
+    
+    alerts = []
+    recommendations = []
+    
+    # Analyze Password Policy
+    if total > 0 and (pwd_weak_count / total) >= 0.05:
+        alerts.append({
+            'severity': 'high',
+            'title': f'High Risk: Weak Passwords for {pwd_weak_count} users',
+            'desc': 'Password strength below recommended standards for a significant portion of users.'
+        })
+    elif pwd_weak_count > 0:
+        alerts.append({
+            'severity': 'medium',
+            'title': f'Medium: Weak Passwords for {pwd_weak_count} users',
+            'desc': 'Some users have weak passwords.'
+        })
+        
+    if pwd_weak_count > 0:
+        recommendations.append({
+            'title': f'Enforce stronger passwords for {pwd_weak_count} users',
+            'desc': 'Require minimum length of 14 and enforce complexity; prompt users to change weak passwords.'
+        })
+
+    # Analyze Backup Policy
+    if backup_fail_count > 0 and (backup_fail_count / max(1, total)) >= 0.1:
+        alerts.append({
+            'severity': 'high',
+            'title': f'High Risk: Backup Failures affecting {backup_fail_count} users',
+            'desc': 'Multiple backup failures detected — data loss risk is high.'
+        })
+    elif backup_fail_count > 0:
+        alerts.append({
+            'severity': 'medium',
+            'title': f'Medium: {backup_fail_count} Backup Failures',
+            'desc': 'Some users have missing or outdated backups.'
+        })
+        
+    if backup_fail_count > 0:
+        recommendations.append({
+            'title': 'Investigate backup failures',
+            'desc': 'Run recovery readiness checks and repair failing backup jobs.'
+        })
+
+    # General recommendations
+    if not alerts:
+        alerts.append({'severity': 'low', 'title': 'No critical alerts detected', 'desc': 'All checks are within acceptable thresholds.'})
+        recommendations.append({'title': 'Maintain current settings', 'desc': 'No immediate recommendations.'})
+        
+    return alerts, recommendations
+
 @app.route('/upload-excel', methods=['POST'])
+@require_auth(roles=['admin','auditor'])
 def upload_excel():
     """رفع وفحص ملف Excel مباشرة"""
     try:
@@ -275,6 +433,9 @@ def upload_excel():
         # count backup issues (any false in backup checks)
         backup_issues = sum(1 for r in results if any(not v for v in r.get('backup_checks', {}).values()))
 
+        # Generate AI Analysis
+        alerts, recommendations = generate_ai_analysis(results, len(results))
+
         # persist report and rows into SQLite
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
@@ -297,8 +458,10 @@ def upload_excel():
             'invalid': invalid_count,
             'overall_score': overall_score,
             'policies_analyzed': 2,
-            'alerts_detected': invalid_count + backup_issues,
-            'non_compliant_users': invalid_count
+            'alerts_detected': len(alerts),
+            'non_compliant_users': invalid_count,
+            'alerts': alerts,
+            'recommendations': recommendations
         }), 200
         
     except Exception as e:
@@ -316,18 +479,129 @@ def health_check():
         'endpoints': [
             '/check-password',
             '/check-passwords-bulk',
-            '/upload-excel'
+            '/upload-excel',
+            '/auth/login',
+            '/reports',
+            '/reports/<id>'
         ]
     }), 200
 
+
+@app.route('/reports', methods=['GET'])
+@require_auth(roles=['admin','auditor'])
+def list_reports():
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score FROM reports ORDER BY uploaded_at DESC')
+    rows = cur.fetchall()
+    conn.close()
+    reports = []
+    for r in rows:
+        reports.append({
+            'id': r[0], 'filename': r[1], 'uploaded_at': r[2], 'total': r[3], 'valid': r[4], 'invalid': r[5], 'overall_score': r[6]
+        })
+    return jsonify({'reports': reports}), 200
+
+
+@app.route('/dashboard-stats', methods=['GET'])
+# @require_auth(roles=['admin','auditor']) # Can be optional for dashboard overview
+def dashboard_stats():
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    
+    # Get latest report
+    cur.execute('SELECT id, overall_score, total, valid, invalid FROM reports ORDER BY uploaded_at DESC LIMIT 1')
+    latest = cur.fetchone()
+    
+    compliance_rate = 0
+    active_alerts = 0
+    
+    if latest:
+        compliance_rate = latest[1] # overall_score
+        # Approximation: active alerts = invalid count + some backup logic logic
+        # For simplicity, let's say alerts = invalid users / 2 roughly, or store alerts in DB
+        active_alerts = latest[4] # invalid count
+        
+    # Pending reports
+    cur.execute("SELECT COUNT(1) FROM reports WHERE uploaded_at > date('now', '-7 days')")
+    recent_count = cur.fetchone()[0]
+    
+    conn.close()
+    
+    return jsonify({
+        'compliance_rate': compliance_rate,
+        'active_alerts': active_alerts,
+        'pending_reports': recent_count,
+        # Mocking the pie chart data for now, ideally calc from latest report
+        'policy_breakdown': {
+            'password': 70, 
+            'backup': 30
+        }
+    }), 200
+
+
+@app.route('/reports/<int:report_id>', methods=['GET'])
+@require_auth(roles=['admin','auditor'])
+def get_report(report_id):
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score FROM reports WHERE id = ?', (report_id,))
+    rep = cur.fetchone()
+    if not rep:
+        conn.close()
+        return jsonify({'error': 'Report not found'}), 404
+    cur.execute('SELECT row_index, username, masked_password, is_valid, checks, strength, backup_checks FROM users WHERE report_id = ?', (report_id,))
+    users = cur.fetchall()
+    conn.close()
+    user_list = []
+    for u in users:
+        user_list.append({
+            'row': u[0], 'username': u[1], 'password': u[2], 'isValid': bool(u[3]), 'checks': json.loads(u[4] or '{}'), 'strength': u[5], 'backup_checks': json.loads(u[6] or '{}')
+        })
+    report_obj = {'id': rep[0], 'filename': rep[1], 'uploaded_at': rep[2], 'total': rep[3], 'valid': rep[4], 'invalid': rep[5], 'overall_score': rep[6], 'results': user_list}
+    return jsonify(report_obj), 200
+
+
+# Serve a simple frontend root and static files from project root for development
+@app.route('/')
+def index():
+    # Prefer the signin page if present
+    if os.path.exists('signin.html'):
+        return send_from_directory('.', 'signin.html')
+    return redirect('/health')
+
+
+@app.route('/<path:filename>')
+def serve_static_file(filename):
+    # Only serve common static asset types from the project root in development
+    if '..' in filename or filename.startswith('/'):
+        return jsonify({'error': 'Not allowed'}), 403
+    allowed_ext = ('html', 'css', 'js', 'png', 'jpg', 'jpeg', 'svg', 'ico')
+    ext = filename.rsplit('.', 1)[-1] if '.' in filename else ''
+    if ext.lower() in allowed_ext and os.path.exists(filename):
+        return send_from_directory('.', filename)
+    return jsonify({'error': 'Not found'}), 404
+
 if __name__ == '__main__':
+    # Use environment variable for port so user can avoid reserved ports (default 5001)
+    port = int(os.environ.get('SAFE_COMPLY_PORT', '5000'))
     print("=" * 50)
-    print("🚀 Backend يعمل على http://localhost:5000")
+    print(f"🚀 Backend running on http://localhost:{port}")
     print("=" * 50)
     print("المسارات المتاحة:")
-    print("  - POST /check-password")
-    print("  - POST /check-passwords-bulk")
-    print("  - POST /upload-excel")
-    print("  - GET  /health")
+    # Print registered rules (skip the Flask static endpoint)
+    seen = set()
+    for rule in sorted(app.url_map.iter_rules(), key=lambda r: (str(r.rule), str(list(r.methods)))):
+        if rule.endpoint == 'static':
+            continue
+        methods = ','.join(sorted(m for m in rule.methods if m not in ('HEAD', 'OPTIONS')))
+        entry = f"  - {methods} {rule.rule}"
+        if entry not in seen:
+            print(entry)
+            seen.add(entry)
     print("=" * 50)
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    try:
+        app.run(debug=True, port=port, host='0.0.0.0')
+    except OSError as e:
+        print('Failed to start server:', e)
+        print('If you see a socket/permission error, pick a different port and set SAFE_COMPLY_PORT or free the port.')
