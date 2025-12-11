@@ -1,69 +1,81 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Account - SafeComply</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="login-container">
-      <!-- Welcome Section (Left Side) -->
-      <div class="welcome-section">
-        <h1 class="welcome-title">Welcome Back!</h1>
-        <p class="welcome-text">
-          Already have an account?<br />Log in to access your dashboard.
-        </p>
-        <button class="signin-btn" onclick="window.location.href='signin.html'">
-          Login
-        </button>
-      </div>
 
-      <!-- Signup Section (Right Side) -->
-      <div class="form-section">
-        <h2 class="form-title">Create Account</h2>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - SafeComply</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-        <form>
-          <div class="form-group">
-            <input
-              type="text"
-              class="form-input"
-              placeholder="Username"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <input
-              type="email"
-              class="form-input"
-              placeholder="Email Address"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <input
-              type="password"
-              class="form-input"
-              placeholder="Password"
-              required
-            />
-          </div>
-
-          <button type="submit" class="signup-btn">Signup</button>
-        </form>
-      </div>
-
-      <script>
-        document
-          .querySelector(".signup-btn")
-          .addEventListener("click", function (e) {
-            e.preventDefault();
-            alert("Account created successfully!");
-            window.location.href = "dashboard.html";
-          });
-      </script>
+<body>
+  <div class="login-container">
+    <!-- Welcome Section (Left Side) -->
+    <div class="welcome-section">
+      <h1 class="welcome-title">Welcome Back!</h1>
+      <p class="welcome-text">
+        Already have an account?<br />Log in to access your dashboard.
+      </p>
+      <button class="signin-btn" onclick="window.location.href='signin.html'">
+        Login
+      </button>
     </div>
-  </body>
+
+    <!-- Signup Section (Right Side) -->
+    <div class="form-section">
+      <h2 class="form-title">Create Account</h2>
+
+      <form>
+        <div class="form-group">
+          <input type="text" class="form-input" placeholder="Username" required />
+        </div>
+
+        <div class="form-group">
+          <input type="email" class="form-input" placeholder="Email Address" required />
+        </div>
+
+        <div class="form-group">
+          <input type="password" class="form-input" placeholder="Password" required />
+        </div>
+
+        <button type="submit" class="signup-btn">Signup</button>
+      </form>
+    </div>
+
+    <script>
+      document.querySelector('form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const inputs = document.querySelectorAll('.form-input');
+        const username = inputs[0].value.trim();
+        const email = inputs[1].value.trim();
+        const password = inputs[2].value; // Don't trim password
+
+        if (!username || !password) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        try {
+          const resp = await fetch('http://localhost:5002/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await resp.json();
+
+          if (resp.ok) {
+            alert("Account created successfully!");
+            window.location.href = "signin.html";
+          } else {
+            alert("Signup failed: " + (data.error || "Unknown error"));
+          }
+        } catch (err) {
+          alert("Error connecting to server: " + err.message);
+        }
+      });
+    </script>
+  </div>
+</body>
+
 </html>

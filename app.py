@@ -230,6 +230,36 @@ def check_password():
         }), 500
 
 
+
+@app.route('/auth/register', methods=['POST'])
+def auth_register():
+    try:
+        data = request.get_json() or {}
+        username = data.get('username')
+        password = data.get('password')
+        role = data.get('role', 'user') # Default role
+        
+        if not username or not password:
+            return jsonify({'error': 'Username and password required'}), 400
+
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        
+        # Check if user exists
+        cur.execute('SELECT id FROM accounts WHERE username = ?', (username,))
+        if cur.fetchone():
+            conn.close()
+            return jsonify({'error': 'Username already exists'}), 400
+            
+        password_hash = generate_password_hash(password)
+        cur.execute('INSERT INTO accounts (username, password_hash, role) VALUES (?,?,?)', (username, password_hash, role))
+        conn.commit()
+        conn.close()
+
+        return jsonify({'message': 'Account created successfully'}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/auth/login', methods=['POST'])
 def auth_login():
     try:
@@ -295,10 +325,7 @@ def check_passwords_bulk():
         
         valid_count = sum(1 for r in results if r['isValid'])
         
-        return jsonify({
-            'results': results,
-            'total': len(results),
-            'valid': valid_count,
+
         if valid_count < len(results):
             # Example bulk check recommendation
             pass
@@ -374,7 +401,7 @@ def generate_ai_analysis(results, total):
     return alerts, recommendations
 
 @app.route('/upload-excel', methods=['POST'])
-@require_auth(roles=['admin','auditor'])
+@require_auth(roles=['admin','auditor','user'])
 def upload_excel():
     """رفع وفحص ملف Excel مباشرة"""
     try:
@@ -488,7 +515,7 @@ def health_check():
 
 
 @app.route('/reports', methods=['GET'])
-@require_auth(roles=['admin','auditor'])
+@require_auth(roles=['admin','auditor','user'])
 def list_reports():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
@@ -584,7 +611,7 @@ def serve_static_file(filename):
 
 if __name__ == '__main__':
     # Use environment variable for port so user can avoid reserved ports (default 5001)
-    port = int(os.environ.get('SAFE_COMPLY_PORT', '5000'))
+    port = int(os.environ.get('SAFE_COMPLY_PORT', '5002'))
     print("=" * 50)
     print(f"🚀 Backend running on http://localhost:{port}")
     print("=" * 50)
