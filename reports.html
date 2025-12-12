@@ -1109,11 +1109,89 @@
     }
 
     function exportPDF() {
-      alert("Downloading PDF report...");
+      if (!window.currentReportId) {
+        alert('No report available. Please upload and analyze data first.');
+        return;
+      }
+
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Please login first');
+        window.location.href = 'signin.html';
+        return;
+      }
+
+      // Download PDF
+      fetch(`/api/reports/${window.currentReportId}/pdf`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to generate PDF');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `compliance_report_${window.currentReportId}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(error => {
+          console.error('PDF export error:', error);
+          alert('Failed to download PDF: ' + error.message);
+        });
     }
 
     function exportExcel() {
-      alert("Downloading Excel data...");
+      if (!window.currentReportId) {
+        alert('No report available. Please upload and analyze data first.');
+        return;
+      }
+
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Please login first');
+        window.location.href = 'signin.html';
+        return;
+      }
+
+      // Download Excel
+      fetch(`/api/reports/${window.currentReportId}/excel`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to generate Excel file');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `compliance_data_${window.currentReportId}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(error => {
+          console.error('Excel export error:', error);
+          alert('Failed to download Excel: ' + error.message);
+        });
     }
 
     function viewDetails() {

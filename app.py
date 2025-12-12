@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, redirect
+from flask import Flask, request, jsonify, send_from_directory, redirect, send_file
 from flask_cors import CORS
 import pandas as pd
 from io import BytesIO
@@ -669,6 +669,205 @@ def admin_delete_user(username):
         return jsonify({'error': 'User not found'}), 404
         
     return jsonify({'message': f'User {username} deleted successfully'}), 200
+
+@app.route('/api/reports/<int:report_id>/pdf', methods=['GET'])
+@require_auth(roles=['admin','auditor','user'])
+def export_report_pdf(report_id):
+    """Export report as PDF"""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        
+        # Get report details
+        cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score FROM reports WHERE id = ?', (report_id,))
+        rep = cur.fetchone()
+        if not rep:
+            conn.close()
+            return jsonify({'error': 'Report not found'}), 404
+            
+        # Get users data
+        cur.execute('SELECT row_index, username, masked_password, is_valid, checks, strength, backup_checks FROM users WHERE report_id = ?', (report_id,))
+        users = cur.fetchall()
+        conn.close()
+        
+        # Try to use reportlab if available
+        try:
+            from reportlab.lib.pagesizes import letter, A4
+            from reportlab.lib import colors
+            from reportlab.lib.units import inch
+            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib.enums import TA_CENTER, TA_LEFT
+            
+            buffer = BytesIO()
+            doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+            
+            # Container for elements
+            elements = []
+            styles = getSampleStyleSheet()
+            
+            # Title
+            title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=24, textColor=colors.HexColor('#051338'), spaceAfter=30, alignment=TA_CENTER)
+            elements.append(Paragraph('AI Compliance Report', title_style))
+            elements.append(Spacer(1, 12))
+            
+            # Report Info
+            info_style = styles['Normal']
+            elements.append(Paragraph(f'<b>Report ID:</b> {rep[0]}', info_style))
+            elements.append(Paragraph(f'<b>Filename:</b> {rep[1]}', info_style))
+            elements.append(Paragraph(f'<b>Generated:</b> {rep[2]}', info_style))
+            elements.append(Spacer(1, 20))
+            
+            # Summary Section
+            summary_style = ParagraphStyle('SummaryTitle', parent=styles['Heading2'], fontSize=16, textColor=colors.HexColor('#051338'), spaceAfter=12)
+            elements.append(Paragraph('Summary', summary_style))
+            
+            summary_data = [
+                ['Metric', 'Value'],
+                ['Overall Compliance Score', f"{rep[6]}%"],
+                ['Total Users', str(rep[3])],
+                ['Valid Passwords', str(rep[4])],
+                ['Invalid Passwords', str(rep[5])]
+            ]
+            
+            summary_table = Table(summary_data, colWidths=[3*inch, 2*inch])
+            summary_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(summary_table)
+            elements.append(Spacer(1, 20))
+            
+            # User Details Section
+            elements.append(Paragraph('User Details', summary_style))
+            
+            user_data = [['#', 'Username', 'Password', 'Valid', 'Strength']]
+            for u in users[:50]:  # Limit to first 50 users to avoid huge PDFs
+                user_data.append([
+                    str(u[0]),
+                    u[1],
+                    u[2],
+                    'Yes' if u[3] else 'No',
+                    f"{u[5]}%"
+                ])
+            
+            user_table = Table(user_data, colWidths=[0.5*inch, 1.5*inch, 1.5*inch, 0.8*inch, 0.8*inch])
+            user_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 8),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey)
+            ]))
+            elements.append(user_table)
+            
+            if len(users) > 50:
+                elements.append(Spacer(1, 12))
+                elements.append(Paragraph(f'<i>Note: Showing first 50 of {len(users)} users</i>', info_style))
+            
+            # Build PDF
+            doc.build(elements)
+            buffer.seek(0)
+            
+            return send_file(
+                buffer,
+                as_attachment=True,
+                download_name=f'compliance_report_{report_id}.pdf',
+                mimetype='application/pdf'
+            )
+            
+        except ImportError:
+            # Fallback: return error message asking to install reportlab
+            return jsonify({
+                'error': 'PDF generation requires reportlab library',
+                'message': 'Please install reportlab: pip install reportlab'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/reports/<int:report_id>/excel', methods=['GET'])
+@require_auth(roles=['admin','auditor','user'])
+def export_report_excel(report_id):
+    """Export report raw data as Excel"""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        
+        # Get report details
+        cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score FROM reports WHERE id = ?', (report_id,))
+        rep = cur.fetchone()
+        if not rep:
+            conn.close()
+            return jsonify({'error': 'Report not found'}), 404
+            
+        # Get users data
+        cur.execute('SELECT row_index, username, masked_password, is_valid, checks, strength, backup_checks FROM users WHERE report_id = ?', (report_id,))
+        users = cur.fetchall()
+        conn.close()
+        
+        # Create DataFrame
+        data = []
+        for u in users:
+            checks_dict = json.loads(u[4] or '{}')
+            backup_dict = json.loads(u[6] or '{}')
+            data.append({
+                'Row': u[0],
+                'Username': u[1],
+                'Password': u[2],
+                'Is Valid': 'Yes' if u[3] else 'No',
+                'Strength': u[5],
+                'Length Check': 'Pass' if checks_dict.get('length') else 'Fail',
+                'Uppercase Check': 'Pass' if checks_dict.get('uppercase') else 'Fail',
+                'Lowercase Check': 'Pass' if checks_dict.get('lowercase') else 'Fail',
+                'Digit Check': 'Pass' if checks_dict.get('digit') else 'Fail',
+                'Special Char Check': 'Pass' if checks_dict.get('special') else 'Fail',
+                'Last Backup OK': 'Yes' if backup_dict.get('last_backup_ok') else 'No',
+                'Backup Frequency OK': 'Yes' if backup_dict.get('freq_ok') else 'No',
+                'Backup Type OK': 'Yes' if backup_dict.get('type_ok') else 'No',
+                'Retention OK': 'Yes' if backup_dict.get('retention_ok') else 'No'
+            })
+        
+        df = pd.DataFrame(data)
+        
+        # Create Excel file in memory
+        buffer = BytesIO()
+        with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+            # Write main data
+            df.to_excel(writer, sheet_name='User Data', index=False)
+            
+            # Write summary on a separate sheet
+            summary_df = pd.DataFrame([
+                {'Metric': 'Report ID', 'Value': rep[0]},
+                {'Metric': 'Filename', 'Value': rep[1]},
+                {'Metric': 'Generated At', 'Value': rep[2]},
+                {'Metric': 'Total Users', 'Value': rep[3]},
+                {'Metric': 'Valid Passwords', 'Value': rep[4]},
+                {'Metric': 'Invalid Passwords', 'Value': rep[5]},
+                {'Metric': 'Overall Score', 'Value': f"{rep[6]}%"}
+            ])
+            summary_df.to_excel(writer, sheet_name='Summary', index=False)
+        
+        buffer.seek(0)
+        
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name=f'compliance_data_{report_id}.xlsx',
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/<path:filename>')
 def serve_static_file(filename):
