@@ -525,7 +525,11 @@
   <div class="dashboard-wrapper">
     <div class="sidebar">
       <div class="profile-section">
-        <div class="profile-img">👤</div>
+        <div class="profile-img" style="overflow:hidden;">
+          <img id="profileImage" src=""
+            style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;" />
+          <span id="profileEmoji">👤</span>
+        </div>
         <div class="profile-name">Admin</div>
         <div class="profile-email">admin@company.com</div>
       </div>
@@ -793,10 +797,18 @@
       // Personalize Welcome Message
       const username = localStorage.getItem("username");
       const userEmail = localStorage.getItem("userEmail");
+      const userPicture = localStorage.getItem("userProfilePicture");
       if (username) {
         document.querySelector(".profile-name").textContent = username;
         document.querySelector(".profile-email").textContent = userEmail || username + "@company.com";
         document.querySelector(".welcome-text").textContent = "Welcome " + username + "!";
+
+        // Load profile picture
+        if (userPicture) {
+          document.getElementById('profileImage').src = userPicture;
+          document.getElementById('profileImage').style.display = 'block';
+          document.getElementById('profileEmoji').style.display = 'none';
+        }
       }
 
       try {

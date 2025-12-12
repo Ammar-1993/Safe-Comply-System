@@ -413,7 +413,13 @@
   <div class="dashboard-wrapper">
     <div class="sidebar">
       <div class="profile-section">
-        <div class="profile-img">👤</div>
+        <div class="profile-img" id="sidebarProfileImg" style="cursor:pointer; overflow:hidden; position:relative;"
+          title="Click to change picture">
+          <img id="profileImage" src=""
+            style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;" />
+          <span id="profileEmoji">👤</span>
+        </div>
+        <input type="file" id="profilePictureInput" accept="image/*" style="display:none;" />
         <div class="profile-name">Admin</div>
         <div class="profile-email">admin@company.com</div>
       </div>
@@ -817,6 +823,14 @@
           // Update sidebar
           document.querySelector('.profile-name').textContent = data.username;
           document.querySelector('.profile-email').textContent = data.email || data.username + '@company.com';
+
+          // Load profile picture
+          if (data.profile_picture) {
+            document.getElementById('profileImage').src = data.profile_picture;
+            document.getElementById('profileImage').style.display = 'block';
+            document.getElementById('profileEmoji').style.display = 'none';
+            localStorage.setItem('userProfilePicture', data.profile_picture);
+          }
         }
       } catch (e) {
         console.error('Failed to load profile:', e);
@@ -828,6 +842,14 @@
       document.querySelector(".profile-email").textContent = username + "@company.com";
       document.getElementById('usernameInput').value = username;
 
+      // Load cached profile picture
+      const cachedPicture = localStorage.getItem('userProfilePicture');
+      if (cachedPicture) {
+        document.getElementById('profileImage').src = cachedPicture;
+        document.getElementById('profileImage').style.display = 'block';
+        document.getElementById('profileEmoji').style.display = 'none';
+      }
+
       // Admin Check for User Management
       if (userRole === 'admin') {
         document.getElementById('userManagementSection').style.display = 'block';
@@ -836,6 +858,63 @@
 
       loadProfile();
     }
+
+    // ============ PROFILE PICTURE UPLOAD ============
+    document.getElementById('sidebarProfileImg').addEventListener('click', function () {
+      document.getElementById('profilePictureInput').click();
+    });
+
+    document.getElementById('profilePictureInput').addEventListener('change', async function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (max 500KB)
+      if (file.size > 500 * 1024) {
+        alert('Image too large. Maximum size is 500KB');
+        return;
+      }
+
+      // Read and convert to base64
+      const reader = new FileReader();
+      reader.onload = async function (event) {
+        const base64Data = event.target.result;
+
+        // Preview immediately
+        document.getElementById('profileImage').src = base64Data;
+        document.getElementById('profileImage').style.display = 'block';
+        document.getElementById('profileEmoji').style.display = 'none';
+
+        // Upload to server
+        try {
+          const token = localStorage.getItem('authToken');
+          const resp = await fetch(`${API_BASE}/auth/profile/picture`, {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ picture: base64Data })
+          });
+
+          const data = await resp.json();
+          if (resp.ok) {
+            localStorage.setItem('userProfilePicture', base64Data);
+            alert('Profile picture updated successfully!');
+          } else {
+            alert('Error: ' + (data.error || 'Failed to update picture'));
+          }
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
 
     // ============ SAVE CHANGES ============
     document.getElementById('saveChangesBtn').addEventListener('click', async function () {

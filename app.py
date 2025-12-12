@@ -72,6 +72,12 @@ def init_db():
     except sqlite3.OperationalError:
         pass  # Column already exists
     
+    # Add profile_picture column if it doesn't exist (stores base64 image data)
+    try:
+        cur.execute('ALTER TABLE accounts ADD COLUMN profile_picture TEXT')
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    
     # Login history table for tracking login attempts
     cur.execute('''
     CREATE TABLE IF NOT EXISTS login_history (
@@ -381,7 +387,7 @@ def auth_get_profile():
         
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
-        cur.execute('SELECT id, username, role, email FROM accounts WHERE username = ?', (username,))
+        cur.execute('SELECT id, username, role, email, profile_picture FROM accounts WHERE username = ?', (username,))
         row = cur.fetchone()
         conn.close()
         
@@ -392,7 +398,8 @@ def auth_get_profile():
             'id': row[0],
             'username': row[1],
             'role': row[2],
-            'email': row[3] or f'{row[1]}@company.com'
+            'email': row[3] or f'{row[1]}@company.com',
+            'profile_picture': row[4]
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -418,6 +425,37 @@ def auth_update_profile():
         conn.close()
         
         return jsonify({'message': 'Profile updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/auth/profile/picture', methods=['POST'])
+@require_auth()
+def auth_update_picture():
+    """Update profile picture (base64 encoded)"""
+    try:
+        data = request.get_json() or {}
+        picture_data = data.get('picture')  # Base64 encoded image
+        
+        if not picture_data:
+            return jsonify({'error': 'No picture data provided'}), 400
+        
+        # Validate it looks like base64 image data
+        if not picture_data.startswith('data:image/'):
+            return jsonify({'error': 'Invalid image format. Must be base64 data URL'}), 400
+        
+        # Limit size (max ~500KB base64)
+        if len(picture_data) > 700000:
+            return jsonify({'error': 'Image too large. Maximum size is 500KB'}), 400
+        
+        username = request.user.get('sub')
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('UPDATE accounts SET profile_picture = ? WHERE username = ?', (picture_data, username))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'message': 'Profile picture updated successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
