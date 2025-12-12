@@ -63,10 +63,25 @@
             return;
           }
 
-          // store token and redirect to reports
+          // store token
           localStorage.setItem('authToken', data.access_token);
           localStorage.setItem('userRole', data.role || '');
           localStorage.setItem('username', data.username || '');
+
+          // Fetch profile to get email and picture
+          try {
+            const profileResp = await fetch('http://localhost:5002/auth/profile', {
+              headers: { 'Authorization': 'Bearer ' + data.access_token }
+            });
+            if (profileResp.ok) {
+              const profile = await profileResp.json();
+              if (profile.email) localStorage.setItem('userEmail', profile.email);
+              if (profile.profile_picture) localStorage.setItem('userProfilePicture', profile.profile_picture);
+            }
+          } catch (e) {
+            console.error('Failed to fetch profile:', e);
+          }
+
           window.location.href = 'dashboard.html';
         } catch (err) {
           alert('Login error: ' + err.message);

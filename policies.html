@@ -484,22 +484,13 @@
       }
     }
 
-    // Logout
-    document
-      .querySelector(".logout-btn")
-      .addEventListener("click", function () {
-        if (confirm("Are you sure you want to logout?")) {
-          window.location.href = "signin.html";
-        }
-      });
-    // تحميل الدارك مود المحفوظ
+    // Dark mode
     if (localStorage.getItem("darkMode") === "true") {
       document.body.classList.add("dark-mode");
       const moonBtn = document.querySelectorAll(".icon-btn")[1];
       if (moonBtn) moonBtn.textContent = "☀️";
     }
 
-    // تفعيل/تعطيل الدارك مود
     const moonBtns = document.querySelectorAll(".icon-btn");
     if (moonBtns[1]) {
       moonBtns[1].addEventListener("click", function () {
@@ -510,12 +501,13 @@
       });
     }
 
-    // Logout (duplicate, keeping for faithfulness to original structure)
+    // Logout
     document
       .querySelector(".logout-btn")
       .addEventListener("click", function (e) {
         e.preventDefault();
         if (confirm("Are you sure you want to logout?")) {
+          localStorage.clear();
           window.location.href = "signin.html";
         }
       });
