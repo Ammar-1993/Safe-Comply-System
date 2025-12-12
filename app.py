@@ -61,9 +61,28 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
         password_hash TEXT,
-        role TEXT
+        role TEXT,
+        email TEXT
     )
     ''')
+    
+    # Add email column if it doesn't exist (migration for existing databases)
+    try:
+        cur.execute('ALTER TABLE accounts ADD COLUMN email TEXT')
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    
+    # Login history table for tracking login attempts
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS login_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        login_at TEXT,
+        ip_address TEXT,
+        status TEXT
+    )
+    ''')
+    
     # seed a default admin account if not exists
     cur.execute("SELECT COUNT(1) FROM accounts WHERE username = 'admin'")
     if cur.fetchone()[0] == 0:
@@ -267,6 +286,9 @@ def auth_login():
         data = request.get_json() or {}
         username = data.get('username')
         password = data.get('password')
+        ip_address = request.remote_addr or 'unknown'
+        login_at = datetime.utcnow().isoformat()
+        
         if not username or not password:
             return jsonify({'error': 'Username and password required'}), 400
 
@@ -274,17 +296,262 @@ def auth_login():
         cur = conn.cursor()
         cur.execute('SELECT id, username, password_hash, role FROM accounts WHERE username = ?', (username,))
         row = cur.fetchone()
-        conn.close()
 
         if not row:
+            # Log failed login attempt
+            cur.execute('INSERT INTO login_history (username, login_at, ip_address, status) VALUES (?,?,?,?)',
+                       (username, login_at, ip_address, 'failed_user_not_found'))
+            conn.commit()
+            conn.close()
             return jsonify({'error': 'Invalid credentials'}), 401
 
         stored_hash = row[2]
         if not check_password_hash(stored_hash, password):
+            # Log failed login attempt
+            cur.execute('INSERT INTO login_history (username, login_at, ip_address, status) VALUES (?,?,?,?)',
+                       (username, login_at, ip_address, 'failed_wrong_password'))
+            conn.commit()
+            conn.close()
             return jsonify({'error': 'Invalid credentials'}), 401
 
+        # Log successful login
+        cur.execute('INSERT INTO login_history (username, login_at, ip_address, status) VALUES (?,?,?,?)',
+                   (username, login_at, ip_address, 'success'))
+        conn.commit()
+        conn.close()
+        
         token = _generate_token(row[1], row[3])
         return jsonify({'access_token': token, 'role': row[3], 'username': row[1]}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/auth/change-password', methods=['POST'])
+@require_auth()
+def auth_change_password():
+    """Change user password"""
+    try:
+        data = request.get_json() or {}
+        current_password = data.get('current_password')
+        new_password = data.get('new_password')
+        
+        if not current_password or not new_password:
+            return jsonify({'error': 'Current and new password required'}), 400
+        
+        username = request.user.get('sub')
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('SELECT password_hash FROM accounts WHERE username = ?', (username,))
+        row = cur.fetchone()
+        
+        if not row:
+            conn.close()
+            return jsonify({'error': 'User not found'}), 404
+        
+        if not check_password_hash(row[0], current_password):
+            conn.close()
+            return jsonify({'error': 'Current password is incorrect'}), 401
+        
+        # Validate new password against policy
+        if not check_password_policy(new_password):
+            conn.close()
+            checks = get_password_checks(new_password)
+            return jsonify({
+                'error': 'New password does not meet security requirements',
+                'checks': checks
+            }), 400
+        
+        new_hash = generate_password_hash(new_password)
+        cur.execute('UPDATE accounts SET password_hash = ? WHERE username = ?', (new_hash, username))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'message': 'Password changed successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/auth/profile', methods=['GET'])
+@require_auth()
+def auth_get_profile():
+    """Get current user profile"""
+    try:
+        username = request.user.get('sub')
+        role = request.user.get('role')
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('SELECT id, username, role, email FROM accounts WHERE username = ?', (username,))
+        row = cur.fetchone()
+        conn.close()
+        
+        if not row:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'id': row[0],
+            'username': row[1],
+            'role': row[2],
+            'email': row[3] or f'{row[1]}@company.com'
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/auth/profile', methods=['PUT'])
+@require_auth()
+def auth_update_profile():
+    """Update user profile"""
+    try:
+        data = request.get_json() or {}
+        new_email = data.get('email')
+        
+        username = request.user.get('sub')
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        
+        # Update email if provided
+        if new_email:
+            cur.execute('UPDATE accounts SET email = ? WHERE username = ?', (new_email, username))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'message': 'Profile updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/auth/history', methods=['GET'])
+@require_auth()
+def auth_get_history():
+    """Get login history for current user"""
+    try:
+        username = request.user.get('sub')
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('SELECT login_at, ip_address, status FROM login_history WHERE username = ? ORDER BY login_at DESC LIMIT 10', (username,))
+        rows = cur.fetchall()
+        conn.close()
+        
+        history = []
+        for r in rows:
+            history.append({
+                'login_at': r[0],
+                'ip_address': r[1],
+                'status': r[2]
+            })
+        
+        return jsonify({'history': history}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/auth/export', methods=['GET'])
+@require_auth()
+def auth_export_data():
+    """Export user data as JSON"""
+    try:
+        username = request.user.get('sub')
+        role = request.user.get('role')
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        
+        # Get user profile
+        cur.execute('SELECT id, username, role, email FROM accounts WHERE username = ?', (username,))
+        profile_row = cur.fetchone()
+        
+        # Get user's reports
+        cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score FROM reports WHERE uploaded_by = ?', (username,))
+        report_rows = cur.fetchall()
+        
+        conn.close()
+        
+        reports = []
+        for r in report_rows:
+            reports.append({
+                'id': r[0],
+                'filename': r[1],
+                'uploaded_at': r[2],
+                'total': r[3],
+                'valid': r[4],
+                'invalid': r[5],
+                'overall_score': r[6]
+            })
+        
+        export_data = {
+            'exported_at': datetime.utcnow().isoformat(),
+            'profile': {
+                'id': profile_row[0],
+                'username': profile_row[1],
+                'role': profile_row[2],
+                'email': profile_row[3] or f'{profile_row[1]}@company.com'
+            },
+            'reports': reports,
+            'report_count': len(reports)
+        }
+        
+        # Create downloadable JSON file
+        buffer = BytesIO()
+        buffer.write(json.dumps(export_data, indent=2).encode('utf-8'))
+        buffer.seek(0)
+        
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name=f'safecomply_export_{username}.json',
+            mimetype='application/json'
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/auth/delete-account', methods=['DELETE'])
+@require_auth()
+def auth_delete_account():
+    """Delete current user account"""
+    try:
+        data = request.get_json() or {}
+        password = data.get('password')
+        
+        if not password:
+            return jsonify({'error': 'Password confirmation required'}), 400
+        
+        username = request.user.get('sub')
+        
+        # Prevent deletion of main admin
+        if username == 'admin':
+            return jsonify({'error': 'Cannot delete the main admin account'}), 400
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        
+        # Verify password
+        cur.execute('SELECT password_hash FROM accounts WHERE username = ?', (username,))
+        row = cur.fetchone()
+        
+        if not row:
+            conn.close()
+            return jsonify({'error': 'User not found'}), 404
+        
+        if not check_password_hash(row[0], password):
+            conn.close()
+            return jsonify({'error': 'Incorrect password'}), 401
+        
+        # Delete user's reports and associated users data
+        cur.execute('SELECT id FROM reports WHERE uploaded_by = ?', (username,))
+        report_ids = [r[0] for r in cur.fetchall()]
+        
+        for rid in report_ids:
+            cur.execute('DELETE FROM users WHERE report_id = ?', (rid,))
+        
+        cur.execute('DELETE FROM reports WHERE uploaded_by = ?', (username,))
+        cur.execute('DELETE FROM login_history WHERE username = ?', (username,))
+        cur.execute('DELETE FROM accounts WHERE username = ?', (username,))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'message': 'Account deleted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

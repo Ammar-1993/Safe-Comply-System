@@ -475,7 +475,7 @@
                 <div class="setting-description">Change your username</div>
               </div>
               <div class="setting-control">
-                <input type="text" class="setting-input" value="Admin" />
+                <input type="text" class="setting-input" id="usernameInput" value="Admin" readonly />
               </div>
             </div>
 
@@ -487,7 +487,7 @@
                 </div>
               </div>
               <div class="setting-control">
-                <input type="email" class="setting-input" value="admin@company.com" />
+                <input type="email" class="setting-input" id="emailInput" value="admin@company.com" />
               </div>
             </div>
 
@@ -497,13 +497,13 @@
                 <div class="setting-description">Change your password</div>
               </div>
               <div class="setting-control">
-                <button class="btn-secondary">Change Password</button>
+                <button class="btn-secondary" id="changePasswordBtn">Change Password</button>
               </div>
             </div>
 
             <div class="button-group">
-              <button class="btn-primary">Save Changes</button>
-              <button class="btn-secondary">Cancel</button>
+              <button class="btn-primary" id="saveChangesBtn">Save Changes</button>
+              <button class="btn-secondary" id="cancelBtn">Cancel</button>
             </div>
           </div>
 
@@ -676,7 +676,7 @@
                 </div>
               </div>
               <div class="setting-control">
-                <button class="btn-secondary">View History</button>
+                <button class="btn-secondary" id="viewHistoryBtn">View History</button>
               </div>
             </div>
           </div>
@@ -701,7 +701,7 @@
                 <div class="setting-description">Download all your data</div>
               </div>
               <div class="setting-control">
-                <button class="btn-secondary">Export</button>
+                <button class="btn-secondary" id="exportBtn">Export</button>
               </div>
             </div>
 
@@ -710,11 +710,10 @@
                 <div class="setting-label">Delete Account</div>
                 <div class="setting-description">
                   Permanently delete your account and all data
-                  ```
                 </div>
               </div>
               <div class="setting-control">
-                <button class="btn-danger">Delete Account</button>
+                <button class="btn-danger" id="deleteAccountBtn">Delete Account</button>
               </div>
             </div>
           </div>
@@ -723,26 +722,351 @@
     </div>
   </div>
 
+  <!-- Change Password Modal -->
+  <div id="passwordModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%;">
+      <h3 style="margin:0 0 20px; color:#051338;">Change Password</h3>
+      <div style="margin-bottom:15px;">
+        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">Current Password</label>
+        <input type="password" id="currentPassword"
+          style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+      </div>
+      <div style="margin-bottom:15px;">
+        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">New Password</label>
+        <input type="password" id="newPassword"
+          style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">Confirm New Password</label>
+        <input type="password" id="confirmPassword"
+          style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+      </div>
+      <div id="passwordRequirements"
+        style="margin-bottom:15px; padding:10px; background:#f8f9fa; border-radius:6px; font-size:12px; color:#666;">
+        Password must be at least 12 characters with uppercase, lowercase, number, and special character.
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button onclick="closePasswordModal()" class="btn-secondary">Cancel</button>
+        <button onclick="submitPasswordChange()" class="btn-primary">Change Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login History Modal -->
+  <div id="historyModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div
+      style="background:white; padding:30px; border-radius:12px; width:600px; max-width:90%; max-height:80vh; overflow-y:auto;">
+      <h3 style="margin:0 0 20px; color:#051338;">Login History</h3>
+      <div id="historyContent" style="min-height:100px;">
+        <div style="text-align:center; color:#666;">Loading...</div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+        <button onclick="closeHistoryModal()" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Account Modal -->
+  <div id="deleteModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div
+      style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; border:2px solid #e74c3c;">
+      <h3 style="margin:0 0 20px; color:#e74c3c;">⚠️ Delete Account</h3>
+      <p style="color:#666; margin-bottom:20px;">This action is permanent and cannot be undone. All your data and
+        reports will be deleted.</p>
+      <div style="margin-bottom:20px;">
+        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">Enter your password to
+          confirm</label>
+        <input type="password" id="deletePassword"
+          style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button onclick="closeDeleteModal()" class="btn-secondary">Cancel</button>
+        <button onclick="submitDeleteAccount()" class="btn-danger">Delete My Account</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // API Base URL - use current origin to work with any port
+    const API_BASE = window.location.origin;
+
     // Load User Details
     const username = localStorage.getItem("username");
     const userRole = localStorage.getItem("userRole");
+    let originalEmail = '';
+
+    // Load profile data on page load
+    async function loadProfile() {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+
+        const resp = await fetch(`${API_BASE}/auth/profile`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          document.getElementById('usernameInput').value = data.username;
+          document.getElementById('emailInput').value = data.email || '';
+          originalEmail = data.email || '';
+
+          // Update sidebar
+          document.querySelector('.profile-name').textContent = data.username;
+          document.querySelector('.profile-email').textContent = data.email || data.username + '@company.com';
+        }
+      } catch (e) {
+        console.error('Failed to load profile:', e);
+      }
+    }
 
     if (username) {
       document.querySelector(".profile-name").textContent = username;
       document.querySelector(".profile-email").textContent = username + "@company.com";
+      document.getElementById('usernameInput').value = username;
 
       // Admin Check for User Management
       if (userRole === 'admin') {
         document.getElementById('userManagementSection').style.display = 'block';
         loadUsers();
       }
+
+      loadProfile();
     }
 
+    // ============ SAVE CHANGES ============
+    document.getElementById('saveChangesBtn').addEventListener('click', async function () {
+      const email = document.getElementById('emailInput').value.trim();
+
+      if (!email) {
+        alert('Please enter an email address');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('authToken');
+        const resp = await fetch(`${API_BASE}/auth/profile`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: email })
+        });
+
+        const data = await resp.json();
+        if (resp.ok) {
+          alert('Profile updated successfully!');
+          originalEmail = email;
+          // Store in localStorage so other pages can read it
+          localStorage.setItem('userEmail', email);
+          document.querySelector('.profile-email').textContent = email;
+        } else {
+          alert('Error: ' + (data.error || 'Failed to update profile'));
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    });
+
+    // ============ CANCEL ============
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      // Reset email to original value
+      document.getElementById('emailInput').value = originalEmail;
+    });
+
+    // ============ CHANGE PASSWORD ============
+    document.getElementById('changePasswordBtn').addEventListener('click', function () {
+      document.getElementById('passwordModal').style.display = 'flex';
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    });
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').style.display = 'none';
+    }
+
+    async function submitPasswordChange() {
+      const current = document.getElementById('currentPassword').value;
+      const newPwd = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      if (!current || !newPwd || !confirm) {
+        alert('Please fill in all password fields');
+        return;
+      }
+
+      if (newPwd !== confirm) {
+        alert('New passwords do not match');
+        return;
+      }
+
+      if (newPwd.length < 12) {
+        alert('Password must be at least 12 characters');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('authToken');
+        const resp = await fetch(`${API_BASE}/auth/change-password`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            current_password: current,
+            new_password: newPwd
+          })
+        });
+
+        const data = await resp.json();
+        if (resp.ok) {
+          alert('Password changed successfully!');
+          closePasswordModal();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to change password'));
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    // ============ VIEW HISTORY ============
+    document.getElementById('viewHistoryBtn').addEventListener('click', async function () {
+      document.getElementById('historyModal').style.display = 'flex';
+      document.getElementById('historyContent').innerHTML = '<div style="text-align:center; color:#666;">Loading...</div>';
+
+      try {
+        const token = localStorage.getItem('authToken');
+        const resp = await fetch(`${API_BASE}/auth/history`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          renderHistory(data.history);
+        } else {
+          document.getElementById('historyContent').innerHTML = '<div style="color:#e74c3c;">Failed to load history</div>';
+        }
+      } catch (e) {
+        document.getElementById('historyContent').innerHTML = '<div style="color:#e74c3c;">Error: ' + e.message + '</div>';
+      }
+    });
+
+    function renderHistory(history) {
+      const container = document.getElementById('historyContent');
+      if (!history || history.length === 0) {
+        container.innerHTML = '<div style="text-align:center; color:#666; padding:20px;">No login history found</div>';
+        return;
+      }
+
+      let html = '<table style="width:100%; border-collapse:collapse;">';
+      html += '<thead><tr style="background:#f8f9fa;"><th style="padding:10px; text-align:left; border-bottom:2px solid #dee2e6;">Date & Time</th><th style="padding:10px; text-align:left; border-bottom:2px solid #dee2e6;">IP Address</th><th style="padding:10px; text-align:left; border-bottom:2px solid #dee2e6;">Status</th></tr></thead><tbody>';
+
+      history.forEach(h => {
+        const statusColor = h.status === 'success' ? '#27ae60' : '#e74c3c';
+        const statusText = h.status === 'success' ? '✓ Success' : '✗ Failed';
+        const date = new Date(h.login_at).toLocaleString();
+        html += `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${date}</td><td style="padding:10px; border-bottom:1px solid #eee;">${h.ip_address}</td><td style="padding:10px; border-bottom:1px solid #eee; color:${statusColor};">${statusText}</td></tr>`;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('historyModal').style.display = 'none';
+    }
+
+    // ============ EXPORT ============
+    document.getElementById('exportBtn').addEventListener('click', async function () {
+      try {
+        const token = localStorage.getItem('authToken');
+        const resp = await fetch(`${API_BASE}/auth/export`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (resp.ok) {
+          const blob = await resp.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'safecomply_export.json';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+          alert('Data exported successfully!');
+        } else {
+          const data = await resp.json();
+          alert('Error: ' + (data.error || 'Failed to export data'));
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    });
+
+    // ============ DELETE ACCOUNT ============
+    document.getElementById('deleteAccountBtn').addEventListener('click', function () {
+      // Check if admin
+      if (username === 'admin') {
+        alert('Cannot delete the main admin account');
+        return;
+      }
+      document.getElementById('deleteModal').style.display = 'flex';
+      document.getElementById('deletePassword').value = '';
+    });
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    async function submitDeleteAccount() {
+      const password = document.getElementById('deletePassword').value;
+
+      if (!password) {
+        alert('Please enter your password to confirm');
+        return;
+      }
+
+      if (!confirm('Are you absolutely sure? This will permanently delete your account and all data.')) {
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('authToken');
+        const resp = await fetch(`${API_BASE}/auth/delete-account`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ password: password })
+        });
+
+        const data = await resp.json();
+        if (resp.ok) {
+          alert('Account deleted successfully. You will be redirected to the login page.');
+          localStorage.clear();
+          window.location.href = 'signin.html';
+        } else {
+          alert('Error: ' + (data.error || 'Failed to delete account'));
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    // ============ ADMIN: LOAD USERS ============
     async function loadUsers() {
       try {
         const token = localStorage.getItem('authToken');
-        const resp = await fetch('http://localhost:5002/admin/users', {
+        const resp = await fetch(`${API_BASE}/admin/users`, {
           headers: { 'Authorization': 'Bearer ' + token }
         });
 
@@ -787,7 +1111,7 @@
 
       try {
         const token = localStorage.getItem('authToken');
-        const resp = await fetch(`http://localhost:5002/admin/users/${username}`, {
+        const resp = await fetch(`${API_BASE}/admin/users/${username}`, {
           method: 'DELETE',
           headers: { 'Authorization': 'Bearer ' + token }
         });
@@ -804,6 +1128,7 @@
       }
     }
 
+    // ============ TOGGLE SWITCH ============
     function toggleSwitch(element) {
       element.classList.toggle("active");
 
@@ -817,6 +1142,7 @@
       }
     }
 
+    // ============ DARK MODE INIT ============
     window.addEventListener("DOMContentLoaded", function () {
       const isDarkMode = localStorage.getItem("darkMode") === "true";
       if (isDarkMode) {
@@ -834,14 +1160,27 @@
       }
     });
 
+    // ============ LOGOUT ============
     document
       .querySelector(".logout-btn")
       .addEventListener("click", function (e) {
         e.preventDefault();
         if (confirm("Are you sure you want to logout?")) {
+          localStorage.clear();
           window.location.href = "signin.html";
         }
       });
+
+    // ============ CLOSE MODALS ON OUTSIDE CLICK ============
+    document.getElementById('passwordModal').addEventListener('click', function (e) {
+      if (e.target === this) closePasswordModal();
+    });
+    document.getElementById('historyModal').addEventListener('click', function (e) {
+      if (e.target === this) closeHistoryModal();
+    });
+    document.getElementById('deleteModal').addEventListener('click', function (e) {
+      if (e.target === this) closeDeleteModal();
+    });
   </script>
 </body>
 

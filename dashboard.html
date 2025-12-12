@@ -792,9 +792,10 @@
     async function loadDashboardStats() {
       // Personalize Welcome Message
       const username = localStorage.getItem("username");
+      const userEmail = localStorage.getItem("userEmail");
       if (username) {
         document.querySelector(".profile-name").textContent = username;
-        document.querySelector(".profile-email").textContent = username + "@company.com";
+        document.querySelector(".profile-email").textContent = userEmail || username + "@company.com";
         document.querySelector(".welcome-text").textContent = "Welcome " + username + "!";
       }
 

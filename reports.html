@@ -1207,7 +1207,7 @@
     const username = localStorage.getItem("username");
     if (username) {
       document.querySelector(".profile-name").textContent = username;
-      document.querySelector(".profile-email").textContent = username + "@company.com";
+      document.querySelector(".profile-email").textContent = localStorage.getItem("userEmail") || username + "@company.com";
     }
 
     document
