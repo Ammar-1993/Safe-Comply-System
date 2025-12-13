@@ -197,7 +197,7 @@ SafeComply uses environment variables for configuration. Set these before runnin
 |----------|---------------|-------------|
 | `SAFE_COMPLY_SECRET` | `change-this-secret` | JWT signing secret ⚠️ |
 | `SAFE_COMPLY_CORS` | `http://localhost:5500` | Allowed CORS origins |
-| `SAFE_COMPLY_PORT` | `5001` | Application port |
+| `SAFE_COMPLY_PORT` | `5002` | Application port |
 
 #### Setting Environment Variables (PowerShell)
 
@@ -205,7 +205,7 @@ SafeComply uses environment variables for configuration. Set these before runnin
 # For current session only
 $env:SAFE_COMPLY_SECRET = 'your-strong-random-secret-here'
 $env:SAFE_COMPLY_CORS = 'http://localhost:5500'
-$env:SAFE_COMPLY_PORT = '5001'
+$env:SAFE_COMPLY_PORT = '5002'
 ```
 
 #### Setting Environment Variables (Persistent)
@@ -249,7 +249,7 @@ Use the included PowerShell script for one-command setup:
 
 # 2. Set environment variables (optional)
 $env:SAFE_COMPLY_SECRET = 'dev-secret-key'
-$env:SAFE_COMPLY_PORT = '5001'
+$env:SAFE_COMPLY_PORT = '5002'
 
 # 3. Run the application
 python .\app.py
@@ -260,14 +260,14 @@ python .\app.py
 Once the server starts, you should see:
 
 ```
- * Running on http://127.0.0.1:5001
+ * Running on http://127.0.0.1:5002
  * Debug mode: on
 ```
 
 Test the API health endpoint:
 
 ```powershell
-curl http://localhost:5001/health
+curl http://localhost:5002/health
 ```
 
 Expected response:
@@ -298,7 +298,7 @@ A default admin account is automatically created on first run:
 
 1. **Open your browser** and navigate to:
    ```
-   http://localhost:5001
+   http://localhost:5002
    ```
 
 2. **Sign in** with the default credentials
@@ -342,7 +342,7 @@ Authorization: Bearer <your-jwt-token>
 
 **Login Example:**
 ```bash
-curl -X POST http://localhost:5001/auth/login \
+curl -X POST http://localhost:5002/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "Admin123!"}'
 ```
@@ -543,7 +543,7 @@ $env:SAFE_COMPLY_CORS = 'https://app.yourdomain.com,https://admin.yourdomain.com
 python -m pip install waitress
 
 # Run with Waitress
-waitress-serve --port=5001 --call app:app
+waitress-serve --port=5002 --call app:app
 ```
 
 #### 4. Database Security
@@ -584,7 +584,7 @@ OSError: [WinError 10048] Only one usage of each socket address is normally perm
 **Solution:**
 ```powershell
 # Find process using the port
-netstat -aon | findstr ":5001"
+netstat -aon | findstr ":5002"
 
 # Kill the process (replace PID with actual process ID)
 taskkill /PID <PID> /F
