@@ -44,7 +44,9 @@
 - 💾 **Backup Policy Compliance** - Monitor backup schedules and retention
 - 📊 **Excel Report Processing** - Bulk analysis from spreadsheet uploads
 - 🤖 **AI-Powered Insights** - Generate alerts and recommendations
+- 🔔 **Real-time Notifications** - Live updates for critical events and reports
 - 📈 **Trend Analysis** - Track compliance changes over time
+- 🎨 **Modern UI/UX** - Enhanced experience with custom modals
 - 👥 **Role-Based Access Control** - Admin, Auditor, and User roles
 - 📄 **PDF/Excel Export** - Generate professional compliance reports
 
@@ -62,6 +64,8 @@
 | **Compliance Scoring** | Calculate overall compliance rates with detailed metrics |
 | **Historical Trends** | Compare current vs. previous reports to detect regressions |
 | **Smart Alerts** | AI-generated warnings for critical compliance issues |
+| **Live Notifications** | Real-time system updates and read status tracking |
+| **Modern Interface** | Custom non-blocking modal dialogs for smoother interaction |
 | **Multi-format Export** | Download reports as PDF or Excel |
 
 ### User Roles
@@ -431,13 +435,18 @@ Safecomply/
 │   ├── backup-policies.html           # Backup policy view
 │   ├── recommendations.html           # AI recommendations
 │   ├── settings.html                  # User settings
-│   └── style.css                      # Global styles
+│   ├── style.css                      # Global styles
+│   ├── modal.css                      # Modal component styles
+│   ├── modal.js                       # Modal component logic
+│   └── notifications.js               # Real-time notification system
 │
 ├── 🛠️ Utility Scripts
 │   ├── create_auditor.py              # Create auditor accounts
 │   ├── create_sample.py               # Generate sample data
+│   ├── generate_demos.py              # Generate demo scenarios (High/Low/Mixed)
 │   ├── migrate_db.py                  # Database migrations
 │   ├── test_reqs.py                   # Test requirements
+│   ├── test_notifications.py          # Test notification system
 │   └── verify_rbac.py                 # Verify role-based access
 │
 └── 📁 .venv/                          # Virtual environment (auto-generated)
