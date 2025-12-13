@@ -1,35 +1,97 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SafeComply</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe Comply System - Welcome</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:#f6f8fa; color:#0b1724; margin:0; }
-    .wrap { max-width:640px; margin:6vh auto; background:white; border-radius:8px; box-shadow:0 6px 18px rgba(11,23,36,0.08); padding:28px; }
-    h1 { margin:0 0 8px; font-size:24px }
-    p { margin:0 0 18px; color:#394b59 }
-    .links { display:flex; gap:12px; flex-wrap:wrap }
-    a.btn { display:inline-block; padding:10px 14px; border-radius:6px; text-decoration:none; color:white; background:#0b69ff }
-    a.ghost { background:transparent; color:#0b69ff; border:1px solid #cfe0ff }
-    footer { margin-top:18px; font-size:13px; color:#6b7b88 }
+    /* Specific Styles for Landing Page to avoid conflicts with shared style.css initially if needed, 
+           but mostly we will rely on style.css updates. */
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <h1>SafeComply — Development</h1>
-    <p>Welcome. Use the links below to open the local UI pages for the SafeComply dev server.</p>
 
-    <div class="links">
-      <a class="btn" href="signin.html">Sign in</a>
-      <a class="ghost" href="reports.html">Reports</a>
-      <a class="ghost" href="dashboard.html">Dashboard</a>
-      <a class="ghost" href="policies.html">Policies</a>
+<body class="landing-body">
+  <div class="landing-overlay"></div>
+
+  <nav class="landing-nav fade-in-down">
+    <div class="logo">
+      <i class="fa-solid fa-shield-halved"></i> Safe Comply
+    </div>
+    <div class="nav-links">
+      <a href="#" class="active">Home</a>
+      <a href="#features">Features</a>
+      <a href="#about">About</a>
+      <a href="dev_menu.html" class="dev-link" title="Dev Menu"><i class="fa-solid fa-code"></i></a>
+    </div>
+    <a href="signin.html" class="nav-btn">Sign In</a>
+  </nav>
+
+  <main class="landing-hero">
+    <div class="hero-content fade-in-up">
+      <div class="badge-pill">
+        <span class="dot"></span> Secure & Compliant
+      </div>
+      <h1>The Future of <br><span class="gradient-text">Compliance Management</span></h1>
+      <p>Ensure your organization meets all regulatory standards with our advanced, AI-driven compliance and reporting
+        system. Secure, reliable, and easy to use.</p>
+
+      <div class="hero-actions">
+        <a href="signin.html" class="btn-primary-glow">Get Started <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="#learn-more" class="btn-secondary-glass">Learn More</a>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <h3>99.9%</h3>
+          <span>Uptime</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat-item">
+          <h3>ISO</h3>
+          <span>Certified</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat-item">
+          <h3>24/7</h3>
+          <span>Monitoring</span>
+        </div>
+      </div>
     </div>
 
-    <footer>
-      Running locally — for development only. Do not expose this on production.
-    </footer>
-  </div>
+    <div class="hero-visual fade-in-left">
+      <div class="glass-card card-1">
+        <div class="card-icon"><i class="fa-solid fa-lock"></i></div>
+        <h4>Secure Data</h4>
+        <div class="progress-bar">
+          <div class="fill" style="width: 100%"></div>
+        </div>
+      </div>
+      <div class="glass-card card-2">
+        <div class="card-icon"><i class="fa-solid fa-file-shield"></i></div>
+        <h4>Auto Reports</h4>
+        <div class="progress-bar">
+          <div class="fill" style="width: 85%"></div>
+        </div>
+      </div>
+      <div class="hero-circle"></div>
+    </div>
+  </main>
+
+  <footer class="landing-footer">
+    <p>&copy; 2025 Safe Comply System. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Simple entry animations
+    document.addEventListener('DOMContentLoaded', () => {
+      // Already handled by CSS animations mostly
+    });
+  </script>
 </body>
+
 </html>

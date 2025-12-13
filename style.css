@@ -5,14 +5,403 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #83afde7e 0%, #6d8cad7e 100%);
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Light default, overridden by landing-body */
   min-height: 100vh;
+  /* Remove flex centering globally as it might affect landing page flow, 
+     but check if it breaks signin.html. 
+     Signin.html relies on body being flex center. 
+     I will scope flex center to a class or keep it and override for landing.
+  */
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  flex-direction: column; /* Changed to column to support normal flow */
+  /* align-items: center;  <-- specific to signin, move to .login-page-body if possible, or override. */
 }
+
+/* --- KEEPING EXISTING STYLES FOR BACKWARD COMPAT (SIGNIN.HTML) --- */
+/* The existing body styles had display:flex, align-items:center, justify-content:center.
+   This centers the .login-container.
+   For the landing page, we want normal flow.
+   I will add a specific class for the login page body in signin.html later? 
+   No, I should just adjust specific pages.
+   For now, I'll reset body for .landing-body.
+*/
+
+body:not(.landing-body) {
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #83afde7e 0%, #6d8cad7e 100%);
+    padding: 20px;
+}
+
+/* --- LANDING PAGE STYLES --- */
+.landing-body {
+    display: block; /* Override flex */
+    background: #0f172a; /* Dark theme base */
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.15) 0%, transparent 20%);
+    color: #f8fafc;
+    overflow-x: hidden;
+    padding: 0;
+}
+
+.landing-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('data:image/svg+xml,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="1" cy="1" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
+    z-index: -1;
+    mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+/* Navbar */
+.landing-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.landing-nav .logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.landing-nav .logo i {
+    color: #38bdf8;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #94a3b8;
+    font-weight: 500;
+    transition: color 0.3s;
+    font-size: 15px;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: white;
+}
+
+.nav-btn {
+    text-decoration: none;
+    color: #0f172a;
+    background: white;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+}
+
+.dev-link {
+    opacity: 0.5;
+}
+.dev-link:hover {
+    opacity: 1;
+}
+
+/* Hero Section */
+.landing-hero {
+    max-width: 1200px;
+    margin: 60px auto 0;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: calc(100vh - 100px);
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+    padding-right: 40px;
+}
+
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 6px 16px;
+    border-radius: 50px;
+    color: #38bdf8;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 24px;
+}
+
+.badge-pill .dot {
+    width: 6px;
+    height: 6px;
+    background: #38bdf8;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #38bdf8;
+}
+
+.hero-content h1 {
+    font-size: 56px;
+    line-height: 1.1;
+    font-weight: 800;
+    margin-bottom: 24px;
+    letter-spacing: -1px;
+}
+
+.gradient-text {
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-content p {
+    font-size: 18px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 480px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 60px;
+}
+
+.btn-primary-glow {
+    text-decoration: none;
+    background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.5);
+}
+
+.btn-primary-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -4px rgba(37, 99, 235, 0.6);
+}
+
+.btn-secondary-glass {
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-secondary-glass:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.stats-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.stat-item h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.stat-item span {
+    font-size: 13px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stats-row .divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Hero Visual (Right Side) */
+.hero-visual {
+    flex: 1;
+    position: relative;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-circle {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: -1;
+    animation: pulse 4s infinite ease-in-out;
+}
+
+.glass-card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5);
+    width: 240px;
+    transition: transform 0.4s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-10px) rotateX(5deg);
+}
+
+.card-1 {
+    top: 100px;
+    right: 50px;
+    z-index: 2;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+}
+
+.card-2 {
+    bottom: 80px;
+    left: 20px;
+    z-index: 1;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(56, 189, 248, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #38bdf8;
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.glass-card h4 {
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar .fill {
+    height: 100%;
+    background: #38bdf8;
+    border-radius: 3px;
+}
+
+.landing-footer {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.fade-in-down {
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+.fade-in-left {
+    animation: fadeInLeft 1s ease-out 0.4s backwards;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .landing-hero {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 40px;
+        min-height: auto;
+    }
+
+    .hero-content {
+        padding-right: 0;
+        margin-bottom: 60px;
+    }
+
+    .hero-content p {
+        margin: 0 auto 40px;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .stats-row {
+        justify-content: center;
+    }
+
+    .hero-visual {
+        width: 100%;
+        height: 400px;
+    }
+}
+
+/* --- EXISTING SIGNIN STYLES BELOW (Unchanged primarily, but ensured no conflict) --- */
 
 .login-container {
   display: flex;
@@ -23,7 +412,8 @@ body {
   overflow: hidden;
 }
 
-/* القسم الأيسر - الترحيب */
+/* (Copying rest of original style.css content here to verify integrity) */
+
 .welcome-section {
   flex: 1;
   background: linear-gradient(135deg, #2c5364 0%, #203a43 50%, #0f2027 100%);
@@ -69,7 +459,6 @@ body {
   color: #2c5364;
 }
 
-/* القسم الأيمن - التسجيل */
 .form-section {
   flex: 1;
   padding: 50px 60px;
@@ -185,7 +574,6 @@ body {
   box-shadow: 0 5px 20px #667eea66;
 }
 
-/* للشاشات الصغيرة */
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;

@@ -938,12 +938,7 @@ def get_report(report_id):
 
 
 # Serve a simple frontend root and static files from project root for development
-@app.route('/')
-def index():
-    # Prefer the signin page if present
-    if os.path.exists('signin.html'):
-        return send_from_directory('.', 'signin.html')
-    return redirect('/health')
+
 
 
 @app.route('/admin/users', methods=['GET'])
@@ -1173,6 +1168,10 @@ def export_report_excel(report_id):
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/')
+def home():
+    return send_file('index.html')
 
 @app.route('/<path:filename>')
 def serve_static_file(filename):
