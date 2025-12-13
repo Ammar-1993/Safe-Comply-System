@@ -524,7 +524,7 @@
             const ret = document.getElementById('checkRetention').value;
 
             if (!date || !ret) {
-                alert('Please fill all fields');
+                showWarning('Please fill all fields', 'Input Required');
                 return;
             }
 
@@ -557,7 +557,7 @@
                 }
             } catch (e) {
                 console.error(e);
-                alert('Error checking compliance');
+                showError('Error checking compliance', 'System Error');
             }
         }
 

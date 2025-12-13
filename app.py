@@ -1345,6 +1345,32 @@ def get_recommendations_api():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/check-backup-policy', methods=['POST'])
+def check_backup_policy_endpoint():
+    """Evaluate a single backup configuration against policy"""
+    try:
+        data = request.get_json() or {}
+        # Construct a pseudo-row for the evaluator
+        row = {
+            'last_backup_date': data.get('last_backup_date'),
+            'backup_frequency': data.get('frequency'),
+            'retention_days': data.get('retention')
+        }
+        
+        # We need to ensure evaluate_backup_policy is available.
+        # It is likely defined earlier in the file.
+        checks = evaluate_backup_policy(row)
+        
+        # Policy: Weekly or better, retention >= 30 days, last backup within 7 days
+        is_compliant = checks['last_backup_ok'] and checks['freq_ok'] and checks['retention_ok']
+        
+        return jsonify({
+            'compliant': is_compliant,
+            'checks': checks
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Use environment variable for port so user can avoid reserved ports (default 5001)
     port = int(os.environ.get('SAFE_COMPLY_PORT', '5002'))
