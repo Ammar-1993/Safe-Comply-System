@@ -332,23 +332,22 @@ def get_notifications():
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         
-        # Get unread or recent 10 events
-        cur.execute('SELECT * FROM notifications WHERE username = ? ORDER BY created_at DESC LIMIT 10', (username,))
+        # Get unread notifications only (user request: disappear when read)
+        cur.execute('SELECT * FROM notifications WHERE username = ? AND is_read = 0 ORDER BY created_at DESC', (username,))
         rows = cur.fetchall()
         
         notifs = []
-        unread_count = 0
         for r in rows:
             notifs.append({
                 'id': r['id'],
                 'title': r['title'],
                 'message': r['message'],
                 'type': r['type'],
-                'is_read': bool(r['is_read']),
+                'is_read': False, 
                 'created_at': r['created_at']
             })
-            if not r['is_read']:
-                unread_count += 1
+            
+        unread_count = len(notifs)
                 
         conn.close()
         return jsonify({'notifications': notifs, 'unread_count': unread_count})
