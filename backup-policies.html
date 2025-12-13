@@ -248,6 +248,7 @@
             color: #e0e0e0;
         }
     </style>
+    <link rel="stylesheet" href="modal.css" />
 </head>
 
 <body>
@@ -309,8 +310,11 @@
             }
         }
 
-        document.querySelector(".logout-btn").addEventListener("click", function () {
-            if (confirm("Are you sure you want to logout?")) window.location.href = "signin.html";
+        document.querySelector(".logout-btn").addEventListener("click", async function () {
+            if (await showConfirm("Are you sure you want to logout?", "Confirm Logout")) {
+                localStorage.clear();
+                window.location.href = "signin.html";
+            }
         });
         if (localStorage.getItem("darkMode") === "true") {
             document.body.classList.add("dark-mode");
@@ -327,6 +331,7 @@
             });
         }
     </script>
+    <script src="modal.js"></script>
 </body>
 
 </html>

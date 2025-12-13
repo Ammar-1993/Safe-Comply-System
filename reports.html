@@ -584,6 +584,7 @@
       background: rgba(30, 30, 46, 0.945);
     }
   </style>
+  <link rel="stylesheet" href="modal.css" />
 </head>
 
 <body>
@@ -910,7 +911,7 @@
         selectedFileDiv.classList.add("show");
         btnAnalyze.classList.add("show");
       } else {
-        alert("Please select a valid Excel file (.xlsx or .xls)");
+        showWarning("Please select a valid Excel file (.xlsx or .xls)", "Invalid File");
       }
     }
 
@@ -923,7 +924,7 @@
 
     async function startAnalysis() {
       if (!selectedFile) {
-        alert('Select a file first');
+        showWarning('Select a file first', 'No File Selected');
         return;
       }
 
@@ -983,7 +984,7 @@
         const token = localStorage.getItem('authToken');
         if (!token) {
           animParams.active = false;
-          alert('You must be logged in to upload files.');
+          showWarning('You must be logged in to upload files.', 'Authentication Required');
           window.location.href = 'signin.html';
           return;
         }
@@ -999,7 +1000,7 @@
         if (!resp.ok) {
           animParams.active = false;
           const err = await resp.json();
-          alert('Upload failed: ' + (err.message || err.error || resp.status));
+          showError('Upload failed: ' + (err.message || err.error || resp.status), 'Upload Failed');
           document.getElementById("processingSection").classList.remove("show");
           document.getElementById("uploadSection").style.display = "block";
           return;
@@ -1106,7 +1107,7 @@
 
       } catch (e) {
         animParams.active = false;
-        alert('Upload error: ' + e.message);
+        showError('Upload error: ' + e.message, 'System Error');
         document.getElementById("processingSection").classList.remove("show");
         document.getElementById("uploadSection").style.display = "block";
       }
@@ -1114,13 +1115,13 @@
 
     function exportPDF() {
       if (!window.currentReportId) {
-        alert('No report available. Please upload and analyze data first.');
+        showWarning('No report available. Please upload and analyze data first.', 'No Report');
         return;
       }
 
       const token = localStorage.getItem('authToken');
       if (!token) {
-        alert('Please login first');
+        showWarning('Please login first', 'Authentication Required');
         window.location.href = 'signin.html';
         return;
       }
@@ -1151,19 +1152,19 @@
         })
         .catch(error => {
           console.error('PDF export error:', error);
-          alert('Failed to download PDF: ' + error.message);
+          showError('Failed to download PDF: ' + error.message, 'Download Error');
         });
     }
 
     function exportExcel() {
       if (!window.currentReportId) {
-        alert('No report available. Please upload and analyze data first.');
+        showWarning('No report available. Please upload and analyze data first.', 'No Report');
         return;
       }
 
       const token = localStorage.getItem('authToken');
       if (!token) {
-        alert('Please login first');
+        showWarning('Please login first', 'Authentication Required');
         window.location.href = 'signin.html';
         return;
       }
@@ -1194,7 +1195,7 @@
         })
         .catch(error => {
           console.error('Excel export error:', error);
-          alert('Failed to download Excel: ' + error.message);
+          showError('Failed to download Excel: ' + error.message, 'Download Error');
         });
     }
 
@@ -1240,14 +1241,15 @@
     // Logout
     document
       .querySelector(".logout-btn")
-      .addEventListener("click", function (e) {
+      .addEventListener("click", async function (e) {
         e.preventDefault();
-        if (confirm("Are you sure you want to logout?")) {
+        if (await showConfirm("Are you sure you want to logout?", "Confirm Logout")) {
           localStorage.clear();
           window.location.href = "signin.html";
         }
       });
   </script>
+  <script src="modal.js"></script>
 </body>
 
 </html>

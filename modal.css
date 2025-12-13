@@ -1,0 +1,215 @@
+/* ============================================
+   SafeComply Custom Modal System
+   Modern, beautiful dialogs to replace native alerts
+   ============================================ */
+
+/* Modal Overlay */
+.sc-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.sc-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Container */
+.sc-modal {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 420px;
+  width: 90%;
+  padding: 0;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.sc-modal-overlay.active .sc-modal {
+  transform: scale(1) translateY(0);
+}
+
+/* Modal Header with Icon */
+.sc-modal-header {
+  padding: 24px 24px 16px;
+  text-align: center;
+}
+
+.sc-modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 32px;
+}
+
+/* Icon Types */
+.sc-modal-icon.success {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #059669;
+}
+
+.sc-modal-icon.error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626;
+}
+
+.sc-modal-icon.warning {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #d97706;
+}
+
+.sc-modal-icon.info {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #2563eb;
+}
+
+.sc-modal-icon.confirm {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4f46e5;
+}
+
+/* Modal Title */
+.sc-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Modal Body */
+.sc-modal-body {
+  padding: 0 24px 24px;
+  text-align: center;
+}
+
+.sc-modal-message {
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Modal Footer */
+.sc-modal-footer {
+  padding: 16px 24px;
+  background: #f9fafb;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Buttons */
+.sc-modal-btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 100px;
+}
+
+.sc-modal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sc-modal-btn:active {
+  transform: translateY(0);
+}
+
+/* Primary Button */
+.sc-modal-btn.primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.sc-modal-btn.primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Success Button */
+.sc-modal-btn.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.sc-modal-btn.success:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Danger Button */
+.sc-modal-btn.danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.sc-modal-btn.danger:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* Cancel/Secondary Button */
+.sc-modal-btn.secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.sc-modal-btn.secondary:hover {
+  background: #d1d5db;
+}
+
+/* Dark Mode Support */
+body.dark-mode .sc-modal {
+  background: linear-gradient(145deg, #2a2a3e 0%, #1e1e2e 100%);
+}
+
+body.dark-mode .sc-modal-title {
+  color: #f3f4f6;
+}
+
+body.dark-mode .sc-modal-message {
+  color: #9ca3af;
+}
+
+body.dark-mode .sc-modal-footer {
+  background: #1e1e2e;
+}
+
+body.dark-mode .sc-modal-btn.secondary {
+  background: #3a3a4e;
+  color: #e5e7eb;
+}
+
+body.dark-mode .sc-modal-btn.secondary:hover {
+  background: #4a4a5e;
+}
+
+/* Animation for shake on error */
+@keyframes sc-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.sc-modal.shake {
+  animation: sc-shake 0.5s ease-in-out;
+}

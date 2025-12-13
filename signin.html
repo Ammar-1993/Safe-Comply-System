@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - SafeComply</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="modal.css" />
 </head>
 
 <body>
@@ -40,13 +41,14 @@
       </form>
     </div>
 
+    <script src="modal.js"></script>
     <script>
       document.getElementById('loginForm').addEventListener('submit', async function (e) {
         e.preventDefault();
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
         if (!username || !password) {
-          alert('Please provide username and password');
+          showWarning('Please provide username and password', 'Missing Fields');
           return;
         }
 
@@ -59,7 +61,7 @@
 
           const data = await resp.json();
           if (!resp.ok) {
-            alert('Login failed: ' + (data.error || data.message || resp.status));
+            showError('Login failed: ' + (data.error || data.message || resp.status), 'Authentication Failed');
             return;
           }
 
@@ -84,7 +86,7 @@
 
           window.location.href = 'dashboard.html';
         } catch (err) {
-          alert('Login error: ' + err.message);
+          showError('Login error: ' + err.message, 'Connection Error');
         }
       });
     </script>

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Account - SafeComply</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="modal.css" />
 </head>
 
 <body>
@@ -42,6 +43,7 @@
       </form>
     </div>
 
+    <script src="modal.js"></script>
     <script>
       document.querySelector('form').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -51,7 +53,7 @@
         const password = inputs[2].value; // Don't trim password
 
         if (!username || !password) {
-          alert('Please fill in all fields');
+          showWarning('Please fill in all fields', 'Missing Information');
           return;
         }
 
@@ -65,13 +67,13 @@
           const data = await resp.json();
 
           if (resp.ok) {
-            alert("Account created successfully!");
+            await showSuccess("Account created successfully! You can now login.", "Welcome!");
             window.location.href = "signin.html";
           } else {
-            alert("Signup failed: " + (data.error || "Unknown error"));
+            showError("Signup failed: " + (data.error || "Unknown error"), "Registration Failed");
           }
         } catch (err) {
-          alert("Error connecting to server: " + err.message);
+          showError("Error connecting to server: " + err.message, "Connection Error");
         }
       });
     </script>

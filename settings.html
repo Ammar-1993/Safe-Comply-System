@@ -407,6 +407,7 @@
       color: white;
     }
   </style>
+  <link rel="stylesheet" href="modal.css" />
 </head>
 
 <body>
@@ -870,13 +871,13 @@
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        showWarning('Please select an image file', 'Invalid File Type');
         return;
       }
 
       // Validate file size (max 500KB)
       if (file.size > 500 * 1024) {
-        alert('Image too large. Maximum size is 500KB');
+        showWarning('Image too large. Maximum size is 500KB', 'File Too Large');
         return;
       }
 
@@ -905,23 +906,24 @@
           const data = await resp.json();
           if (resp.ok) {
             localStorage.setItem('userProfilePicture', base64Data);
-            alert('Profile picture updated successfully!');
+            showSuccess('Profile picture updated successfully!', 'Update Saved');
           } else {
-            alert('Error: ' + (data.error || 'Failed to update picture'));
+            showError('Error: ' + (data.error || 'Failed to update picture'), 'Update Failed');
           }
         } catch (err) {
-          alert('Error: ' + err.message);
+          showError('Error: ' + err.message, 'Connection Error');
         }
       };
       reader.readAsDataURL(file);
     });
 
     // ============ SAVE CHANGES ============
+    // ============ SAVE CHANGES ============
     document.getElementById('saveChangesBtn').addEventListener('click', async function () {
       const email = document.getElementById('emailInput').value.trim();
 
       if (!email) {
-        alert('Please enter an email address');
+        showWarning('Please enter an email address', 'Missing Information');
         return;
       }
 
@@ -938,16 +940,16 @@
 
         const data = await resp.json();
         if (resp.ok) {
-          alert('Profile updated successfully!');
+          showSuccess('Profile updated successfully!', 'Changes Saved');
           originalEmail = email;
           // Store in localStorage so other pages can read it
           localStorage.setItem('userEmail', email);
           document.querySelector('.profile-email').textContent = email;
         } else {
-          alert('Error: ' + (data.error || 'Failed to update profile'));
+          showError('Error: ' + (data.error || 'Failed to update profile'), 'Update Failed');
         }
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message, 'Connection Error');
       }
     });
 
@@ -975,17 +977,17 @@
       const confirm = document.getElementById('confirmPassword').value;
 
       if (!current || !newPwd || !confirm) {
-        alert('Please fill in all password fields');
+        showWarning('Please fill in all password fields', 'Missing Information');
         return;
       }
 
       if (newPwd !== confirm) {
-        alert('New passwords do not match');
+        showWarning('New passwords do not match', 'Mismatch');
         return;
       }
 
       if (newPwd.length < 12) {
-        alert('Password must be at least 12 characters');
+        showWarning('Password must be at least 12 characters', 'Password too short');
         return;
       }
 
@@ -1005,13 +1007,13 @@
 
         const data = await resp.json();
         if (resp.ok) {
-          alert('Password changed successfully!');
           closePasswordModal();
+          showSuccess('Password changed successfully!', 'Success');
         } else {
-          alert('Error: ' + (data.error || 'Failed to change password'));
+          showError('Error: ' + (data.error || 'Failed to change password'), 'Update Failed');
         }
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message, 'Connection Error');
       }
     }
 
@@ -1063,6 +1065,7 @@
     }
 
     // ============ EXPORT ============
+    // ============ EXPORT ============
     document.getElementById('exportBtn').addEventListener('click', async function () {
       try {
         const token = localStorage.getItem('authToken');
@@ -1080,13 +1083,13 @@
           a.click();
           window.URL.revokeObjectURL(url);
           a.remove();
-          alert('Data exported successfully!');
+          showSuccess('Data exported successfully!', 'Export Complete');
         } else {
           const data = await resp.json();
-          alert('Error: ' + (data.error || 'Failed to export data'));
+          showError('Error: ' + (data.error || 'Failed to export data'), 'Export Failed');
         }
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message, 'Connection Error');
       }
     });
 
@@ -1094,7 +1097,7 @@
     document.getElementById('deleteAccountBtn').addEventListener('click', function () {
       // Check if admin
       if (username === 'admin') {
-        alert('Cannot delete the main admin account');
+        showWarning('Cannot delete the main admin account', 'Action Not Allowed');
         return;
       }
       document.getElementById('deleteModal').style.display = 'flex';
@@ -1109,11 +1112,11 @@
       const password = document.getElementById('deletePassword').value;
 
       if (!password) {
-        alert('Please enter your password to confirm');
+        showWarning('Please enter your password to confirm', 'Missing Password');
         return;
       }
 
-      if (!confirm('Are you absolutely sure? This will permanently delete your account and all data.')) {
+      if (!await showDangerConfirm('Are you absolutely sure? This will permanently delete your account and all data.', 'Delete Account?')) {
         return;
       }
 
@@ -1130,14 +1133,14 @@
 
         const data = await resp.json();
         if (resp.ok) {
-          alert('Account deleted successfully. You will be redirected to the login page.');
+          await showSuccess('Account deleted successfully. You will be redirected to the login page.', 'Account Deleted');
           localStorage.clear();
           window.location.href = 'signin.html';
         } else {
-          alert('Error: ' + (data.error || 'Failed to delete account'));
+          showError('Error: ' + (data.error || 'Failed to delete account'), 'Deletion Failed');
         }
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message, 'Connection Error');
       }
     }
 
@@ -1186,7 +1189,7 @@
     }
 
     async function deleteUser(username) {
-      if (!confirm(`Are you sure you want to delete user '${username}'? This cannot be undone.`)) return;
+      if (!await showDangerConfirm(`Are you sure you want to delete user '${username}'? This cannot be undone.`, 'Delete User?')) return;
 
       try {
         const token = localStorage.getItem('authToken');
@@ -1197,13 +1200,13 @@
 
         const data = await resp.json();
         if (resp.ok) {
-          alert(data.message);
+          await showSuccess(data.message, 'User Deleted');
           loadUsers(); // Reload list
         } else {
-          alert('Error: ' + (data.error || 'Failed to delete'));
+          showError('Error: ' + (data.error || 'Failed to delete'), 'Deletion Failed');
         }
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message, 'Connection Error');
       }
     }
 
@@ -1242,9 +1245,9 @@
     // ============ LOGOUT ============
     document
       .querySelector(".logout-btn")
-      .addEventListener("click", function (e) {
+      .addEventListener("click", async function (e) {
         e.preventDefault();
-        if (confirm("Are you sure you want to logout?")) {
+        if (await showConfirm("Are you sure you want to logout?", "Confirm Logout")) {
           localStorage.clear();
           window.location.href = "signin.html";
         }
@@ -1261,6 +1264,7 @@
       if (e.target === this) closeDeleteModal();
     });
   </script>
+  <script src="modal.js"></script>
 </body>
 
 </html>

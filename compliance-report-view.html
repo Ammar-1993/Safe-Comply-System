@@ -269,6 +269,7 @@
             background-color: #2c2c3e;
         }
     </style>
+    <link rel="stylesheet" href="modal.css" />
 </head>
 
 <body>
@@ -324,6 +325,7 @@
             </div>
         </div>
     </div>
+    <script src="modal.js"></script>
     <script>
         // Load User Details
         const username = localStorage.getItem("username");
@@ -359,7 +361,7 @@
                 });
 
                 if (resp.status === 403) {
-                    alert("Unauthorized: You do not have permission to view this report.");
+                    await showError("Unauthorized: You do not have permission to view this report.", "Access Denied");
                     window.location.href = "reports.html";
                     return;
                 }
@@ -373,7 +375,7 @@
 
             } catch (err) {
                 console.error(err);
-                alert('Error loading report: ' + err.message);
+                showError('Error loading report: ' + err.message, "Load Error");
             }
         }
 
@@ -403,8 +405,11 @@
 
         window.addEventListener('DOMContentLoaded', loadReport);
 
-        document.querySelector(".logout-btn").addEventListener("click", function () {
-            if (confirm("Are you sure you want to logout?")) window.location.href = "signin.html";
+        document.querySelector(".logout-btn").addEventListener("click", async function () {
+            if (await showConfirm("Are you sure you want to logout?", "Confirm Logout")) {
+                localStorage.clear();
+                window.location.href = "signin.html";
+            }
         });
         if (localStorage.getItem("darkMode") === "true") {
             document.body.classList.add("dark-mode");

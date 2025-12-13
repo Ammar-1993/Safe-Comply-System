@@ -519,6 +519,7 @@
       color: white;
     }
   </style>
+  <link rel="stylesheet" href="modal.css" />
 </head>
 
 <body>
@@ -865,14 +866,15 @@
     // Logout
     document
       .querySelector(".logout-btn")
-      .addEventListener("click", function (e) {
+      .addEventListener("click", async function (e) {
         e.preventDefault();
-        if (confirm("Are you sure you want to logout?")) {
+        if (await showConfirm("Are you sure you want to logout?", "Confirm Logout")) {
           localStorage.clear();
           window.location.href = "signin.html";
         }
       });
   </script>
+  <script src="modal.js"></script>
 </body>
 
 </html>
