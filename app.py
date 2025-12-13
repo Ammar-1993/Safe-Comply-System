@@ -1276,6 +1276,75 @@ def serve_static_file(filename):
         return send_from_directory('.', filename)
     return jsonify({'error': 'Not found'}), 404
 
+@app.route('/api/recommendations', methods=['GET'])
+@require_auth(roles=['admin','auditor','user'])
+def get_recommendations_api():
+    """Get AI-generated recommendations based on latest report"""
+    try:
+        username = request.user.get('sub')
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        
+        # Get latest report for this user
+        cur.execute('SELECT id, overall_score FROM reports WHERE uploaded_by = ? ORDER BY uploaded_at DESC LIMIT 1', (username,))
+        report = cur.fetchone()
+        
+        if not report:
+            conn.close()
+            return jsonify({'recommendations': [], 'has_report': False}), 200
+            
+        report_id = report['id']
+        current_score = report['overall_score']
+        
+        # Get detailed rows for analysis
+        cur.execute('SELECT * FROM users WHERE report_id = ?', (report_id,))
+        rows = cur.fetchall()
+        
+        # Convert rows to dicts for analysis function
+        results = []
+        for r in rows:
+            # Parse stored checks JSON/Strings if necessary, but generate_ai_analysis 
+            # expects dicts with 'strength' and 'backup_checks'
+            # Note: 'backup_checks' is stored as TEXT in DB, we need to parse it?
+            # Looking at init_db: backup_checks TEXT.
+            # create_report stores it as stringified JSON probably? 
+            # We need to verify how it's stored or used. 
+            # But wait, generate_ai_analysis logic:
+            # backup_ok_count = sum(1 for r in results if all(r.get('backup_checks', {}).values()))
+            
+            backup_checks = {}
+            if r['backup_checks']:
+                try:
+                    # It might be stored as a string representation of dict
+                    import ast
+                    backup_checks = ast.literal_eval(r['backup_checks']) if isinstance(r['backup_checks'], str) else r['backup_checks']
+                except:
+                    pass
+            
+            results.append({
+                'strength': r['strength'],
+                'backup_checks': backup_checks
+            })
+
+        # We need previous score for trend analysis
+        cur.execute('SELECT overall_score FROM reports WHERE uploaded_by = ? AND id != ? ORDER BY uploaded_at DESC LIMIT 1', (username, report_id))
+        prev_report = cur.fetchone()
+        previous_score = prev_report['overall_score'] if prev_report else None
+        
+        alerts, recommendations = generate_ai_analysis(results, len(results), current_score, previous_score)
+        
+        conn.close()
+        
+        return jsonify({
+            'recommendations': recommendations,
+            'alerts': alerts,
+            'has_report': True
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Use environment variable for port so user can avoid reserved ports (default 5001)
     port = int(os.environ.get('SAFE_COMPLY_PORT', '5002'))

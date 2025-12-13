@@ -166,6 +166,7 @@
             overflow-y: auto;
         }
 
+        /* --- New Tab & Content Styles --- */
         .content-card {
             background: #ffffffc9;
             padding: 25px;
@@ -174,11 +175,51 @@
             margin-bottom: 25px;
         }
 
-        .card-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #051338;
+        .card-header {
+            border-bottom: 1px solid #eee;
             margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+        }
+
+        .tab {
+            padding: 10px 0;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #3498db;
+        }
+
+        .tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .policy-list {
@@ -197,10 +238,71 @@
             line-height: 1.6;
         }
 
-        .divider {
-            height: 2px;
-            background: #e9ecef;
-            margin: 30px 0;
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-check {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn-check:hover {
+            background: #219150;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .result-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .result-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         /* Dark Mode */
@@ -239,13 +341,27 @@
             background: rgba(42, 42, 62, 0.8);
         }
 
-        body.dark-mode .card-title {
-            color: #ffffff;
+        body.dark-mode .tab {
+            color: #ccc;
+        }
+
+        body.dark-mode .tab.active {
+            color: #3498db;
         }
 
         body.dark-mode .policy-list li {
             background: #3a3a4e;
             color: #e0e0e0;
+        }
+
+        body.dark-mode .form-label {
+            color: #ccc;
+        }
+
+        body.dark-mode .form-control {
+            background: #3a3a4e;
+            border-color: #4a4a5e;
+            color: white;
         }
     </style>
     <link rel="stylesheet" href="modal.css" />
@@ -299,19 +415,176 @@
             </div>
             <div class="content-area">
                 <div class="content-card">
-                    <div class="card-title">💾 Backup Policy</div>
-                    <ul class="policy-list">
-                        <li>Backup type: <b>Hybrid (Local + Cloud-based)</b>.</li>
-                        <li>Backup frequency: <b>Weekly</b>.</li>
-                        <li>Retention period: <b>30 days</b>.</li>
-                        <li>Backup responsibility: <b>IT administrator</b>.</li>
-                        <li>Recovery readiness checks performed <b>monthly</b>.</li>
-                    </ul>
+                    <div class="card-header">
+                        <div class="tabs">
+                            <div class="tab active" onclick="switchTab('policy')">📜 Policy Standards</div>
+                            <div class="tab" onclick="switchTab('checker')">✅ Compliance Checker</div>
+                            <div class="tab" onclick="switchTab('calculator')">🧮 Storage Estimator</div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 1: Policy Rules -->
+                    <div id="policy" class="tab-content active">
+                        <ul class="policy-list">
+                            <li>Backup type: <b>Hybrid (Local + Cloud-based)</b>.</li>
+                            <li>Backup frequency: <b>Weekly or Daily (Recommended)</b>.</li>
+                            <li>Retention period: <b>Minimum 30 days</b>.</li>
+                            <li>Freshness: <b>Last backup must be within 7 days</b>.</li>
+                            <li>Backup responsibility: <b>IT administrator</b>.</li>
+                            <li>Recovery readiness checks performed <b>monthly</b>.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Tab 2: Compliance Checker -->
+                    <div id="checker" class="tab-content">
+                        <div style="max-width: 600px;">
+                            <div class="form-group">
+                                <label class="form-label">Last Backup Date</label>
+                                <input type="date" id="checkDate" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Backup Frequency</label>
+                                <select id="checkFreq" class="form-control">
+                                    <option value="Daily">Daily</option>
+                                    <option value="Weekly">Weekly</option>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Ad-hoc">Ad-hoc</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Retention Period (Days)</label>
+                                <input type="number" id="checkRetention" class="form-control" placeholder="e.g. 30">
+                            </div>
+                            <button class="btn-check" onclick="runComplianceCheck()">Check Compliance</button>
+
+                            <div id="complianceResult" class="result-box"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Storage Estimator -->
+                    <div id="calculator" class="tab-content">
+                        <p style="margin-bottom:20px; color:#666;">Estimate required cloud storage based on your source
+                            data and retention policy.</p>
+
+                        <div class="calculator-grid">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Source Data Size (GB)</label>
+                                    <input type="number" id="calcSize" class="form-control" value="100">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Daily Change Rate (%)</label>
+                                    <input type="number" id="calcChange" class="form-control" value="2"
+                                        title="Typically 2-5%">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Retention Period (Days)</label>
+                                    <input type="number" id="calcRetention" class="form-control" value="30">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Backup Type</label>
+                                    <select id="calcType" class="form-control">
+                                        <option value="incremental">Incremental (efficient)</option>
+                                        <option value="full">Full Only (storage heavy)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-check" onclick="calculateStorage()">Calculate</button>
+
+                        <div id="calcResult" class="result-box result-info" style="margin-top:20px; font-weight:bold;">
+                            Enter values to estimate storage needs.
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
     <script>
+        // Tab Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Find tab by text content is tricky, let rely on index or just simple traversal matching
+            const index = ['policy', 'checker', 'calculator'].indexOf(tabId);
+            document.querySelectorAll('.tab')[index].classList.add('active');
+
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Compliance Checker logic
+        async function runComplianceCheck() {
+            const date = document.getElementById('checkDate').value;
+            const freq = document.getElementById('checkFreq').value;
+            const ret = document.getElementById('checkRetention').value;
+
+            if (!date || !ret) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            try {
+                const resp = await fetch('/check-backup-policy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        last_backup_date: date,
+                        frequency: freq,
+                        retention: ret
+                    })
+                });
+
+                const data = await resp.json();
+                const resBox = document.getElementById('complianceResult');
+                resBox.style.display = 'block';
+
+                if (data.compliant) {
+                    resBox.className = 'result-box result-success';
+                    resBox.innerHTML = `<strong>✅ Non-Compliant? No! It is Compliant.</strong><br>Your configuration meets all policy standards.`;
+                } else {
+                    resBox.className = 'result-box result-error';
+                    let issues = [];
+                    if (!data.checks.last_backup_ok) issues.push("Backup is too old (check date)");
+                    if (!data.checks.freq_ok) issues.push("Frequency must be Daily or Weekly");
+                    if (!data.checks.retention_ok) issues.push("Retention must be at least 30 days");
+
+                    resBox.innerHTML = `<strong>❌ Non-Compliant</strong><br>Issues found:<ul>${issues.map(i => `<li>${i}</li>`).join('')}</ul>`;
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error checking compliance');
+            }
+        }
+
+        // Calculator Logic
+        function calculateStorage() {
+            const size = parseFloat(document.getElementById('calcSize').value) || 0;
+            const change = (parseFloat(document.getElementById('calcChange').value) || 0) / 100;
+            const days = parseInt(document.getElementById('calcRetention').value) || 0;
+            const type = document.getElementById('calcType').value;
+
+            let total = 0;
+            if (type === 'full') {
+                // Simple worst case: Size * Days (if full daily)
+                total = size * days;
+            } else {
+                // 1 Full + (Days - 1) * ChangeRate * Size
+                // A simplified model for incremental
+                total = size + ((days - 1) * size * change);
+            }
+
+            const resBox = document.getElementById('calcResult');
+            resBox.style.display = 'block';
+            resBox.innerHTML = `Estimated Storage Required: <span style="font-size:1.2em; color:#2980b9;">${total.toFixed(2)} GB</span><br>
+                               <span style="font-size:0.9em; font-weight:normal">Based on 1 Full backup + ${days - 1} incrementals.</span>`;
+        }
+
+
         // Load User Details
         const username = localStorage.getItem("username");
         const userPicture = localStorage.getItem("userProfilePicture");
