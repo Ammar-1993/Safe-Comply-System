@@ -72,12 +72,15 @@ async function markAllAsRead() {
         const token = localStorage.getItem('authToken');
         if (!token) return;
 
+        // Optimistic UI update: Clear immediately
+        updateNotificationUI([], 0);
+
         await fetch(MARK_READ_API_URL, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token }
         });
         
-        // Refresh immediately
+        // Refresh to confirm server state
         fetchNotifications();
     } catch (e) {
         console.error("Failed to mark read", e);
