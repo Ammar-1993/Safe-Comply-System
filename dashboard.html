@@ -137,6 +137,83 @@
       display: flex;
       gap: 15px;
       align-items: center;
+      position: relative;
+    }
+
+    .notification-dropdown {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      width: 320px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      border: 1px solid #edf2f7;
+    }
+
+    .notification-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .notification-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #f1f3f5;
+      font-weight: 600;
+      color: #2c3e50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notification-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .notification-item:hover {
+      background: #f8f9fa;
+    }
+
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .notif-desc {
+      font-size: 12px;
+      color: #6c757d;
+      line-height: 1.4;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #e74c3c;
+      color: white;
+      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
     }
 
     .search-box {
@@ -573,7 +650,22 @@
         <div class="welcome-text">Welcome Admin!</div>
         <div class="header-actions">
           <input type="text" class="search-box" placeholder="Search..." />
-          <button class="icon-btn">🔔</button>
+          <div style="position: relative;">
+            <button class="icon-btn" id="notif-btn">
+              🔔
+              <span class="notification-badge">3</span>
+            </button>
+            <div class="notification-dropdown" id="notif-dropdown">
+              <div class="notification-header">
+                <span>Notifications</span>
+                <span id="mark-read-btn" style="font-size: 11px; color: #3498db; cursor: pointer;">Mark all as
+                  read</span>
+              </div>
+              <div class="notification-list">
+                <!-- Dynamic Content Loads Here -->
+              </div>
+            </div>
+          </div>
           <button class="icon-btn">🌙</button>
         </div>
       </div>
@@ -854,6 +946,15 @@
     }
 
     const moonBtns = document.querySelectorAll(".icon-btn");
+    // Handled individually now to avoid confusion, but keeping dark mode on the specific moon button (index related or class)
+    // The previous code selected buttons by index. Since we added a wrapper, querySelectorAll should still work but let's be more specific.
+
+    // Dark Mode Toggle (targeting the Moon button specifically)
+    // We can rely on the last icon-btn or add an ID to be safe, but let's stick to the existing approach or simply find the one with the moon icon.
+    // The previous code used moonBtns[1]. Since we didn't add more .icon-btn elements (just wrapped one), the indexing might still hold 
+    // BUT we changed the structure. 
+    // The first .icon-btn is the Bell (inside div). The second is Moon.
+    // So current code moonBtns[1] should still work.
     if (moonBtns[1]) {
       moonBtns[1].addEventListener("click", function () {
         document.body.classList.toggle("dark-mode");
@@ -875,6 +976,7 @@
       });
   </script>
   <script src="modal.js"></script>
+  <script src="notifications.js"></script>
 </body>
 
 </html>

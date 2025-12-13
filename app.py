@@ -89,6 +89,19 @@ def init_db():
     )
     ''')
     
+    # Create notifications table
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        type TEXT DEFAULT 'info',
+        is_read BOOLEAN DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
     # seed a default admin account if not exists
     cur.execute("SELECT COUNT(1) FROM accounts WHERE username = 'admin'")
     if cur.fetchone()[0] == 0:
@@ -96,9 +109,22 @@ def init_db():
         cur.execute('INSERT INTO accounts (username, password_hash, role) VALUES (?,?,?)', ('admin', pw, 'admin'))
     conn.commit()
     conn.close()
+    print("Database initialized.")
 
 
 init_db()
+
+def create_notification(username, title, message, n_type='info'):
+    """Helper to create a notification"""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('INSERT INTO notifications (username, title, message, type) VALUES (?,?,?,?)',
+                    (username, title, message, n_type))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Error creating notification: {e}")
 
 def check_password_policy(password):
     """فحص كلمة المرور حسب السياسة الأمنية"""
@@ -283,6 +309,64 @@ def auth_register():
         conn.close()
 
         return jsonify({'message': 'Account created successfully'}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/notifications', methods=['GET'])
+@require_auth(roles=['admin','auditor','user'])
+def get_notifications():
+    try:
+        # Get username from token (require_auth wrapper puts decoded payload in request.user)
+        # Assuming require_auth sets request.user = payload
+        # If not, we re-parse. Let's look at require_auth again or play safe.
+        # But wait, looking at my `auth_delete_account` above, it uses `request.user.get('sub')`.
+        # So I should use that pattern.
+        
+        username = request.user.get('sub')
+        if not username:
+             # Fallback if request.user isn't set properly in some context
+             token = request.headers.get('Authorization').split(" ")[1]
+             username = jwt.decode(token, SECRET_KEY, algorithms=["HS256"]).get('sub')
+
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        
+        # Get unread or recent 10 events
+        cur.execute('SELECT * FROM notifications WHERE username = ? ORDER BY created_at DESC LIMIT 10', (username,))
+        rows = cur.fetchall()
+        
+        notifs = []
+        unread_count = 0
+        for r in rows:
+            notifs.append({
+                'id': r['id'],
+                'title': r['title'],
+                'message': r['message'],
+                'type': r['type'],
+                'is_read': bool(r['is_read']),
+                'created_at': r['created_at']
+            })
+            if not r['is_read']:
+                unread_count += 1
+                
+        conn.close()
+        return jsonify({'notifications': notifs, 'unread_count': unread_count})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/notifications/mark-read', methods=['POST'])
+@require_auth(roles=['admin','auditor','user'])
+def mark_notifications_read():
+    try:
+        username = request.user.get('sub')
+        
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('UPDATE notifications SET is_read = 1 WHERE username = ?', (username,))
+        conn.commit()
+        conn.close()
+        return jsonify({'message': 'Marked as read'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -649,7 +733,7 @@ def check_passwords_bulk():
             'message': 'حدث خطأ في المعالجة'
         }), 500
 
-def generate_ai_analysis(results, total, current_score=0, previous_score=None):
+def generate_ai_analysis(results, total, current_score=0, previous_score=None, username=None):
     """Generate alerts and recommendations based on analysis results and historical trends."""
     
     pwd_weak_count = sum(1 for r in results if r.get('strength', 0) < 60)
@@ -663,28 +747,29 @@ def generate_ai_analysis(results, total, current_score=0, previous_score=None):
     if previous_score is not None:
         diff = current_score - previous_score
         if diff < -10:
-            alerts.append({
-                'severity': 'high',
-                'title': f'CRITICAL: Compliance Score Dropped by {abs(diff)}%',
-                'desc': f'Significant regression detected. Score fell from {previous_score}% to {current_score}%.'
-            })
-            recommendations.append({
-                'title': 'Immediate Audit Required',
-                'desc': 'Review recent changes or user onboarding processes that caused this drop.'
-            })
+            title = f'CRITICAL: Compliance Score Dropped by {abs(diff)}%'
+            msg = f'Significant regression detected. Score fell from {previous_score}% to {current_score}%.'
+            alerts.append({'severity': 'high', 'title': title, 'desc': msg})
+            recommendations.append({'title': 'Immediate Audit Required', 'desc': 'Review recent changes or user onboarding processes that caused this drop.'})
+            
+            if username:
+                create_notification(username, title, msg, 'error')
+                
         elif diff < -5:
-             alerts.append({
-                'severity': 'medium',
-                'title': f'Warning: Compliance Score Dropped by {abs(diff)}%',
-                'desc': f'Score fell from {previous_score}% to {current_score}%.'
-            })
+             title = f'Warning: Compliance Score Dropped by {abs(diff)}%'
+             msg = f'Score fell from {previous_score}% to {current_score}%.'
+             alerts.append({'severity': 'medium', 'title': title, 'desc': msg})
+             
+             if username:
+                create_notification(username, title, msg, 'warning')
+                
         elif diff > 5:
-            # We can use 'low' severity for positive news or add a new type if UI supports it
-            alerts.append({
-                'severity': 'low',
-                'title': f'Positive Trend: Score Improved by {diff}%',
-                'desc': f'Compliance rose from {previous_score}% to {current_score}%.'
-            })
+            title = f'Positive Trend: Score Improved by {diff}%'
+            msg = f'Compliance rose from {previous_score}% to {current_score}%.'
+            alerts.append({'severity': 'low', 'title': title, 'desc': msg})
+            
+            if username:
+                create_notification(username, title, msg, 'success')
 
     # Analyze Password Policy
     if total > 0 and (pwd_weak_count / total) >= 0.05:
@@ -793,6 +878,12 @@ def upload_excel():
         # count backup issues (any false in backup checks)
         backup_issues = sum(1 for r in results if any(not v for v in r.get('backup_checks', {}).values()))
 
+        # Get username for notification
+        username = request.user.get('sub')
+        if not username:
+             token = request.headers.get('Authorization').split(" ")[1]
+             username = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"]).get('sub')
+
         # Get Previous Score for Trend Analysis
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
@@ -800,13 +891,12 @@ def upload_excel():
         prev_row = cur.fetchone()
         previous_score = prev_row[0] if prev_row else None
         
-        # Generate AI Analysis with Trend
-        alerts, recommendations = generate_ai_analysis(results, len(results), current_score=overall_score, previous_score=previous_score)
+        # Generate AI Analysis with Trend using USERNAME for auth
+        alerts, recommendations = generate_ai_analysis(results, len(results), current_score=overall_score, previous_score=previous_score, username=username)
 
         uploaded_at = datetime.utcnow().isoformat()
-        uploaded_by = request.user.get('sub', 'unknown')
-        cur.execute('INSERT INTO reports (filename, uploaded_at, uploaded_by, total, valid, invalid, overall_score) VALUES (?,?,?,?,?,?,?)',
-                    (file.filename, uploaded_at, uploaded_by, len(results), valid_count, invalid_count, overall_score))
+        cur.execute('INSERT INTO reports (filename, uploaded_at, total, valid, invalid, overall_score) VALUES (?,?,?,?,?,?)',
+                    (file.filename, uploaded_at, len(results), valid_count, invalid_count, overall_score))
         report_id = cur.lastrowid
 
         for r in results:
@@ -815,6 +905,9 @@ def upload_excel():
 
         conn.commit()
         conn.close()
+        
+        # Notify user that report is ready
+        create_notification(username, "Analysis Complete", f"Your report for {file.filename} is ready.", "success")
 
         return jsonify({
             'results': results,
