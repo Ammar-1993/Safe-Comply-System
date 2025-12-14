@@ -19,6 +19,10 @@ SECRET_KEY = os.environ.get('SAFE_COMPLY_SECRET')
 
 DB_PATH = 'safecomply.db'
 
+def get_riyadh_time():
+    """Returns current time in Riyadh (UTC+3)"""
+    return datetime.utcnow() + timedelta(hours=3)
+
 app = Flask(__name__)
 # Expose SECRET_KEY on app config for libraries/plugins that expect it
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -124,8 +128,9 @@ def create_notification(username, title, message, n_type='info'):
     try:
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
-        cur.execute('INSERT INTO notifications (username, title, message, type) VALUES (?,?,?,?)',
-                    (username, title, message, n_type))
+        created_at = get_riyadh_time().isoformat()
+        cur.execute('INSERT INTO notifications (username, title, message, type, created_at) VALUES (?,?,?,?,?)',
+                    (username, title, message, n_type, created_at))
         conn.commit()
         conn.close()
     except Exception as e:
@@ -210,7 +215,8 @@ def evaluate_backup_policy(row):
     try:
         if last_backup is not None and (not (isinstance(last_backup, float) and pd.isna(last_backup))):
             last_dt = pd.to_datetime(last_backup)
-            last_ok = (datetime.utcnow() - last_dt.to_pydatetime()) <= timedelta(days=7)
+            # Use Riyadh time for comparison
+            last_ok = (get_riyadh_time() - last_dt.to_pydatetime()) <= timedelta(days=7)
     except Exception:
         last_ok = False
 
@@ -381,7 +387,7 @@ def auth_login():
         username = data.get('username')
         password = data.get('password')
         ip_address = request.remote_addr or 'unknown'
-        login_at = datetime.utcnow().isoformat()
+        login_at = get_riyadh_time().isoformat()
         
         if not username or not password:
             return jsonify({'error': 'Username and password required'}), 400
@@ -606,7 +612,7 @@ def auth_export_data():
             })
         
         export_data = {
-            'exported_at': datetime.utcnow().isoformat(),
+            'exported_at': get_riyadh_time().isoformat(),
             'profile': {
                 'id': profile_row[0],
                 'username': profile_row[1],
@@ -898,7 +904,7 @@ def upload_excel():
         # Generate AI Analysis with Trend using USERNAME for auth
         alerts, recommendations = generate_ai_analysis(results, len(results), current_score=overall_score, previous_score=previous_score, username=username)
 
-        uploaded_at = datetime.utcnow().isoformat()
+        uploaded_at = get_riyadh_time().isoformat()
         cur.execute('INSERT INTO reports (filename, uploaded_at, total, valid, invalid, overall_score, uploaded_by) VALUES (?,?,?,?,?,?,?)',
                     (file.filename, uploaded_at, len(results), valid_count, invalid_count, overall_score, username))
         report_id = cur.lastrowid

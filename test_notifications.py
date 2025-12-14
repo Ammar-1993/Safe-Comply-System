@@ -8,7 +8,8 @@ def create_manual_notification(username, title, message, n_type='info'):
     try:
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
-        created_at = datetime.datetime.utcnow().isoformat()
+        # Use Riyadh time (UTC+3)
+        created_at = (datetime.datetime.utcnow() + datetime.timedelta(hours=3)).isoformat()
         cur.execute(
             'INSERT INTO notifications (username, title, message, type, is_read, created_at) VALUES (?, ?, ?, ?, 0, ?)',
             (username, title, message, n_type, created_at)
