@@ -899,8 +899,8 @@ def upload_excel():
         alerts, recommendations = generate_ai_analysis(results, len(results), current_score=overall_score, previous_score=previous_score, username=username)
 
         uploaded_at = datetime.utcnow().isoformat()
-        cur.execute('INSERT INTO reports (filename, uploaded_at, total, valid, invalid, overall_score) VALUES (?,?,?,?,?,?)',
-                    (file.filename, uploaded_at, len(results), valid_count, invalid_count, overall_score))
+        cur.execute('INSERT INTO reports (filename, uploaded_at, total, valid, invalid, overall_score, uploaded_by) VALUES (?,?,?,?,?,?,?)',
+                    (file.filename, uploaded_at, len(results), valid_count, invalid_count, overall_score, username))
         report_id = cur.lastrowid
 
         for r in results:
@@ -1013,15 +1013,23 @@ def dashboard_stats():
 
 
 @app.route('/reports/<int:report_id>', methods=['GET'])
-@require_auth(roles=['admin','auditor'])
+@require_auth(roles=['admin','auditor','user'])
 def get_report(report_id):
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
-    cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score FROM reports WHERE id = ?', (report_id,))
+    cur.execute('SELECT id, filename, uploaded_at, total, valid, invalid, overall_score, uploaded_by FROM reports WHERE id = ?', (report_id,))
     rep = cur.fetchone()
     if not rep:
         conn.close()
         return jsonify({'error': 'Report not found'}), 404
+    
+    # Check ownership for non-admin/auditor
+    current_user = request.user.get('sub')
+    current_role = request.user.get('role')
+    if current_role not in ['admin', 'auditor'] and rep[7] != current_user:
+        conn.close()
+        return jsonify({'error': 'Forbidden'}), 403
+
     cur.execute('SELECT row_index, username, masked_password, is_valid, checks, strength, backup_checks FROM users WHERE report_id = ?', (report_id,))
     users = cur.fetchall()
     conn.close()
@@ -1032,6 +1040,36 @@ def get_report(report_id):
         })
     report_obj = {'id': rep[0], 'filename': rep[1], 'uploaded_at': rep[2], 'total': rep[3], 'valid': rep[4], 'invalid': rep[5], 'overall_score': rep[6], 'results': user_list}
     return jsonify(report_obj), 200
+
+@app.route('/reports/<int:report_id>', methods=['DELETE'])
+@require_auth(roles=['admin','auditor','user'])
+def delete_report(report_id):
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    
+    # Check existence and ownership
+    cur.execute('SELECT uploaded_by FROM reports WHERE id = ?', (report_id,))
+    row = cur.fetchone()
+    if not row:
+        conn.close()
+        return jsonify({'error': 'Report not found'}), 404
+        
+    uploaded_by = row[0]
+    current_user = request.user.get('sub')
+    current_role = request.user.get('role')
+    
+    # Allow deletion if admin, or if user owns the report
+    if current_role != 'admin' and uploaded_by != current_user:
+        conn.close()
+        return jsonify({'error': 'Forbidden'}), 403
+
+    # Delete associated users first
+    cur.execute('DELETE FROM users WHERE report_id = ?', (report_id,))
+    cur.execute('DELETE FROM reports WHERE id = ?', (report_id,))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'message': 'Report deleted successfully'}), 200
 
 
 # Serve a simple frontend root and static files from project root for development

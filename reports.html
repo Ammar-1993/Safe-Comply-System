@@ -575,6 +575,103 @@
       border-radius: 10px;
     }
 
+    /* --- New Styles for Reports Archive Table --- */
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 14px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .styled-table thead tr {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      text-align: left;
+    }
+
+    .styled-table th {
+      padding: 12px 15px;
+      font-weight: 600;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .styled-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f1f3f5;
+      color: #2c3e50;
+      vertical-align: middle;
+    }
+
+    .styled-table tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #f1f8ff;
+    }
+
+    /* Status Badges */
+    .score-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .score-badge.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .score-badge.warning {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .score-badge.danger {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Action Links */
+    .action-link {
+      text-decoration: none;
+      color: #3498db;
+      font-weight: 600;
+      margin-right: 10px;
+      transition: color 0.2s;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .action-link:hover {
+      color: #1d6fa5;
+      text-decoration: underline;
+    }
+
+    /* Empty State */
+    .empty-state-container {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6c757d;
+      display: none;
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+
+
     /* Dark Mode Styles */
     body.dark-mode {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -582,6 +679,145 @@
 
     body.dark-mode .dashboard-wrapper {
       background: rgba(30, 30, 46, 0.945);
+    }
+
+    body.dark-mode .section-card,
+    body.dark-mode .upload-box,
+    body.dark-mode .processing-section,
+    body.dark-mode .summary-card {
+      background: #252a41;
+      color: #fff;
+    }
+
+    body.dark-mode .page-title,
+    body.dark-mode .upload-title,
+    body.dark-mode .processing-title,
+    body.dark-mode .report-title,
+    body.dark-mode .summary-value,
+    body.dark-mode .section-title,
+    body.dark-mode .policy-name,
+    body.dark-mode .file-name {
+      color: #fff;
+    }
+
+    body.dark-mode .styled-table thead tr {
+      background-color: #1e2336;
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .styled-table th,
+    body.dark-mode .styled-table td {
+      border-color: #343b55;
+      color: #ddd;
+    }
+
+    body.dark-mode .styled-table tbody tr:hover {
+      background-color: #2c324a;
+    }
+
+    body.dark-mode .policy-item {
+      background: #1e2336;
+    }
+
+    /* Notification Styles */
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      position: relative;
+    }
+
+    .search-box {
+      padding: 8px 15px;
+      border: 1px solid #dee2e6;
+      border-radius: 20px;
+      width: 250px;
+      font-size: 13px;
+    }
+
+    .icon-btn {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #f8f9fa;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .notification-dropdown {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      width: 320px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      border: 1px solid #edf2f7;
+    }
+
+    .notification-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .notification-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #f1f3f5;
+      font-weight: 600;
+      color: #2c3e50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notification-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .notification-item:hover {
+      background: #f8f9fa;
+    }
+
+    .notif-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .notif-desc {
+      font-size: 12px;
+      color: #6c757d;
+      line-height: 1.4;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #e74c3c;
+      color: white;
+      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
     }
   </style>
   <link rel="stylesheet" href="modal.css" />
@@ -649,8 +885,7 @@
                   read</span>
               </div>
               <div class="notification-list">
-                <!-- Dynamic Content Loads Here -->
-              </div>
+                </div>
             </div>
           </div>
           <button class="icon-btn">🌙</button>
@@ -658,7 +893,6 @@
       </div>
 
       <div class="content-area">
-        <!-- Upload Section -->
         <div id="uploadSection" class="upload-container">
           <div class="page-title">Upload Compliance Data</div>
           <div class="page-description">
@@ -693,7 +927,6 @@
           </button>
         </div>
 
-        <!-- Processing Section -->
         <div id="processingSection" class="processing-section">
           <div class="processing-title">
             AI is analyzing your compliance data...
@@ -725,7 +958,6 @@
           </div>
         </div>
 
-        <!-- Report Section -->
         <div id="reportSection" class="report-section">
           <div class="report-header">
             <div class="report-ready">✅</div>
@@ -733,7 +965,6 @@
             <div class="report-subtitle">Generated on December 6, 2024</div>
           </div>
 
-          <!-- Summary -->
           <div class="summary-grid">
             <div class="summary-card">
               <div class="summary-icon">📊</div>
@@ -757,7 +988,6 @@
             </div>
           </div>
 
-          <!-- Policies Analysis -->
           <div class="section-card">
             <div class="section-title">📋 Policies Analysis</div>
             <div class="policy-item">
@@ -770,7 +1000,6 @@
             </div>
           </div>
 
-          <!-- Employees Issues -->
           <div class="section-card">
             <div class="section-title">👥 Employees Issues</div>
             <div class="policy-item">
@@ -787,7 +1016,6 @@
             </div>
           </div>
 
-          <!-- AI Alerts -->
           <div class="section-card">
             <div class="section-title">🚨 AI-Detected Alerts</div>
             <div class="alert-item high">
@@ -799,41 +1027,8 @@
                 required.
               </div>
             </div>
-            <div class="alert-item high">
-              <div class="alert-title">
-                🔴 High Risk: 10 Failed Backups in 30 Days
-              </div>
-              <div class="alert-description">
-                Multiple backup failures detected. Data loss risk is high.
-              </div>
             </div>
-            <div class="alert-item medium">
-              <div class="alert-title">
-                🟠 Medium: Weak Passwords for 7 Users
-              </div>
-              <div class="alert-description">
-                Password strength below recommended standards.
-              </div>
-            </div>
-            <div class="alert-item medium">
-              <div class="alert-title">
-                🟠 Medium: Storage Space Below 20%
-              </div>
-              <div class="alert-description">
-                Backup storage capacity running low.
-              </div>
-            </div>
-            <div class="alert-item low">
-              <div class="alert-title">
-                🟡 Low: 15 Passwords Not Changed in 120+ Days
-              </div>
-              <div class="alert-description">
-                Password rotation policy exceeded.
-              </div>
-            </div>
-          </div>
 
-          <!-- AI Recommendations -->
           <div class="section-card">
             <div class="section-title">💡 AI Recommendations</div>
             <div class="recommendation-item">
@@ -845,35 +1040,8 @@
                 significantly improve security posture.
               </div>
             </div>
-            <div class="recommendation-item">
-              <div class="recommendation-title">
-                System recommends changing weak passwords for 7 users
-              </div>
-              <div class="recommendation-description">
-                Enforce minimum password length of 14 characters with
-                complexity requirements.
-              </div>
             </div>
-            <div class="recommendation-item">
-              <div class="recommendation-title">
-                Improve encryption policy to enhance data protection
-              </div>
-              <div class="recommendation-description">
-                Implement end-to-end encryption for sensitive data transfers.
-              </div>
-            </div>
-            <div class="recommendation-item">
-              <div class="recommendation-title">
-                Immediate storage expansion required (Priority: High)
-              </div>
-              <div class="recommendation-description">
-                Add 2 TB storage capacity to prevent backup failures and data
-                loss.
-              </div>
-            </div>
-          </div>
 
-          <!-- Export Options -->
           <div class="export-buttons">
             <button class="btn-export primary" onclick="exportPDF()">
               📄 Download Report (PDF)
@@ -886,6 +1054,39 @@
             </button>
           </div>
         </div>
+
+        <div class="section-card" style="margin-top: 40px;">
+          <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>🗄️ Reports History</span>
+            <button onclick="loadReportsArchive()"
+              style="background:none; border:none; cursor:pointer; color:#3498db; font-size:14px; display:flex; align-items:center; gap:5px;">
+              🔄 Refresh
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="styled-table" id="reportsTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>File Name</th>
+                  <th>Uploaded By</th>
+                  <th>Date</th>
+                  <th>Score</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                </tbody>
+            </table>
+          </div>
+
+          <div id="reportsEmpty" class="empty-state-container">
+            <div class="empty-icon">📂</div>
+            <div>No reports found in the archive.</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1001,7 +1202,7 @@
       fd.append('file', selectedFile);
 
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
         if (!token) {
           animParams.active = false;
           showWarning('You must be logged in to upload files.', 'Authentication Required');
@@ -1009,7 +1210,7 @@
           return;
         }
 
-        const resp = await fetch('http://localhost:5002/upload-excel', {
+        const resp = await fetch('/upload-excel', {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + token
@@ -1065,6 +1266,10 @@
 
           // Policies Analysis
           const sectionCards = document.querySelectorAll('.section-card');
+          // Note: The index might shift because we added the archive card.
+          // We target specifically by content or structure if needed, but here assuming order:
+          // 0: Policies, 1: Employees, 2: Alerts, 3: Recs, 4: Archive
+          
           if (sectionCards && sectionCards.length >= 1) {
             const policiesCard = sectionCards[0];
             const policyItems = policiesCard.querySelectorAll('.policy-item');
@@ -1123,6 +1328,12 @@
           // Show Report
           document.getElementById("processingSection").classList.remove("show");
           document.getElementById("reportSection").classList.add("show");
+
+          // Refresh the archive list to show the new report
+          if (typeof loadReportsArchive === 'function') {
+             loadReportsArchive();
+          }
+
         }, 600);
 
       } catch (e) {
@@ -1139,7 +1350,7 @@
         return;
       }
 
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
       if (!token) {
         showWarning('Please login first', 'Authentication Required');
         window.location.href = 'signin.html';
@@ -1182,7 +1393,7 @@
         return;
       }
 
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
       if (!token) {
         showWarning('Please login first', 'Authentication Required');
         window.location.href = 'signin.html';
@@ -1271,108 +1482,7 @@
   </script>
   <script src="modal.js"></script>
   <script src="notifications.js"></script>
-  <style>
-    /* Notification Styles (Duplicated from dashboard for consistency) */
-    .header-actions {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      position: relative;
-    }
-
-    .search-box {
-      padding: 8px 15px;
-      border: 1px solid #dee2e6;
-      border-radius: 20px;
-      width: 250px;
-      font-size: 13px;
-    }
-
-    .icon-btn {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      background: #f8f9fa;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .notification-dropdown {
-      position: absolute;
-      top: 60px;
-      right: 0;
-      width: 320px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-      overflow: hidden;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s ease;
-      border: 1px solid #edf2f7;
-    }
-
-    .notification-dropdown.active {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .notification-header {
-      padding: 15px 20px;
-      border-bottom: 1px solid #f1f3f5;
-      font-weight: 600;
-      color: #2c3e50;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .notification-item {
-      padding: 15px 20px;
-      border-bottom: 1px solid #f8f9fa;
-      transition: background 0.2s;
-      cursor: pointer;
-    }
-
-    .notification-item:hover {
-      background: #f8f9fa;
-    }
-
-    .notif-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .notif-desc {
-      font-size: 12px;
-      color: #6c757d;
-      line-height: 1.4;
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: #e74c3c;
-      color: white;
-      font-size: 10px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid white;
-    }
-  </style>
+  <script src="reports.js"></script>
 </body>
 
 </html>

@@ -371,7 +371,7 @@
                     return;
                 }
 
-                const resp = await fetch(`http://localhost:5002/reports/${reportId}`, {
+                const resp = await fetch(`/reports/${reportId}`, {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
 
