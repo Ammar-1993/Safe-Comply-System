@@ -6,17 +6,22 @@ import sqlite3
 import json
 from datetime import datetime, timedelta
 import os
+import sys
 import jwt
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# JWT secret (use env var in production)
-SECRET_KEY = os.environ.get('SAFE_COMPLY_SECRET', 'change-this-secret')
+# JWT secret (use env var in production). Do NOT use an insecure default in production.
+# For local debug you may enable SAFE_COMPLY_DEBUG and allow an insecure default,
+# but production must set SAFE_COMPLY_SECRET.
+SECRET_KEY = os.environ.get('SAFE_COMPLY_SECRET')
 
 
 DB_PATH = 'safecomply.db'
 
 app = Flask(__name__)
+# Expose SECRET_KEY on app config for libraries/plugins that expect it
+app.config['SECRET_KEY'] = SECRET_KEY
 # Configure CORS: use SAFE_COMPLY_CORS env var (comma-separated origins) or allow all for dev
 cors_origins = os.environ.get('SAFE_COMPLY_CORS', '*')
 if cors_origins == '*' or cors_origins.strip() == '':
@@ -877,11 +882,11 @@ def upload_excel():
         # count backup issues (any false in backup checks)
         backup_issues = sum(1 for r in results if any(not v for v in r.get('backup_checks', {}).values()))
 
-        # Get username for notification
+        # Get username for notification (use unified SECRET_KEY)
         username = request.user.get('sub')
         if not username:
-             token = request.headers.get('Authorization').split(" ")[1]
-             username = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"]).get('sub')
+            token = request.headers.get('Authorization').split(" ")[1]
+            username = jwt.decode(token, SECRET_KEY, algorithms=["HS256"]).get('sub')
 
         # Get Previous Score for Trend Analysis
         conn = sqlite3.connect(DB_PATH)
@@ -1372,8 +1377,46 @@ def check_backup_policy_endpoint():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Use environment variable for port so user can avoid reserved ports (default 5001)
+    # Use environment variable for port so user can avoid reserved ports (default 5002)
     port = int(os.environ.get('SAFE_COMPLY_PORT', '5002'))
+
+    # Debug mode is opt-in via SAFE_COMPLY_DEBUG environment variable
+    SAFE_COMPLY_DEBUG = os.environ.get('SAFE_COMPLY_DEBUG', 'false').lower() in ('1', 'true', 'yes')
+
+    # If running in debug mode and no SECRET_KEY provided, allow a clear dev fallback (with warning).
+    if not SECRET_KEY:
+        if SAFE_COMPLY_DEBUG:
+            # Provide an explicit dev-only default and update app config so token operations work locally.
+            SECRET_KEY = 'safecomply-dev-debug-key'
+            app.config['SECRET_KEY'] = SECRET_KEY
+            print('WARNING: SAFE_COMPLY_SECRET is not set. Using a temporary dev SECRET_KEY because SAFE_COMPLY_DEBUG is enabled.')
+            print('This is INSECURE — do NOT use this value in production. Set SAFE_COMPLY_SECRET for production deployments.')
+        else:
+            print('ERROR: SAFE_COMPLY_SECRET environment variable is not set. Aborting startup for safety.')
+            print('Set SAFE_COMPLY_SECRET to a secure random value before running in production.')
+            sys.exit(1)
+
+    # Startup banner
+    print('=' * 50)
+    print(f"🚀 Backend running on http://localhost:{port} (debug={SAFE_COMPLY_DEBUG})")
+    print('=' * 50)
+    print('المسارات المتاحة:')
+    # Print registered rules (skip the Flask static endpoint)
+    seen = set()
+    for rule in sorted(app.url_map.iter_rules(), key=lambda r: (str(r.rule), str(list(r.methods)))):
+        if rule.endpoint == 'static':
+            continue
+        methods = ','.join(sorted(m for m in rule.methods if m not in ('HEAD', 'OPTIONS')))
+        entry = f"  - {methods} {rule.rule}"
+        if entry not in seen:
+            print(entry)
+            seen.add(entry)
+    print('=' * 50)
+    try:
+        app.run(debug=SAFE_COMPLY_DEBUG, port=port, host='0.0.0.0')
+    except OSError as e:
+        print('Failed to start server:', e)
+        print('If you see a socket/permission error, pick a different port and set SAFE_COMPLY_PORT or free the port.')
     print("=" * 50)
     print(f"🚀 Backend running on http://localhost:{port}")
     print("=" * 50)
