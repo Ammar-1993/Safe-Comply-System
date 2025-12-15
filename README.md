@@ -68,11 +68,37 @@
 | **Modern Interface** | Custom non-blocking modal dialogs for smoother interaction |
 | **Multi-format Export** | Download reports as PDF or Excel |
 
-### User Roles
+### 👥 Role-Based Access Control (RBAC)
 
-- **Admin** - Full system access, user management, all reports
-- **Auditor** - View all reports, generate compliance documentation
-- **User** - Upload reports, view own submissions
+The system implements a strict permission model with three distinct roles:
+
+#### 1. Admin 🛡️
+*   **Scope:** Full system control and oversight.
+*   **Permissions:**
+    *   **User Management:** View list of all users, delete user accounts.
+    *   **Reports:** View **all** reports submitted by any user.
+    *   **Report Actions:** Delete **any** report, export any report (PDF/Excel).
+    *   **Policies:** View and manage system-wide policies.
+    *   **General:** Full access to dashboard, profile management, and notifications.
+
+#### 2. Auditor 📋
+*   **Scope:** Compliance review and oversight.
+*   **Permissions:**
+    *   **Reports:** View **all** reports submitted by any user.
+    *   **Report Actions:** Export **any** report (PDF/Excel).
+    *   **Deletion:** Can **only** delete reports they uploaded themselves.
+    *   **Policies:** View system policies.
+    *   **General:** Access to dashboard, profile management, and notifications.
+    *   **Restrictions:** Cannot manage users or delete reports owned by others.
+
+#### 3. User 👤
+*   **Scope:** Individual contributor.
+*   **Permissions:**
+    *   **Reports:** View **only** their own submitted reports.
+    *   **Report Actions:** Export **own** reports (PDF/Excel).
+    *   **Deletion:** Can **only** delete reports they uploaded themselves.
+    *   **General:** Upload new reports, manage own profile, view personal notifications.
+    *   **Restrictions:** No access to other users' data or system configuration.
 
 ---
 
