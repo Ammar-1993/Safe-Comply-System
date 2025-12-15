@@ -587,22 +587,23 @@ body:not(.landing-body) {
     }
 }
 
-/* --- EXISTING SIGNIN STYLES BELOW (Unchanged primarily, but ensured no conflict) --- */
+/* --- EXISTING SIGNIN STYLES BELOW (UPDATED) --- */
 
 .login-container {
   display: flex;
   width: 900px;
   height: 550px;
   background: white;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  border-radius: 12px;
 }
 
 /* (Copying rest of original style.css content here to verify integrity) */
 
 .welcome-section {
   flex: 1;
-  background: linear-gradient(135deg, #2c5364 0%, #203a43 50%, #0f2027 100%);
+  background: #2c3e50; /* Dashboard Sidebar Color */
   color: white;
   display: flex;
   flex-direction: column;
@@ -614,35 +615,36 @@ body:not(.landing-body) {
 
 .welcome-title {
   font-size: 32px;
-  font-weight: bold;
+  font-weight: 700;
   margin-bottom: 20px;
-  letter-spacing: 1px;
+  letter-spacing: -0.5px;
 }
 
 .welcome-text {
   font-size: 15px;
   line-height: 1.6;
   margin-bottom: 35px;
-  opacity: 0.9;
+  opacity: 0.8;
   max-width: 280px;
+  color: #cbd5e1;
 }
 
 .signin-btn {
   padding: 12px 40px;
-  border: 2px solid white;
+  border: 2px solid rgba(255,255,255,0.2);
   background: transparent;
   color: white;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  border-radius: 6px;
 }
 
 .signin-btn:hover {
   background: white;
-  color: #2c5364;
+  color: #2c3e50;
+  border-color: white;
 }
 
 .form-section {
@@ -655,9 +657,9 @@ body:not(.landing-body) {
 
 .form-title {
   font-size: 28px;
-  font-weight: 600;
-  color: #2c5364;
-  margin-bottom: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 30px;
   text-align: center;
 }
 
@@ -671,24 +673,25 @@ body:not(.landing-body) {
 .social-icon {
   width: 40px;
   height: 40px;
-  border: 2px solid #ddd;
+  border: 2px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
   font-size: 18px;
-  color: #666;
+  color: #64748b;
+  border-radius: 8px;
 }
 
 .social-icon:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #3498db;
+  color: #3498db;
 }
 
 .divider-text {
   text-align: center;
-  color: #999;
+  color: #94a3b8;
   font-size: 13px;
   margin-bottom: 25px;
 }
@@ -703,61 +706,65 @@ body:not(.landing-body) {
   right: 15px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: #94a3b8;
   font-size: 16px;
 }
 
 .form-input {
   width: 100%;
-  padding: 14px 45px 14px 15px;
-  border: 2px solid #e0e0e0;
+  padding: 14px 15px;
+  border: 1px solid #e2e8f0;
   font-size: 14px;
   transition: all 0.3s;
-  background: #f8f9fa;
+  background: #f8fafc;
+  border-radius: 6px;
+  color: #334155;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #3498db;
   background: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .form-input::placeholder {
-  color: #aaa;
+  color: #94a3b8;
 }
 
 .forgot-password {
   display: block;
   text-align: left;
-  color: #667eea;
+  color: #3498db;
   font-size: 13px;
   text-decoration: none;
   margin-bottom: 20px;
   transition: color 0.3s;
+  font-weight: 500;
 }
 
 .forgot-password:hover {
-  color: #764ba2;
+  color: #2980b9;
 }
 
 .signup-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #5171927e 0%, #3b4f64 100%);
+  background: #3498db;
   color: white;
   border: none;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  text-transform: uppercase;
-  letter-spacing: 1px;
   margin-top: 10px;
+  border-radius: 6px;
 }
 
 .signup-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px #667eea66;
+  background: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 @media (max-width: 768px) {
