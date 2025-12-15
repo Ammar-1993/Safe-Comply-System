@@ -1424,8 +1424,10 @@ if __name__ == '__main__':
     # Use environment variable for port so user can avoid reserved ports (default 5002)
     port = int(os.environ.get('SAFE_COMPLY_PORT', '5002'))
 
-    # Debug mode is opt-in via SAFE_COMPLY_DEBUG environment variable
-    SAFE_COMPLY_DEBUG = os.environ.get('SAFE_COMPLY_DEBUG', 'false').lower() in ('1', 'true', 'yes')
+    # Debug mode defaults to True for easier development (one-command run)
+    # To disable debug mode (production), explicitly set SAFE_COMPLY_DEBUG=false
+    debug_env = os.environ.get('SAFE_COMPLY_DEBUG', 'true').lower()
+    SAFE_COMPLY_DEBUG = debug_env in ('1', 'true', 'yes')
 
     # If running in debug mode and no SECRET_KEY provided, allow a clear dev fallback (with warning).
     if not SECRET_KEY:
@@ -1444,7 +1446,7 @@ if __name__ == '__main__':
     print('=' * 50)
     print(f"🚀 Backend running on http://localhost:{port} (debug={SAFE_COMPLY_DEBUG})")
     print('=' * 50)
-    print('المسارات المتاحة:')
+    print('Available Routes:')
     # Print registered rules (skip the Flask static endpoint)
     seen = set()
     for rule in sorted(app.url_map.iter_rules(), key=lambda r: (str(r.rule), str(list(r.methods)))):
@@ -1458,26 +1460,6 @@ if __name__ == '__main__':
     print('=' * 50)
     try:
         app.run(debug=SAFE_COMPLY_DEBUG, port=port, host='0.0.0.0')
-    except OSError as e:
-        print('Failed to start server:', e)
-        print('If you see a socket/permission error, pick a different port and set SAFE_COMPLY_PORT or free the port.')
-    print("=" * 50)
-    print(f"🚀 Backend running on http://localhost:{port}")
-    print("=" * 50)
-    print("المسارات المتاحة:")
-    # Print registered rules (skip the Flask static endpoint)
-    seen = set()
-    for rule in sorted(app.url_map.iter_rules(), key=lambda r: (str(r.rule), str(list(r.methods)))):
-        if rule.endpoint == 'static':
-            continue
-        methods = ','.join(sorted(m for m in rule.methods if m not in ('HEAD', 'OPTIONS')))
-        entry = f"  - {methods} {rule.rule}"
-        if entry not in seen:
-            print(entry)
-            seen.add(entry)
-    print("=" * 50)
-    try:
-        app.run(debug=True, port=port, host='0.0.0.0')
     except OSError as e:
         print('Failed to start server:', e)
         print('If you see a socket/permission error, pick a different port and set SAFE_COMPLY_PORT or free the port.')
