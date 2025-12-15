@@ -57,8 +57,8 @@ else:
 
 # 2. User Actions (Register new user to ensure clean state)
 print("\n--- USER ACTIONS ---")
-reg_resp = requests.post(f'{BASE_URL}/auth/register', json={'username': 'rbac_user', 'password': 'User123!'})
-user_token = login('rbac_user', 'User123!')
+reg_resp = requests.post(f'{BASE_URL}/auth/register', json={'username': 'rbac_user', 'password': 'User123!@#Safe'})
+user_token = login('rbac_user', 'User123!@#Safe')
 
 if user_token:
     # Upload user file

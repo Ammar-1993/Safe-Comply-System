@@ -305,6 +305,19 @@ def auth_register():
         if not username or not password:
             return jsonify({'error': 'Username and password required'}), 400
 
+        # Validate password policy
+        if not check_password_policy(password):
+            checks = get_password_checks(password)
+            errors = []
+            if not checks['length']: errors.append("at least 12 characters")
+            if not checks['uppercase']: errors.append("an uppercase letter")
+            if not checks['lowercase']: errors.append("a lowercase letter")
+            if not checks['digit']: errors.append("a number")
+            if not checks['special']: errors.append("a special character")
+            
+            error_msg = "Password is too weak. It must contain: " + ", ".join(errors)
+            return jsonify({'error': error_msg}), 400
+
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
         

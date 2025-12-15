@@ -70,34 +70,26 @@
 
 ### 👥 Role-Based Access Control (RBAC)
 
-The system implements a strict permission model with three distinct roles:
+The system implements a strict permission model with three distinct roles. The table below details the specific capabilities of each role:
 
-#### 1. Admin 🛡️
-*   **Scope:** Full system control and oversight.
-*   **Permissions:**
-    *   **User Management:** View list of all users, delete user accounts.
-    *   **Reports:** View **all** reports submitted by any user.
-    *   **Report Actions:** Delete **any** report, export any report (PDF/Excel).
-    *   **Policies:** View and manage system-wide policies.
-    *   **General:** Full access to dashboard, profile management, and notifications.
+| Feature / Action | 🛡️ Admin | 📋 Auditor | 👤 User |
+| :--- | :---: | :---: | :---: |
+| **User Management** (List/Delete Users) | ✅ | ❌ | ❌ |
+| **View All Reports** | ✅ | ✅ | ❌ |
+| **View Own Reports** | ✅ | ✅ | ✅ |
+| **Upload New Reports** | ✅ | ✅ | ✅ |
+| **Export Any Report** (PDF/Excel) | ✅ | ✅ | ❌ |
+| **Export Own Report** (PDF/Excel) | ✅ | ✅ | ✅ |
+| **Delete Any Report** | ✅ | ❌ | ❌ |
+| **Delete Own Report** | ✅ | ✅ | ✅ |
+| **View Policies** | ✅ | ✅ | ✅ |
+| **Manage Profile** | ✅ | ✅ | ✅ |
+| **View Dashboard** | ✅ | ✅ | ✅ |
 
-#### 2. Auditor 📋
-*   **Scope:** Compliance review and oversight.
-*   **Permissions:**
-    *   **Reports:** View **all** reports submitted by any user.
-    *   **Report Actions:** Export **any** report (PDF/Excel).
-    *   **Deletion:** Can **only** delete reports they uploaded themselves.
-    *   **Policies:** View system policies.
-    *   **General:** Access to dashboard, profile management, and notifications.
-    *   **Restrictions:** Cannot manage users or delete reports owned by others.
-
-#### 3. User 👤
-*   **Scope:** Individual contributor.
-*   **Permissions:**
-    *   **Reports:** View **only** their own submitted reports.
-    *   **Report Actions:** Export **own** reports (PDF/Excel).
-    *   **Deletion:** Can **only** delete reports they uploaded themselves.
-    *   **General:** Upload new reports, manage own profile, view personal notifications.
+#### Role Definitions
+*   **Admin:** Full system control, including user management and unrestricted report access.
+*   **Auditor:** Compliance oversight with read-only access to all reports, but can only manage their own data.
+*   **User:** Standard access limited to their own submissions and data.
     *   **Restrictions:** No access to other users' data or system configuration.
 
 ---
