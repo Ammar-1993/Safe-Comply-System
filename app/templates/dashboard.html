@@ -596,7 +596,7 @@
       color: white;
     }
   </style>
-  <link rel="stylesheet" href="modal.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
 </head>
 
 <body>
@@ -975,8 +975,8 @@
         }
       });
   </script>
-  <script src="modal.js"></script>
-  <script src="notifications.js"></script>
+  <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
 </body>
 
 </html>
