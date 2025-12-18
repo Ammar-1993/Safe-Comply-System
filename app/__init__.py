@@ -1,6 +1,9 @@
 from flask import Flask
 from config import config
 from app.extensions import db, cors
+from flask_migrate import Migrate
+
+migrate = Migrate()
 
 def create_app(config_name='default'):
     app = Flask(__name__)
@@ -8,6 +11,7 @@ def create_app(config_name='default'):
 
     # Initialize extensions
     db.init_app(app)
+    migrate.init_app(app, db)
     
     # Configure CORS
     cors_origins = app.config.get('CORS_ORIGINS', '*')
