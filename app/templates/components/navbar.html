@@ -1,0 +1,23 @@
+<div class="top-header">
+  <div class="welcome-text">{{ page_title | default('Welcome Admin!') }}</div>
+  <div class="header-actions">
+    <input type="text" class="search-box" placeholder="Search..." />
+    <div style="position: relative;">
+      <button class="icon-btn" id="notif-btn">
+        🔔
+        <span class="notification-badge" style="display:none;">0</span>
+      </button>
+      <div class="notification-dropdown" id="notif-dropdown">
+        <div class="notification-header">
+          <span>Notifications</span>
+          <span id="mark-read-btn" style="font-size: 11px; color: #3498db; cursor: pointer;">Mark all as
+            read</span>
+        </div>
+        <div class="notification-list">
+          <!-- Dynamic Content Loads Here -->
+        </div>
+      </div>
+    </div>
+    <button class="icon-btn">🌙</button>
+  </div>
+</div>
