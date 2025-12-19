@@ -70,7 +70,6 @@ async function deleteReport(reportId) {
 
 // Function exposed globally so it can be called from HTML or other scripts
 async function loadReportsArchive() {
-    console.log("Loading reports archive...");
     try {
         const res = await api.get('/reports');
 
