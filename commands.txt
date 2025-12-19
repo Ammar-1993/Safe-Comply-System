@@ -1,0 +1,1 @@
+python -c "import sqlite3, os; db=os.environ.get('SAFE_COMPLY_DB_PATH','safecomply.db'); con=sqlite3.connect(db); con.execute('PRAGMA foreign_keys=ON'); cur=con.cursor(); cur.execute('BEGIN'); cur.execute('DELETE FROM users'); cur.execute('DELETE FROM reports'); cur.execute('DELETE FROM login_history'); cur.execute('DELETE FROM notifications'); con.commit(); con.close()"

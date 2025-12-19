@@ -767,6 +767,32 @@ body:not(.landing-body) {
   font-size: 16px;
 }
 
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  z-index: 10;
+}
+
+.password-toggle:hover {
+  color: #3498db;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
 .form-input {
   width: 100%;
   padding: 14px 15px;
