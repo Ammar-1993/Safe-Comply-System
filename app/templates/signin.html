@@ -11,39 +11,40 @@
 </head>
 
 <body>
-  <div class="login-container">
+  <main class="login-container">
     <!-- Welcome Section (Left Side) -->
-    <div class="welcome-section">
-      <h1 class="welcome-title">Hello!</h1>
+    <section class="welcome-section" aria-labelledby="welcome-title">
+      <h1 id="welcome-title" class="welcome-title">Hello!</h1>
       <p class="welcome-text">
         Don't have an account?<br />Create one now to get started.
       </p>
-      <button class="signin-btn" onclick="window.location.href='signup.html'">
+      <button class="signin-btn" onclick="window.location.href='signup.html'" aria-label="Create Account">
         Create Account
       </button>
-    </div>
+    </section>
 
     <!-- Login Section (Right Side) -->
-    <div class="form-section">
-      <h2 class="form-title">Login</h2>
+    <section class="form-section" aria-labelledby="login-title">
+      <h2 id="login-title" class="form-title">Login</h2>
 
       <form id="loginForm">
         <div class="form-group">
-          <input id="username" type="text" class="form-input" placeholder="Username" required />
+          <input id="username" type="text" class="form-input" placeholder="Username" required aria-label="Username" />
         </div>
 
         <div class="form-group">
-          <input id="password" type="password" class="form-input" placeholder="Password" required />
-          <span class="password-toggle" onclick="togglePassword('password', this)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          <input id="password" type="password" class="form-input" placeholder="Password" required aria-label="Password" />
+          <span class="password-toggle" onclick="togglePassword('password', this)" role="button" aria-label="Toggle password visibility" tabindex="0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
           </span>
         </div>
 
         <!-- <a href="#" class="forgot-password">Forgot Password?</a> -->
 
-        <button type="submit" class="signup-btn">Login</button>
+        <button type="submit" class="signup-btn" aria-label="Login">Login</button>
       </form>
-    </div>
+    </section>
+  </main>
 
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/api.js') }}"></script>

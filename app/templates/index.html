@@ -19,16 +19,16 @@
 <body class="landing-body">
   <div class="landing-overlay"></div>
 
-  <nav class="landing-nav fade-in-down">
+  <nav class="landing-nav fade-in-down" aria-label="Main Navigation">
     <div class="logo">
-      <i class="fa-solid fa-shield-halved"></i> Safe Comply
+      <i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Safe Comply
     </div>
     <div class="nav-links">
       <a href="#" class="active">Home</a>
       <a href="#features">Features</a>
       <a href="#about">About</a>
     </div>
-    <a href="signin.html" class="nav-btn">Sign In</a>
+    <a href="signin.html" class="nav-btn" aria-label="Sign In">Sign In</a>
   </nav>
 
   <main class="landing-hero">
@@ -41,8 +41,8 @@
         system. Secure, reliable, and easy to use.</p>
 
       <div class="hero-actions">
-        <a href="signin.html" class="btn-primary-glow">Get Started <i class="fa-solid fa-arrow-right"></i></a>
-        <a href="#features" class="btn-secondary-glass">Learn More</a>
+        <a href="signin.html" class="btn-primary-glow" aria-label="Get Started">Get Started <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        <a href="#features" class="btn-secondary-glass" aria-label="Learn More">Learn More</a>
       </div>
 
       <div class="stats-row">
@@ -83,41 +83,41 @@
   </main>
 
   <!-- FEATURES SECTION -->
-  <section id="features" class="section-container">
+  <section id="features" class="section-container" aria-labelledby="features-title">
     <div class="section-header">
       <div class="badge-pill"><span class="dot"></span> Capabilities</div>
-      <h2>Powerful <span class="gradient-text">Features</span></h2>
+      <h2 id="features-title">Powerful <span class="gradient-text">Features</span></h2>
       <p>Everything you need to manage compliance effectively.</p>
     </div>
     
     <div class="features-grid">
       <div class="feature-card">
-        <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+        <div class="icon-box"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i></div>
         <h3>Automated Reports</h3>
         <p>Generate comprehensive compliance reports instantly with a single click. Export to PDF or Excel formats.</p>
       </div>
       <div class="feature-card">
-        <div class="icon-box"><i class="fa-solid fa-robot"></i></div>
+        <div class="icon-box"><i class="fa-solid fa-robot" aria-hidden="true"></i></div>
         <h3>AI Analysis</h3>
         <p>Our intelligent engine analyzes trends and provides actionable recommendations to improve your security posture.</p>
       </div>
       <div class="feature-card">
-        <div class="icon-box"><i class="fa-solid fa-database"></i></div>
+        <div class="icon-box"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
         <h3>Backup Verification</h3>
         <p>Ensure your data is safe with automated backup policy checks, frequency validation, and retention monitoring.</p>
       </div>
       <div class="feature-card">
-        <div class="icon-box"><i class="fa-solid fa-users-gear"></i></div>
+        <div class="icon-box"><i class="fa-solid fa-users-gear" aria-hidden="true"></i></div>
         <h3>User Management</h3>
         <p>Easily manage user roles, permissions, and audit logs to maintain strict access control.</p>
       </div>
       <div class="feature-card">
-        <div class="icon-box"><i class="fa-solid fa-lock"></i></div>
+        <div class="icon-box"><i class="fa-solid fa-lock" aria-hidden="true"></i></div>
         <h3>Password Policy</h3>
         <p>Enforce strong password policies with real-time strength estimation and compliance checks.</p>
       </div>
       <div class="feature-card">
-        <div class="icon-box"><i class="fa-solid fa-history"></i></div>
+        <div class="icon-box"><i class="fa-solid fa-history" aria-hidden="true"></i></div>
         <h3>Historical Tracking</h3>
         <p>Track compliance scores over time and detect regressions before they become critical issues.</p>
       </div>
@@ -125,11 +125,11 @@
   </section>
 
   <!-- ABOUT SECTION -->
-  <section id="about" class="section-container section-alt">
+  <section id="about" class="section-container section-alt" aria-labelledby="about-title">
     <div class="about-wrapper">
       <div class="about-content">
         <div class="badge-pill"><span class="dot"></span> Our Mission</div>
-        <h2>Redefining <span class="gradient-text">Compliance</span></h2>
+        <h2 id="about-title">Redefining <span class="gradient-text">Compliance</span></h2>
         <p class="lead">Safe Comply System allows organizations to navigate the complex landscape of regulatory requirements with ease and confidence.</p>
         <p>Our objective is to provide a centralized platform that simplifies auditing, reduces risk, and ensures data integrity across all your systems. By leveraging advanced analytics and automation, we help you focus on your core business while we handle the compliance heavy lifting.</p>
         
@@ -162,15 +162,15 @@
     </div>
   </section>
 
-  <footer class="landing-footer">
+  <footer class="landing-footer" role="contentinfo">
     <div class="footer-content">
       <div class="logo">
-        <i class="fa-solid fa-shield-halved"></i> Safe Comply
+        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Safe Comply
       </div>
       <div class="footer-links">
        
         
-        <a href="#">↑↑↑</a>
+        <a href="#" aria-label="Back to top">↑↑↑</a>
       </div>
       <div class="copyright">
         &copy; 2025 Safe Comply System.
