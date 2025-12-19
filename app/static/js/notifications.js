@@ -1,18 +1,11 @@
 
 // System-Wide Notifications Logic
 
-const NOTIFICATION_API_URL = 'http://localhost:5002/api/notifications';
-const MARK_READ_API_URL = 'http://localhost:5002/api/notifications/mark-read';
 const POLL_INTERVAL = 15000; // 15 seconds
 
 async function fetchNotifications() {
     try {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-
-        const resp = await fetch(NOTIFICATION_API_URL, {
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const resp = await api.get('/api/notifications');
 
         if (resp.ok) {
             const data = await resp.json();
@@ -69,16 +62,10 @@ function updateNotificationUI(notifications, unreadCount) {
 
 async function markAllAsRead() {
     try {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-
         // Optimistic UI update: Clear immediately
         updateNotificationUI([], 0);
 
-        await fetch(MARK_READ_API_URL, {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
+        await api.post('/api/notifications/mark-read');
         
         // Refresh to confirm server state
         fetchNotifications();

@@ -48,6 +48,7 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
     <script>
       document.querySelector('form').addEventListener('submit', async function (e) {
@@ -63,11 +64,7 @@
         }
 
         try {
-          const resp = await fetch('http://localhost:5002/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-          });
+          const resp = await api.post('/auth/register', { username, password });
 
           const data = await resp.json();
 

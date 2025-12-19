@@ -254,10 +254,7 @@
       }
 
       try {
-        const token = localStorage.getItem('authToken');
-        const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
-
-        const resp = await fetch('http://localhost:5002/dashboard-stats', { headers });
+        const resp = await api.get('/dashboard-stats');
         if (!resp.ok) {
           if (resp.status === 401) window.location.href = 'signin.html';
           return;
@@ -325,6 +322,7 @@
       });
   </script>
   <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/api.js') }}"></script>
   <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
 </body>
 

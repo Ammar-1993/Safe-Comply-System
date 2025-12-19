@@ -5,17 +5,9 @@ const itemsPerPage = 10;
 
 // Helper function to download files with auth header
 async function downloadReportFile(reportId, type) {
-    const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
-    if (!token) {
-        showWarning('Please login first', 'Authentication Required');
-        return;
-    }
-
     const endpoint = `/api/reports/${reportId}/${type}`;
     try {
-        const res = await fetch(endpoint, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await api.get(endpoint);
 
         if (!res.ok) {
             const err = await res.json();
@@ -51,17 +43,8 @@ async function deleteReport(reportId) {
         return;
     }
 
-    const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
-    if (!token) {
-        showWarning('Please login first', 'Authentication Required');
-        return;
-    }
-
     try {
-        const res = await fetch(`/reports/${reportId}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await api.delete(`/reports/${reportId}`);
 
         if (res.ok) {
             // Refresh the table
@@ -89,16 +72,7 @@ async function deleteReport(reportId) {
 async function loadReportsArchive() {
     console.log("Loading reports archive...");
     try {
-        const token = localStorage.getItem('access_token') || localStorage.getItem('authToken'); // Check both keys just in case
-        
-        if (!token) { 
-            console.warn("No auth token found, skipping reports load.");
-            return; 
-        }
-
-        const res = await fetch('/reports', { 
-            headers: { Authorization: `Bearer ${token}` } 
-        });
+        const res = await api.get('/reports');
 
         if (!res.ok) {
             console.warn('Failed to fetch reports:', res.status);

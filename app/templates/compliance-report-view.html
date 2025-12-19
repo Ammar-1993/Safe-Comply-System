@@ -66,15 +66,7 @@
             }
 
             try {
-                const token = localStorage.getItem('authToken');
-                if (!token) {
-                    window.location.href = 'signin.html';
-                    return;
-                }
-
-                const resp = await fetch(`/reports/${reportId}`, {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
+                const resp = await api.get(`/reports/${reportId}`);
 
                 if (resp.status === 403) {
                     await showError("Unauthorized: You do not have permission to view this report.", "Access Denied");
@@ -147,6 +139,7 @@
         }
     </script>
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
     <style>
         /* Notification Styles */

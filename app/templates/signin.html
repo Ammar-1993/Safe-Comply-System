@@ -46,6 +46,7 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
     <script>
       document.getElementById('loginForm').addEventListener('submit', async function (e) {
@@ -58,11 +59,7 @@
         }
 
         try {
-          const resp = await fetch('http://localhost:5002/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-          });
+          const resp = await api.post('/auth/login', { username, password });
 
           const data = await resp.json();
           if (!resp.ok) {
@@ -77,9 +74,7 @@
 
           // Fetch profile to get email and picture
           try {
-            const profileResp = await fetch('http://localhost:5002/auth/profile', {
-              headers: { 'Authorization': 'Bearer ' + data.access_token }
-            });
+            const profileResp = await api.get('/auth/profile');
             if (profileResp.ok) {
               const profile = await profileResp.json();
               if (profile.email) localStorage.setItem('userEmail', profile.email);
