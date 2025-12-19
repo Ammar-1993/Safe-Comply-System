@@ -1,3 +1,5 @@
+/* Global Styles & Marketing/Auth Pages */
+
 * {
   margin: 0;
   padding: 0;
@@ -5,40 +7,27 @@
 }
 
 body {
-  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Light default, overridden by landing-body */
+  font-family: var(--font-family-base);
+  background: var(--bg-gradient-landing);
   min-height: 100vh;
-  /* Remove flex centering globally as it might affect landing page flow, 
-     but check if it breaks signin.html. 
-     Signin.html relies on body being flex center. 
-     I will scope flex center to a class or keep it and override for landing.
-  */
   display: flex;
-  flex-direction: column; /* Changed to column to support normal flow */
-  /* align-items: center;  <-- specific to signin, move to .login-page-body if possible, or override. */
+  flex-direction: column;
 }
 
-/* --- KEEPING EXISTING STYLES FOR BACKWARD COMPAT (SIGNIN.HTML) --- */
-/* The existing body styles had display:flex, align-items:center, justify-content:center.
-   This centers the .login-container.
-   For the landing page, we want normal flow.
-   I will add a specific class for the login page body in signin.html later? 
-   No, I should just adjust specific pages.
-   For now, I'll reset body for .landing-body.
-*/
-
+/* --- AUTH PAGES (Signin/Signup) --- */
+/* These pages rely on the body being a flex container to center the login box */
 body:not(.landing-body) {
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #83afde7e 0%, #6d8cad7e 100%);
+    background: var(--bg-gradient-body);
     padding: 20px;
 }
 
-/* --- LANDING PAGE STYLES (UPDATED) --- */
+/* --- LANDING PAGE STYLES --- */
 .landing-body {
     display: block; /* Override flex */
-    background: #f8fafc; /* Light theme base */
-    color: #334155; /* Dark text */
+    background: var(--bg-light);
+    color: var(--text-dark);
     overflow-x: hidden;
     padding: 0;
 }
@@ -56,21 +45,21 @@ body:not(.landing-body) {
     max-width: 100%;
     margin: 0;
     width: 100%;
-    background: #2c3e50; /* Dashboard Sidebar Color */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: var(--secondary-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .landing-nav .logo {
     font-size: 24px;
     font-weight: 700;
-    color: white;
+    color: var(--bg-white);
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .landing-nav .logo i {
-    color: #3498db;
+    color: var(--primary-color);
 }
 
 .nav-links {
@@ -81,22 +70,22 @@ body:not(.landing-body) {
 
 .nav-links a {
     text-decoration: none;
-    color: #ecf0f1;
+    color: var(--text-light);
     font-weight: 500;
     transition: color 0.3s;
     font-size: 15px;
 }
 
 .nav-links a:hover, .nav-links a.active {
-    color: #3498db;
+    color: var(--primary-color);
 }
 
 .nav-btn {
     text-decoration: none;
-    color: #2c3e50;
-    background: white;
+    color: var(--secondary-color);
+    background: var(--bg-white);
     padding: 8px 20px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     font-size: 14px;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -104,7 +93,7 @@ body:not(.landing-body) {
 
 .nav-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-md);
 }
 
 /* Hero Section */
@@ -132,7 +121,7 @@ body:not(.landing-body) {
     border: 1px solid rgba(52, 152, 219, 0.2);
     padding: 6px 16px;
     border-radius: 50px;
-    color: #3498db;
+    color: var(--primary-color);
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 24px;
@@ -141,9 +130,9 @@ body:not(.landing-body) {
 .badge-pill .dot {
     width: 6px;
     height: 6px;
-    background: #3498db;
+    background: var(--primary-color);
     border-radius: 50%;
-    box-shadow: 0 0 8px #3498db;
+    box-shadow: 0 0 8px var(--primary-color);
 }
 
 .hero-content h1 {
@@ -152,11 +141,11 @@ body:not(.landing-body) {
     font-weight: 800;
     margin-bottom: 24px;
     letter-spacing: -1px;
-    color: #2c3e50;
+    color: var(--secondary-color);
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -164,7 +153,7 @@ body:not(.landing-body) {
 
 .hero-content p {
     font-size: 18px;
-    color: #64748b;
+    color: var(--text-muted);
     line-height: 1.6;
     margin-bottom: 40px;
     max-width: 480px;
@@ -178,8 +167,8 @@ body:not(.landing-body) {
 
 .btn-primary-glow {
     text-decoration: none;
-    background: #3498db;
-    color: white;
+    background: var(--primary-color);
+    color: var(--bg-white);
     padding: 14px 32px;
     border-radius: 6px;
     font-weight: 600;
@@ -201,7 +190,7 @@ body:not(.landing-body) {
     text-decoration: none;
     background: transparent;
     border: 2px solid #cbd5e1;
-    color: #2c3e50;
+    color: var(--secondary-color);
     padding: 14px 32px;
     border-radius: 6px;
     font-weight: 600;
@@ -209,8 +198,8 @@ body:not(.landing-body) {
 }
 
 .btn-secondary-glass:hover {
-    border-color: #3498db;
-    color: #3498db;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
     background: rgba(52, 152, 219, 0.05);
 }
 
@@ -219,19 +208,19 @@ body:not(.landing-body) {
     align-items: center;
     gap: 24px;
     padding-top: 24px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--border-color);
 }
 
 .stat-item h3 {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 4px;
-    color: #2c3e50;
+    color: var(--secondary-color);
 }
 
 .stat-item span {
     font-size: 13px;
-    color: #64748b;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -239,7 +228,7 @@ body:not(.landing-body) {
 .stats-row .divider {
     width: 1px;
     height: 40px;
-    background: #e2e8f0;
+    background: var(--border-color);
 }
 
 /* Hero Visual (Right Side) */
@@ -265,11 +254,11 @@ body:not(.landing-body) {
 
 .glass-card {
     position: absolute;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
     padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
     width: 240px;
     transition: transform 0.4s ease;
 }
@@ -298,7 +287,7 @@ body:not(.landing-body) {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3498db;
+    color: var(--primary-color);
     font-size: 20px;
     margin-bottom: 16px;
 }
@@ -306,7 +295,7 @@ body:not(.landing-body) {
 .glass-card h4 {
     margin-bottom: 12px;
     font-size: 16px;
-    color: #2c3e50;
+    color: var(--secondary-color);
     font-weight: 600;
 }
 
@@ -319,13 +308,13 @@ body:not(.landing-body) {
 
 .progress-bar .fill {
     height: 100%;
-    background: #3498db;
+    background: var(--primary-color);
     border-radius: 3px;
 }
 
 .landing-footer {
-    background: #2c3e50;
-    color: white;
+    background: var(--secondary-color);
+    color: var(--bg-white);
     padding: 30px 0;
     border-top: none;
     margin-top: auto;
@@ -344,14 +333,14 @@ body:not(.landing-body) {
 .landing-footer .logo {
     font-size: 20px;
     font-weight: 700;
-    color: white;
+    color: var(--bg-white);
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .landing-footer .logo i {
-    color: #3498db;
+    color: var(--primary-color);
 }
 
 .footer-links {
@@ -361,13 +350,13 @@ body:not(.landing-body) {
 
 .footer-links a {
     text-decoration: none;
-    color: #ecf0f1;
+    color: var(--text-light);
     font-size: 14px;
     transition: color 0.3s;
 }
 
 .footer-links a:hover {
-    color: #3498db;
+    color: var(--primary-color);
 }
 
 .copyright {
@@ -458,11 +447,11 @@ body:not(.landing-body) {
     padding: 100px 40px;
     max-width: 1200px;
     margin: 0 auto;
-    background: white;
+    background: var(--bg-white);
 }
 
 .section-alt {
-    background: #f8fafc;
+    background: var(--bg-light);
 }
 
 .section-header {
@@ -474,12 +463,12 @@ body:not(.landing-body) {
     font-size: 42px;
     margin-bottom: 16px;
     font-weight: 800;
-    color: #2c3e50;
+    color: var(--secondary-color);
 }
 
 .section-header p {
     font-size: 18px;
-    color: #64748b;
+    color: var(--text-muted);
     max-width: 600px;
     margin: 0 auto;
 }
@@ -492,8 +481,8 @@ body:not(.landing-body) {
 }
 
 .feature-card {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
     padding: 30px;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -503,7 +492,7 @@ body:not(.landing-body) {
 
 .feature-card:hover {
     transform: translateY(-5px);
-    border-color: #3498db;
+    border-color: var(--primary-color);
     box-shadow: 0 10px 30px rgba(52, 152, 219, 0.15);
 }
 
@@ -515,27 +504,27 @@ body:not(.landing-body) {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3498db;
+    color: var(--primary-color);
     font-size: 24px;
     margin-bottom: 24px;
     transition: all 0.3s;
 }
 
 .feature-card:hover .icon-box {
-    background: #3498db;
-    color: white;
+    background: var(--primary-color);
+    color: var(--bg-white);
     transform: scale(1.1) rotate(5deg);
 }
 
 .feature-card h3 {
     font-size: 20px;
     margin-bottom: 12px;
-    color: #2c3e50;
+    color: var(--secondary-color);
 }
 
 .feature-card p {
     font-size: 15px;
-    color: #64748b;
+    color: var(--text-muted);
     line-height: 1.6;
 }
 
@@ -554,7 +543,7 @@ body:not(.landing-body) {
     font-size: 42px;
     margin-bottom: 24px;
     font-weight: 800;
-    color: #2c3e50;
+    color: var(--secondary-color);
 }
 
 .about-content .lead {
@@ -565,7 +554,7 @@ body:not(.landing-body) {
 }
 
 .about-content p {
-    color: #64748b;
+    color: var(--text-muted);
     line-height: 1.7;
     margin-bottom: 40px;
 }
@@ -577,13 +566,13 @@ body:not(.landing-body) {
 
 .astat h4 {
     font-size: 36px;
-    color: #2c3e50;
+    color: var(--secondary-color);
     font-weight: 700;
     margin-bottom: 5px;
 }
 
 .astat span {
-    color: #64748b;
+    color: var(--text-muted);
     text-transform: uppercase;
     font-size: 13px;
     font-weight: 600;
@@ -644,24 +633,22 @@ body:not(.landing-body) {
     }
 }
 
-/* --- EXISTING SIGNIN STYLES BELOW (UPDATED) --- */
+/* --- AUTH STYLES (Signin/Signup) --- */
 
 .login-container {
   display: flex;
   width: 900px;
   height: 550px;
-  background: white;
+  background: var(--bg-white);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
-
-/* (Copying rest of original style.css content here to verify integrity) */
 
 .welcome-section {
   flex: 1;
-  background: #2c3e50; /* Dashboard Sidebar Color */
-  color: white;
+  background: var(--secondary-color);
+  color: var(--bg-white);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -690,7 +677,7 @@ body:not(.landing-body) {
   padding: 12px 40px;
   border: 2px solid rgba(255,255,255,0.2);
   background: transparent;
-  color: white;
+  color: var(--bg-white);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -699,9 +686,9 @@ body:not(.landing-body) {
 }
 
 .signin-btn:hover {
-  background: white;
-  color: #2c3e50;
-  border-color: white;
+  background: var(--bg-white);
+  color: var(--secondary-color);
+  border-color: var(--bg-white);
 }
 
 .form-section {
@@ -715,7 +702,7 @@ body:not(.landing-body) {
 .form-title {
   font-size: 28px;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--secondary-color);
   margin-bottom: 30px;
   text-align: center;
 }
@@ -730,20 +717,20 @@ body:not(.landing-body) {
 .social-icon {
   width: 40px;
   height: 40px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
   font-size: 18px;
-  color: #64748b;
+  color: var(--text-muted);
   border-radius: 8px;
 }
 
 .social-icon:hover {
-  border-color: #3498db;
-  color: #3498db;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .divider-text {
@@ -784,7 +771,7 @@ body:not(.landing-body) {
 }
 
 .password-toggle:hover {
-  color: #3498db;
+  color: var(--primary-color);
 }
 
 .password-toggle svg {
@@ -796,18 +783,18 @@ body:not(.landing-body) {
 .form-input {
   width: 100%;
   padding: 14px 15px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   font-size: 14px;
   transition: all 0.3s;
-  background: #f8fafc;
+  background: var(--bg-light);
   border-radius: 6px;
-  color: #334155;
+  color: var(--text-dark);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #3498db;
-  background: white;
+  border-color: var(--primary-color);
+  background: var(--bg-white);
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
@@ -818,7 +805,7 @@ body:not(.landing-body) {
 .forgot-password {
   display: block;
   text-align: left;
-  color: #3498db;
+  color: var(--primary-color);
   font-size: 13px;
   text-decoration: none;
   margin-bottom: 20px;
@@ -833,8 +820,8 @@ body:not(.landing-body) {
 .signup-btn {
   width: 100%;
   padding: 14px;
-  background: #3498db;
-  color: white;
+  background: var(--primary-color);
+  color: var(--bg-white);
   border: none;
   font-size: 14px;
   font-weight: 600;
