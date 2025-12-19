@@ -572,3 +572,45 @@
     font-size: 14px;
     color: var(--text-muted);
 }
+
+/* Dark Mode Styles */
+body.dark-mode .settings-card {
+    background: var(--secondary-dark);
+    color: var(--text-light);
+}
+
+body.dark-mode .settings-card-title {
+    color: var(--text-light);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .setting-item {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .setting-label {
+    color: var(--text-light);
+}
+
+body.dark-mode .setting-description {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .setting-input {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+}
+
+body.dark-mode .setting-input:focus {
+    border-color: var(--primary-color);
+}
+
+body.dark-mode .toggle-switch {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .toggle-switch.active {
+    background: var(--success-color);
+}
+

@@ -416,3 +416,47 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* Dark Mode Styles */
+body.dark-mode .page-title {
+    color: var(--text-light);
+}
+
+body.dark-mode .page-description {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .upload-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .upload-box:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-color);
+}
+
+body.dark-mode .upload-title {
+    color: var(--text-light);
+}
+
+body.dark-mode .upload-hint {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .btn-choose {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-light);
+}
+
+body.dark-mode .btn-choose:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode .selected-file {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+}
+
