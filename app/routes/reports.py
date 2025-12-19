@@ -316,83 +316,152 @@ def export_report_pdf(report_id):
             
         users = report.users
         
+        # Reconstruct results for AI Analysis
+        results = []
+        for u in users:
+            backup_checks = json.loads(u.backup_checks or '{}')
+            results.append({
+                'strength': u.strength,
+                'backup_checks': backup_checks
+            })
+            
+        # Generate AI Analysis
+        # We need previous score for trend analysis, fetch it
+        prev_report = db.session.execute(
+            select(Report).where(Report.uploaded_at < report.uploaded_at).order_by(Report.uploaded_at.desc()).limit(1)
+        ).scalar_one_or_none()
+        previous_score = prev_report.overall_score if prev_report else None
+        
+        alerts, recommendations = generate_ai_analysis(results, len(results), current_score=report.overall_score, previous_score=previous_score)
+
         try:
             from reportlab.lib.pagesizes import letter
             from reportlab.lib import colors
             from reportlab.lib.units import inch
-            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether
             from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-            from reportlab.lib.enums import TA_CENTER
+            from reportlab.lib.enums import TA_CENTER, TA_LEFT
             
             buffer = BytesIO()
-            doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+            doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
             
             elements = []
             styles = getSampleStyleSheet()
             
-            title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=24, textColor=colors.HexColor('#051338'), spaceAfter=30, alignment=TA_CENTER)
+            # --- Header ---
+            title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=26, textColor=colors.HexColor('#2c3e50'), spaceAfter=10, alignment=TA_CENTER, fontName='Helvetica-Bold')
             elements.append(Paragraph('AI Compliance Report', title_style))
-            elements.append(Spacer(1, 12))
-            
-            info_style = styles['Normal']
-            elements.append(Paragraph(f'<b>Report ID:</b> {report.id}', info_style))
-            elements.append(Paragraph(f'<b>Filename:</b> {report.filename}', info_style))
-            elements.append(Paragraph(f'<b>Generated:</b> {report.uploaded_at}', info_style))
             elements.append(Spacer(1, 20))
             
-            summary_style = ParagraphStyle('SummaryTitle', parent=styles['Heading2'], fontSize=16, textColor=colors.HexColor('#051338'), spaceAfter=12)
-            elements.append(Paragraph('Summary', summary_style))
+            # --- Metadata ---
+            meta_style = ParagraphStyle('Meta', parent=styles['Normal'], fontSize=10, textColor=colors.HexColor('#7f8c8d'), spaceAfter=2)
+            elements.append(Paragraph(f'<b>Report ID:</b> {report.id}', meta_style))
+            elements.append(Paragraph(f'<b>Filename:</b> {report.filename}', meta_style))
+            elements.append(Paragraph(f'<b>Generated:</b> {report.uploaded_at}', meta_style))
+            elements.append(Spacer(1, 25))
+            
+            # --- Summary Section ---
+            h2_style = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=16, textColor=colors.HexColor('#2c3e50'), spaceAfter=12, fontName='Helvetica-Bold')
+            elements.append(Paragraph('Executive Summary', h2_style))
             
             summary_data = [
                 ['Metric', 'Value'],
                 ['Overall Compliance Score', f"{report.overall_score}%"],
                 ['Total Users', str(report.total)],
-                ['Valid Passwords', str(report.valid)],
-                ['Invalid Passwords', str(report.invalid)]
+                ['Policies Analyzed', '2 (Password, Backup)'],
+                ['Alerts Detected', str(len(alerts))]
             ]
             
-            summary_table = Table(summary_data, colWidths=[3*inch, 2*inch])
+            summary_table = Table(summary_data, colWidths=[3.5*inch, 2*inch], hAlign='LEFT')
             summary_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
                 ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 12),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+                ('FONTSIZE', (0, 0), (-1, 0), 11),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+                ('TOPPADDING', (0, 0), (-1, 0), 10),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8f9fa')),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#bdc3c7')),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8f9fa')])
             ]))
             elements.append(summary_table)
-            elements.append(Spacer(1, 20))
+            elements.append(Spacer(1, 25))
             
-            elements.append(Paragraph('User Details', summary_style))
+            # --- AI Insights (Alerts & Recommendations) ---
+            if alerts:
+                elements.append(Paragraph('🚨 AI-Detected Alerts', h2_style))
+                for alert in alerts:
+                    color = '#e74c3c' if alert['severity'] == 'high' else ('#f39c12' if alert['severity'] == 'medium' else '#27ae60')
+                    alert_title_style = ParagraphStyle('AlertTitle', parent=styles['Normal'], fontSize=11, textColor=colors.HexColor(color), fontName='Helvetica-Bold', spaceAfter=2)
+                    elements.append(Paragraph(f"• {alert['title']}", alert_title_style))
+                    elements.append(Paragraph(f"&nbsp;&nbsp; {alert['desc']}", styles['Normal']))
+                    elements.append(Spacer(1, 8))
+                elements.append(Spacer(1, 15))
+
+            if recommendations:
+                elements.append(Paragraph('💡 AI Recommendations', h2_style))
+                for rec in recommendations:
+                    rec_title_style = ParagraphStyle('RecTitle', parent=styles['Normal'], fontSize=11, textColor=colors.HexColor('#2980b9'), fontName='Helvetica-Bold', spaceAfter=2)
+                    elements.append(Paragraph(f"• {rec['title']}", rec_title_style))
+                    elements.append(Paragraph(f"&nbsp;&nbsp; {rec['desc']}", styles['Normal']))
+                    elements.append(Spacer(1, 8))
+                elements.append(Spacer(1, 25))
+
+            # --- User Details Table ---
+            elements.append(Paragraph('Detailed User Analysis', h2_style))
             
-            user_data = [['#', 'Username', 'Password', 'Valid', 'Strength']]
-            for u in users[:50]:
+            # Table Header
+            user_data = [['ID', 'Username', 'Password Strength', 'Backup Status', 'Result']]
+            
+            # Table Body
+            for u in users: # Show all users, or limit if needed. PDF can handle many pages.
+                # Strength Color
+                s_val = u.strength
+                s_color = '#27ae60' if s_val >= 75 else ('#f39c12' if s_val >= 50 else '#e74c3c')
+                strength_cell = Paragraph(f'<font color="{s_color}"><b>{s_val}%</b></font>', styles['Normal'])
+                
+                # Backup Status
+                b_checks = json.loads(u.backup_checks or '{}')
+                b_ok = all(b_checks.values()) if b_checks else False
+                b_text = "Active" if b_ok else "Failed"
+                b_color = '#27ae60' if b_ok else '#e74c3c'
+                backup_cell = Paragraph(f'<font color="{b_color}"><b>{b_text}</b></font>', styles['Normal'])
+                
+                # Result Status
+                is_compliant = bool(u.is_valid) # Assuming is_valid covers overall compliance for now, or combine with backup
+                # Web view logic: user.isValid ? Compliant : Non-Compliant. 
+                # Note: In upload_excel, is_valid is purely password policy. 
+                # But let's stick to the web view's "Result" column which uses user.isValid.
+                r_text = "Compliant" if is_compliant else "Non-Compliant"
+                r_color = '#27ae60' if is_compliant else '#e74c3c'
+                result_cell = Paragraph(f'<font color="{r_color}"><b>{r_text}</b></font>', styles['Normal'])
+                
                 user_data.append([
                     str(u.row_index),
-                    u.username,
-                    u.masked_password,
-                    'Yes' if u.is_valid else 'No',
-                    f"{u.strength}%"
+                    Paragraph(u.username, styles['Normal']), # Wrap username to avoid overflow
+                    strength_cell,
+                    backup_cell,
+                    result_cell
                 ])
             
-            user_table = Table(user_data, colWidths=[0.5*inch, 1.5*inch, 1.5*inch, 0.8*inch, 0.8*inch])
+            # Column Widths
+            col_widths = [0.6*inch, 2.0*inch, 1.5*inch, 1.5*inch, 1.5*inch]
+            
+            user_table = Table(user_data, colWidths=col_widths, repeatRows=1)
             user_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 8),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey)
+                ('FONTSIZE', (0, 0), (-1, 0), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+                ('TOPPADDING', (0, 0), (-1, 0), 10),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ecf0f1')),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#fbfcfc')])
             ]))
             elements.append(user_table)
-            
-            if len(users) > 50:
-                elements.append(Spacer(1, 12))
-                elements.append(Paragraph(f'<i>Note: Showing first 50 of {len(users)} users</i>', info_style))
             
             doc.build(elements)
             buffer.seek(0)
@@ -424,10 +493,19 @@ def export_report_excel(report_id):
             
         users = report.users
         
+        # Reconstruct results for AI Analysis
+        results = []
         data = []
         for u in users:
             checks_dict = json.loads(u.checks or '{}')
             backup_dict = json.loads(u.backup_checks or '{}')
+            
+            # For AI Analysis
+            results.append({
+                'strength': u.strength,
+                'backup_checks': backup_dict
+            })
+            
             data.append({
                 'Row': u.row_index,
                 'Username': u.username,
@@ -445,6 +523,14 @@ def export_report_excel(report_id):
                 'Retention OK': 'Yes' if backup_dict.get('retention_ok') else 'No'
             })
         
+        # Generate AI Analysis
+        prev_report = db.session.execute(
+            select(Report).where(Report.uploaded_at < report.uploaded_at).order_by(Report.uploaded_at.desc()).limit(1)
+        ).scalar_one_or_none()
+        previous_score = prev_report.overall_score if prev_report else None
+        
+        alerts, recommendations = generate_ai_analysis(results, len(results), current_score=report.overall_score, previous_score=previous_score)
+        
         df = pd.DataFrame(data)
         
         buffer = BytesIO()
@@ -461,6 +547,17 @@ def export_report_excel(report_id):
                 {'Metric': 'Overall Score', 'Value': f"{report.overall_score}%"}
             ])
             summary_df.to_excel(writer, sheet_name='Summary', index=False)
+            
+            # AI Insights Sheet
+            insights_data = []
+            for a in alerts:
+                insights_data.append({'Type': 'Alert', 'Severity': a['severity'].upper(), 'Title': a['title'], 'Description': a['desc']})
+            for r in recommendations:
+                insights_data.append({'Type': 'Recommendation', 'Severity': '-', 'Title': r['title'], 'Description': r['desc']})
+                
+            if insights_data:
+                insights_df = pd.DataFrame(insights_data)
+                insights_df.to_excel(writer, sheet_name='AI Insights', index=False)
         
         buffer.seek(0)
         
