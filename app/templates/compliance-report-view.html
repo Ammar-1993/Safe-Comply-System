@@ -7,6 +7,8 @@
     <title>Detailed Report - SafeComply</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/reports.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
 </head>
 
@@ -20,8 +22,8 @@
       <div class="content-area">
                 <div class="content-card">
                     <div class="card-title">Detailed User Analysis</div>
-                    <p>This view displays the row-by-row analysis from the latest upload.</p>
-                    <table>
+                    <p style="margin-bottom: 20px; color: var(--text-muted);">This view displays the row-by-row analysis from the latest upload.</p>
+                    <table class="result-table">
                         <thead>
                             <tr>
                                 <th>User ID</th>
@@ -106,10 +108,14 @@
 
                 const resultStatus = user.isValid ? '<span class="status-pass">Compliant</span>' : '<span class="status-fail">Non-Compliant</span>';
 
+                let strengthClass = 'strength-low';
+                if (user.strength >= 75) strengthClass = 'strength-high';
+                else if (user.strength >= 50) strengthClass = 'strength-medium';
+
                 tr.innerHTML = `
                     <td>${user.row}</td>
                     <td>${user.username}</td>
-                    <td>${user.strength}%</td>
+                    <td><span class="${strengthClass}">${user.strength}%</span></td>
                     <td>${backupStatus}</td>
                     <td>${resultStatus}</td>
                  `;

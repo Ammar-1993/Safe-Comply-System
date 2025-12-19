@@ -7,6 +7,7 @@
     <title>Backup Policy - SafeComply</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
 </head>
 
@@ -18,17 +19,16 @@
                   {% set page_title = 'Backup Policies' %}
       {% include 'components/navbar.html' %}
       <div class="content-area">
-                <div class="content-card">
-                    <div class="card-header">
-                        <div class="tabs">
-                            <div class="tab active" onclick="switchTab('policy')">📜 Policy Standards</div>
-                            <div class="tab" onclick="switchTab('checker')">✅ Compliance Checker</div>
-                            <div class="tab" onclick="switchTab('calculator')">🧮 Storage Estimator</div>
-                        </div>
-                    </div>
+                <!-- Page Tabs -->
+                <div class="tabs-container">
+                    <div class="tab-item active" onclick="switchTab('policy')">📜 Policy Standards</div>
+                    <div class="tab-item" onclick="switchTab('checker')">✅ Compliance Checker</div>
+                    <div class="tab-item" onclick="switchTab('calculator')">🧮 Storage Estimator</div>
+                </div>
 
-                    <!-- Tab 1: Policy Rules -->
-                    <div id="policy" class="tab-content active">
+                <!-- Tab 1: Policy Rules -->
+                <div id="policy" class="tab-content active">
+                    <div class="content-card">
                         <ul class="policy-list">
                             <li>Backup type: <b>Hybrid (Local + Cloud-based)</b>.</li>
                             <li>Backup frequency: <b>Weekly or Daily (Recommended)</b>.</li>
@@ -38,9 +38,11 @@
                             <li>Recovery readiness checks performed <b>monthly</b>.</li>
                         </ul>
                     </div>
+                </div>
 
-                    <!-- Tab 2: Compliance Checker -->
-                    <div id="checker" class="tab-content">
+                <!-- Tab 2: Compliance Checker -->
+                <div id="checker" class="tab-content">
+                    <div class="content-card">
                         <div style="max-width: 600px;">
                             <div class="form-group">
                                 <label class="form-label">Last Backup Date</label>
@@ -64,9 +66,11 @@
                             <div id="complianceResult" class="result-box"></div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Tab 3: Storage Estimator -->
-                    <div id="calculator" class="tab-content">
+                <!-- Tab 3: Storage Estimator -->
+                <div id="calculator" class="tab-content">
+                    <div class="content-card">
                         <p style="margin-bottom:20px; color:#666;">Estimate required cloud storage based on your source
                             data and retention policy.</p>
 
@@ -103,7 +107,6 @@
                             Enter values to estimate storage needs.
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -111,12 +114,12 @@
     <script>
         // Tab Logic
         function switchTab(tabId) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
             // Find tab by text content is tricky, let rely on index or just simple traversal matching
             const index = ['policy', 'checker', 'calculator'].indexOf(tabId);
-            document.querySelectorAll('.tab')[index].classList.add('active');
+            document.querySelectorAll('.tab-item')[index].classList.add('active');
 
             document.getElementById(tabId).classList.add('active');
         }

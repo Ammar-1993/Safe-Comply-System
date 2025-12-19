@@ -7,6 +7,8 @@
   <title>AI Compliance Report Generator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/reports.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
 </head>
 
@@ -18,7 +20,7 @@
             {% set page_title = 'AI Compliance Report Generator' %}
       {% include 'components/navbar.html' %}
       <div class="content-area">
-        <div id="uploadSection" class="upload-container">
+        <div id="uploadSection" class="content-card upload-container">
           <div class="page-title">Upload Compliance Data</div>
           <div class="page-description">
             Upload your compliance data file and the AI system will analyze it
@@ -47,7 +49,7 @@
             <button class="btn-remove" onclick="removeFile()">Remove</button>
           </div>
 
-          <button class="btn-analyze" id="btnAnalyze" onclick="startAnalysis()">
+          <button class="btn-analyze" id="btnAnalyze" onclick="startAnalysis()" disabled>
             🤖 Upload & Analyze
           </button>
         </div>
@@ -190,7 +192,7 @@
           </div>
 
           <div class="table-responsive">
-            <table class="styled-table" id="reportsTable">
+            <table class="result-table" id="reportsTable">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -255,7 +257,7 @@
         document.getElementById("fileSize").textContent =
           (file.size / 1024).toFixed(2) + " KB";
         selectedFileDiv.classList.add("show");
-        btnAnalyze.classList.add("show");
+        btnAnalyze.disabled = false;
       } else {
         showWarning("Please select a valid Excel file (.xlsx or .xls)", "Invalid File");
       }
@@ -264,7 +266,7 @@
     function removeFile() {
       selectedFile = null;
       selectedFileDiv.classList.remove("show");
-      btnAnalyze.classList.remove("show");
+      btnAnalyze.disabled = true;
       fileInput.value = "";
     }
 
@@ -371,94 +373,8 @@
 
         // Delay to show completion
         setTimeout(() => {
-          // populate summary cards
-          document.querySelector('.summary-grid .summary-card:nth-child(1) .summary-value').textContent = data.overall_score + '%';
-          document.querySelector('.summary-grid .summary-card:nth-child(2) .summary-value').textContent = data.policies_analyzed;
-          document.querySelector('.summary-grid .summary-card:nth-child(3) .summary-value').textContent = data.alerts_detected;
-          document.querySelector('.summary-grid .summary-card:nth-child(4) .summary-value').textContent = data.non_compliant_users;
-
-          const rows = data.results || [];
-          const total = rows.length || 0;
-          const pwdAvg = total ? Math.round(rows.reduce((s, r) => s + (r.strength || 0), 0) / total) : 0;
-          const pwdWeakCount = rows.filter(r => (r.strength || 0) < 60).length;
-
-          const backupOkCount = rows.filter(r => {
-            const b = r.backup_checks || {};
-            return Object.keys(b).length && Object.values(b).every(v => v === true);
-          }).length;
-          const backupFailCount = total - backupOkCount;
-          const backupScore = total ? Math.round((backupOkCount / total) * 100) : 0;
-
-          // Policies Analysis
-          const sectionCards = document.querySelectorAll('.section-card');
-          // Note: The index might shift because we added the archive card.
-          // We target specifically by content or structure if needed, but here assuming order:
-          // 0: Policies, 1: Employees, 2: Alerts, 3: Recs, 4: Archive
-          
-          if (sectionCards && sectionCards.length >= 1) {
-            const policiesCard = sectionCards[0];
-            const policyItems = policiesCard.querySelectorAll('.policy-item');
-            if (policyItems[0]) {
-              policyItems[0].querySelector('.policy-score').textContent = pwdAvg + '%';
-              policyItems[0].querySelector('.policy-score').className = 'policy-score ' + (pwdAvg >= 75 ? 'high' : (pwdAvg >= 50 ? 'medium' : 'low'));
-            }
-            if (policyItems[1]) {
-              policyItems[1].querySelector('.policy-score').textContent = backupScore + '%';
-              policyItems[1].querySelector('.policy-score').className = 'policy-score ' + (backupScore >= 75 ? 'high' : (backupScore >= 50 ? 'medium' : 'low'));
-            }
-          }
-
-          // Employees Issues
-          if (sectionCards && sectionCards.length >= 2) {
-            const empCard = sectionCards[1];
-            const empItems = empCard.querySelectorAll('.policy-item');
-            if (empItems[0]) empItems[0].querySelector('.policy-score').textContent = pwdWeakCount;
-            if (empItems[2]) empItems[2].querySelector('.policy-score').textContent = backupFailCount;
-          }
-
-          // AI-Detected Alerts
-          if (sectionCards && sectionCards.length >= 3) {
-            const alertsCard = sectionCards[2];
-            alertsCard.querySelectorAll('.alert-item').forEach(n => n.remove());
-
-            const alerts = data.alerts || [];
-            alerts.forEach(a => {
-              const cls = a.severity === 'high' ? 'high' : (a.severity === 'medium' ? 'medium' : 'low');
-              const titlePrefix = a.severity === 'high' ? '🔴' : (a.severity === 'medium' ? '🟠' : '🟡');
-              const html = `
-                  <div class="alert-item ${cls}">
-                    <div class="alert-title">${titlePrefix} ${a.title}</div>
-                    <div class="alert-description">${a.desc}</div>
-                  </div>`;
-              alertsCard.insertAdjacentHTML('beforeend', html);
-            });
-          }
-
-          // AI Recommendations
-          if (sectionCards && sectionCards.length >= 4) {
-            const recCard = sectionCards[3];
-            recCard.querySelectorAll('.recommendation-item').forEach(n => n.remove());
-
-            const recs = data.recommendations || [];
-            recs.forEach(r => {
-              const html = `
-                  <div class="recommendation-item">
-                    <div class="recommendation-title">${r.title}</div>
-                    <div class="recommendation-description">${r.desc}</div>
-                  </div>`;
-              recCard.insertAdjacentHTML('beforeend', html);
-            });
-          }
-
-          // Show Report
-          document.getElementById("processingSection").classList.remove("show");
-          document.getElementById("reportSection").classList.add("show");
-
-          // Refresh the archive list to show the new report
-          if (typeof loadReportsArchive === 'function') {
-             loadReportsArchive();
-          }
-
+          // Redirect to details view
+          window.location.href = "compliance-report-view.html?id=" + window.currentReportId;
         }, 600);
 
       } catch (e) {
