@@ -1,44 +1,46 @@
-<div class="sidebar">
+<aside class="sidebar">
   <div class="profile-section">
-    <div class="profile-img" id="sidebarProfileImg" style="overflow:hidden; position:relative; cursor: pointer;" title="Click to change picture (Settings only)">
-      <img id="profileImage" src="" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;" />
-      <span id="profileEmoji">👤</span>
+    <div class="profile-img" id="sidebarProfileImg" style="overflow:hidden; position:relative; cursor: pointer;" title="Click to change picture (Settings only)" role="button" aria-label="Change profile picture">
+      <img id="profileImage" src="" alt="Profile Picture" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;" />
+      <span id="profileEmoji" aria-hidden="true">👤</span>
     </div>
     <!-- Hidden input for profile picture upload, primarily for settings page -->
-    <input type="file" id="profilePictureInput" accept="image/*" style="display:none;" />
+    <input type="file" id="profilePictureInput" accept="image/*" style="display:none;" aria-hidden="true" />
     <div class="profile-name">Admin</div>
     <div class="profile-email">admin@company.com</div>
   </div>
 
-  <a href="dashboard.html" class="menu-item {{ 'active' if active_page == 'dashboard' else '' }}">
-    <span>📊</span>
-    <span>Dashboard</span>
-  </a>
-  <a href="password-policies.html" class="menu-item {{ 'active' if active_page == 'password-policies' else '' }}">
-    <span>🔐</span>
-    <span>Password Policies</span>
-  </a>
-  <a href="backup-policies.html" class="menu-item {{ 'active' if active_page == 'backup-policies' else '' }}">
-    <span>💾</span>
-    <span>Backup Policies</span>
-  </a>
-  <a href="reports.html" class="menu-item {{ 'active' if active_page == 'reports' else '' }}">
-    <span>📄</span>
-    <span>Reports</span>
-  </a>
-  <a href="recommendations.html" class="menu-item {{ 'active' if active_page == 'recommendations' else '' }}">
-    <span>💡</span>
-    <span>Recommendations</span>
-  </a>
-  <a href="settings.html" class="menu-item {{ 'active' if active_page == 'settings' else '' }}">
-    <span>⚙️</span>
-    <span>Settings</span>
-  </a>
+  <nav aria-label="Main Navigation">
+    <a href="dashboard.html" class="menu-item {{ 'active' if active_page == 'dashboard' else '' }}" aria-current="{{ 'page' if active_page == 'dashboard' else 'false' }}">
+      <span aria-hidden="true">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="password-policies.html" class="menu-item {{ 'active' if active_page == 'password-policies' else '' }}" aria-current="{{ 'page' if active_page == 'password-policies' else 'false' }}">
+      <span aria-hidden="true">🔐</span>
+      <span>Password Policies</span>
+    </a>
+    <a href="backup-policies.html" class="menu-item {{ 'active' if active_page == 'backup-policies' else '' }}" aria-current="{{ 'page' if active_page == 'backup-policies' else 'false' }}">
+      <span aria-hidden="true">💾</span>
+      <span>Backup Policies</span>
+    </a>
+    <a href="reports.html" class="menu-item {{ 'active' if active_page == 'reports' else '' }}" aria-current="{{ 'page' if active_page == 'reports' else 'false' }}">
+      <span aria-hidden="true">📄</span>
+      <span>Reports</span>
+    </a>
+    <a href="recommendations.html" class="menu-item {{ 'active' if active_page == 'recommendations' else '' }}" aria-current="{{ 'page' if active_page == 'recommendations' else 'false' }}">
+      <span aria-hidden="true">💡</span>
+      <span>Recommendations</span>
+    </a>
+    <a href="settings.html" class="menu-item {{ 'active' if active_page == 'settings' else '' }}" aria-current="{{ 'page' if active_page == 'settings' else 'false' }}">
+      <span aria-hidden="true">⚙️</span>
+      <span>Settings</span>
+    </a>
+  </nav>
 
   <div class="bottom-menu">
-    <a href="#" class="menu-item logout-btn">
-      <span>🚪</span>
+    <a href="#" class="menu-item logout-btn" role="button">
+      <span aria-hidden="true">🚪</span>
       <span>Logout</span>
     </a>
   </div>
-</div>
+</aside>

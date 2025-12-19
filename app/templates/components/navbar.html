@@ -1,16 +1,16 @@
-<div class="top-header">
+<header class="top-header">
   <div class="welcome-text">{{ page_title | default('Welcome Admin!') }}</div>
   <div class="header-actions">
-    <input type="text" class="search-box" placeholder="Search..." />
+    <input type="text" class="search-box" placeholder="Search..." aria-label="Search" />
     <div style="position: relative;">
-      <button class="icon-btn" id="notif-btn">
-        🔔
+      <button class="icon-btn" id="notif-btn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
+        <span aria-hidden="true">🔔</span>
         <span class="notification-badge" style="display:none;">0</span>
       </button>
-      <div class="notification-dropdown" id="notif-dropdown">
+      <div class="notification-dropdown" id="notif-dropdown" aria-label="Notifications List">
         <div class="notification-header">
           <span>Notifications</span>
-          <span id="mark-read-btn" style="font-size: 11px; color: #3498db; cursor: pointer;">Mark all as
+          <span id="mark-read-btn" style="font-size: 11px; color: #3498db; cursor: pointer;" role="button" tabindex="0">Mark all as
             read</span>
         </div>
         <div class="notification-list">
@@ -18,6 +18,8 @@
         </div>
       </div>
     </div>
-    <button class="icon-btn">🌙</button>
+    <button class="icon-btn" aria-label="Toggle Dark Mode">
+      <span aria-hidden="true">🌙</span>
+    </button>
   </div>
-</div>
+</header>

@@ -16,10 +16,10 @@
   <div class="dashboard-wrapper">
         {% set active_page = 'reports' %}
     {% include 'components/sidebar.html' %}
-    <div class="main-content">
+    <main class="main-content">
             {% set page_title = 'AI Compliance Report Generator' %}
       {% include 'components/navbar.html' %}
-      <div class="content-area">
+      <section class="content-area">
         <div id="uploadSection" class="content-card upload-container">
           <div class="page-title">Upload Compliance Data</div>
           <div class="page-description">
@@ -216,8 +216,8 @@
           </div>
         </div>
 
-      </div>
-    </div>
+      </section>
+    </main>
   </div>
 
   <script>

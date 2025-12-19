@@ -16,11 +16,11 @@
     <!-- SIDEBAR -->
         {% set active_page = '' %}
     {% include 'components/sidebar.html' %}
-    <div class="main-content">
+    <main class="main-content">
       <!-- Top Header -->
             {% set page_title = 'Policies Overview' %}
       {% include 'components/navbar.html' %}
-      <div class="content-area">
+      <section class="content-area">
         <!-- POLICIES COMPLIANCE STATUS -->
         <div class="content-card">
           <div class="card-title">Policies Compliance Status</div>
@@ -119,8 +119,8 @@
             </li>
           </ul>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   </div>
 
   <script>

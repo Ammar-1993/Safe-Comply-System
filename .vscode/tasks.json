@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "append_css",
+			"type": "shell",
+			"command": "Add-Content",
+			"args": [
+				"D:\\projects\\Safecomply\\app\\static\\css\\dashboard.css",
+				"\n/* Responsive Design */\n@media (max-width: 768px) {\n  body {\n    padding: 0;\n    height: auto;\n    overflow-y: auto;\n  }\n\n  .dashboard-wrapper {\n    flex-direction: column;\n    height: auto;\n    border-radius: 0;\n    max-width: 100%;\n  }\n\n  .sidebar {\n    width: 100%;\n    padding: 15px;\n    flex-direction: row;\n    flex-wrap: wrap;\n    justify-content: space-between;\n    align-items: center;\n    position: relative;\n    z-index: 100;\n  }\n\n  .profile-section {\n    display: flex;\n    align-items: center;\n    padding: 0;\n    border-bottom: none;\n    text-align: left;\n    gap: 10px;\n    margin-bottom: 0;\n  }\n\n  .profile-img {\n    width: 40px;\n    height: 40px;\n    margin: 0;\n    font-size: 18px;\n  }\n\n  .profile-name, .profile-email {\n    display: none;\n  }\n\n  nav {\n    display: none;\n    width: 100%;\n    margin-top: 15px;\n    background: rgba(0,0,0,0.1);\n    border-radius: 8px;\n    padding: 10px;\n  }\n\n  nav.mobile-visible {\n    display: block;\n  }\n\n  .menu-item {\n    padding: 10px;\n    margin: 2px 0;\n  }\n\n  .bottom-menu {\n    display: none; /* Simplify for mobile */\n  }\n  \n  .main-content {\n    height: auto;\n    overflow-y: visible;\n    padding: 15px;\n  }\n\n  .top-header {\n    flex-direction: column;\n    gap: 15px;\n    align-items: flex-start;\n    padding: 0 0 15px 0;\n  }\n\n  .header-right {\n    width: 100%;\n    justify-content: space-between;\n  }\n\n  .search-box {\n    width: 100%;\n    max-width: none;\n  }\n\n  .stats-grid {\n    grid-template-columns: 1fr;\n  }\n\n  .content-grid {\n    grid-template-columns: 1fr;\n  }\n  \n  .mobile-menu-toggle {\n    display: block !important;\n    color: white;\n    font-size: 24px;\n    cursor: pointer;\n    background: none;\n    border: none;\n    padding: 5px;\n  }\n}\n\n.mobile-menu-toggle {\n  display: none;\n}\n"
+			],
+			"group": "build"
+		}
+	]
+}
