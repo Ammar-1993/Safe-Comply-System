@@ -1,3 +1,8 @@
+// Pagination State
+let allReports = [];
+let currentPage = 1;
+const itemsPerPage = 10;
+
 // Helper function to download files with auth header
 async function downloadReportFile(reportId, type) {
     const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
@@ -104,77 +109,135 @@ async function loadReportsArchive() {
         }
 
         const data = await res.json();
-        const rows = data.reports || [];
+        allReports = data.reports || [];
         
-        const tbody = document.querySelector('#reportsTable tbody');
-        const empty = document.getElementById('reportsEmpty');
-        const table = document.getElementById('reportsTable');
-
-        if (!tbody) return;
-
-        tbody.innerHTML = ''; // Clear existing rows
-
-        if (rows.length === 0) {
-            if (empty) empty.style.display = 'block';
-            if (table) table.style.display = 'none';
-            return;
-        }
-
-        // Hide empty state, show table
-        if (empty) empty.style.display = 'none';
-        if (table) table.style.display = 'table';
-
         // Sort rows by ID descending (newest first) if not already sorted
-        rows.sort((a, b) => b.id - a.id);
+        allReports.sort((a, b) => b.id - a.id);
 
-        rows.forEach(r => {
-            const tr = document.createElement('tr');
-            
-            // Format Date
-            let dateStr = r.uploaded_at;
-            try {
-                const dateObj = new Date(r.uploaded_at);
-                dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            } catch(e) {}
-
-            // Calculate Score Color
-            let scoreClass = 'danger';
-            if (r.overall_score >= 80) scoreClass = 'success';
-            else if (r.overall_score >= 50) scoreClass = 'warning';
-
-            tr.innerHTML = `
-                <td>#${r.id}</td>
-                <td>
-                    <div style="font-weight:500;">${r.filename}</div>
-                    <div style="font-size:11px; color:#999;">${r.total} records</div>
-                </td>
-                <td>${r.uploaded_by || 'Unknown'}</td>
-                <td>${dateStr}</td>
-                <td>
-                    <span class="score-badge ${scoreClass}">
-                        ${r.overall_score}%
-                    </span>
-                </td>
-                <td>
-                    <a href="compliance-report-view.html?id=${r.id}" class="action-link">
-                        🔍 View
-                    </a>
-                    <a href="#" onclick="deleteReport(${r.id}); return false;" class="action-link" style="color: #e74c3c;">
-                        🗑️ Delete
-                    </a>
-                    <a href="#" onclick="downloadReportFile(${r.id}, 'excel'); return false;" class="action-link">
-                        📊 Excel
-                    </a>
-                    <a href="#" onclick="downloadReportFile(${r.id}, 'pdf'); return false;" class="action-link">
-                        📄 PDF
-                    </a>
-                </td>`;
-            tbody.appendChild(tr);
-        });
+        renderTable(1);
 
     } catch (e) {
         console.error('Error rendering reports:', e);
     }
+}
+
+function renderTable(page) {
+    currentPage = page;
+    const tbody = document.querySelector('#reportsTable tbody');
+    const empty = document.getElementById('reportsEmpty');
+    const table = document.getElementById('reportsTable');
+    const paginationControls = document.getElementById('paginationControls');
+
+    if (!tbody) return;
+
+    tbody.innerHTML = ''; // Clear existing rows
+
+    if (allReports.length === 0) {
+        if (empty) empty.style.display = 'block';
+        if (table) table.style.display = 'none';
+        if (paginationControls) paginationControls.style.display = 'none';
+        return;
+    }
+
+    // Hide empty state, show table
+    if (empty) empty.style.display = 'none';
+    if (table) table.style.display = 'table';
+    if (paginationControls) paginationControls.style.display = 'flex';
+
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageItems = allReports.slice(start, end);
+
+    pageItems.forEach(r => {
+        const tr = document.createElement('tr');
+        
+        // Format Date
+        let dateStr = r.uploaded_at;
+        try {
+            const dateObj = new Date(r.uploaded_at);
+            dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        } catch(e) {}
+
+        // Calculate Score Color
+        let scoreClass = 'danger';
+        if (r.overall_score >= 80) scoreClass = 'success';
+        else if (r.overall_score >= 50) scoreClass = 'warning';
+
+        tr.innerHTML = `
+            <td>#${r.id}</td>
+            <td>
+                <div style="font-weight:500;">${r.filename}</div>
+                <div style="font-size:11px; color:#999;">${r.total} records</div>
+            </td>
+            <td>${r.uploaded_by || 'Unknown'}</td>
+            <td>${dateStr}</td>
+            <td>
+                <span class="score-badge ${scoreClass}">
+                    ${r.overall_score}%
+                </span>
+            </td>
+            <td>
+                <a href="compliance-report-view.html?id=${r.id}" class="action-link">
+                    🔍 View
+                </a>
+                <a href="#" onclick="deleteReport(${r.id}); return false;" class="action-link" style="color: #e74c3c;">
+                    🗑️ Delete
+                </a>
+                <a href="#" onclick="downloadReportFile(${r.id}, 'excel'); return false;" class="action-link">
+                    📊 Excel
+                </a>
+                <a href="#" onclick="downloadReportFile(${r.id}, 'pdf'); return false;" class="action-link">
+                    📄 PDF
+                </a>
+            </td>`;
+        tbody.appendChild(tr);
+    });
+
+    renderPagination();
+}
+
+function renderPagination() {
+    const paginationControls = document.getElementById('paginationControls');
+    if (!paginationControls) return;
+
+    paginationControls.innerHTML = '';
+    const totalPages = Math.ceil(allReports.length / itemsPerPage);
+
+    if (totalPages <= 1) return;
+
+    // Prev Button
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'pagination-btn';
+    prevBtn.textContent = '«';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => renderTable(currentPage - 1);
+    paginationControls.appendChild(prevBtn);
+
+    // Page Numbers
+    // Simple logic: show all if <= 7, else show start, end, and current neighborhood
+    // For simplicity in this iteration, let's show a max of 5 buttons around current
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const btn = document.createElement('button');
+        btn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+        btn.textContent = i;
+        btn.onclick = () => renderTable(i);
+        paginationControls.appendChild(btn);
+    }
+
+    // Next Button
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'pagination-btn';
+    nextBtn.textContent = '»';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => renderTable(currentPage + 1);
+    paginationControls.appendChild(nextBtn);
 }
 
 // Auto-load on page ready
