@@ -253,7 +253,7 @@ body {
 }
 
 .stat-box {
-  background: #ffffffc9;
+  background: var(--bg-card);
   padding: 20px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -307,7 +307,7 @@ body {
 }
 
 .content-card {
-  background: #ffffffc9;
+  background: var(--bg-card);
   padding: 20px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -501,6 +501,88 @@ body {
   border-radius: 10px;
 }
 
+/* Chart Component */
+.chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 10px;
+}
+
+.chart-svg {
+  transform: rotate(-90deg);
+}
+
+.chart-percentage {
+  position: absolute;
+  top: 130px;
+  left: 10px;
+  text-align: center;
+}
+
+.chart-percentage-secondary {
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  text-align: center;
+}
+
+.chart-label-lg {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000000;
+}
+
+/* Legend */
+.legend-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.legend-color-box.backup {
+  background: #c4d0dd;
+}
+
+.legend-color-box.password {
+  background: #5a7a99;
+}
+
+.legend-text {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* Header Badge */
+.header-badge {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
 /* Dark Mode Styles */
 body.dark-mode {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -537,10 +619,7 @@ body.dark-mode .section-title {
   color: #ffffff;
 }
 
-body.dark-mode .stat-box,
-body.dark-mode .content-card {
-  background: rgba(42, 42, 62, 0.8);
-}
+
 
 body.dark-mode .card-title {
   color: #ffffff;
@@ -589,6 +668,14 @@ body.dark-mode .setting-select {
   background: #3a3a4e;
   border-color: #4a4a5e;
   color: var(--bg-white);
+}
+
+body.dark-mode .chart-label-lg {
+  color: #ffffff;
+}
+
+body.dark-mode .legend-text {
+  color: #a0a0a0;
 }
 
 /* Responsive Design */

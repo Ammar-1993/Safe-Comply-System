@@ -30,9 +30,22 @@
   --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
   
+  /* Semantic Colors */
+  --bg-card: #ffffffc9;
+  --text-main: #000000;
+  --text-secondary: #6c757d;
+
   /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-circle: 50%;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+  --bg-card: rgba(42, 42, 62, 0.8);
+  --text-main: #ffffff;
+  --text-secondary: #a0a0a0;
+  --bg-gradient-body: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
