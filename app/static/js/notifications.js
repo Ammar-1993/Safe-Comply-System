@@ -79,22 +79,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // Attach event listeners
     const markReadBtn = document.getElementById('mark-read-btn');
     if (markReadBtn) {
-        markReadBtn.addEventListener('click', markAllAsRead);
+                markReadBtn.addEventListener('click', markAllAsRead);
+                // Keyboard support (Enter/Space)
+                markReadBtn.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                markAllAsRead();
+                        }
+                });
     }
     
     const notifBtn = document.getElementById("notif-btn");
     const notifDropdown = document.getElementById("notif-dropdown");
 
     if (notifBtn && notifDropdown) {
-      notifBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        notifDropdown.classList.toggle("active");
-      });
+            const toggleDropdown = (open) => {
+                const willOpen = typeof open === 'boolean' ? open : !notifDropdown.classList.contains('active');
+                notifDropdown.classList.toggle('active', willOpen);
+                notifBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            };
+
+            notifBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleDropdown();
+            });
+
+            // Keyboard toggle on button
+            notifBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleDropdown();
+                } else if (e.key === 'Escape') {
+                        toggleDropdown(false);
+                }
+            });
       
       document.addEventListener("click", function (e) {
         if (notifDropdown.classList.contains("active")) {
              if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
-                notifDropdown.classList.remove("active");
+                                toggleDropdown(false);
              }
         }
       });

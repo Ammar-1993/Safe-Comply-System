@@ -339,13 +339,7 @@
           return;
         }
 
-        const resp = await fetch('/upload-excel', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + token
-          },
-          body: fd
-        });
+        const resp = await api.upload('/upload-excel', fd);
 
         if (!resp.ok) {
           animParams.active = false;
@@ -401,12 +395,7 @@
       }
 
       // Download PDF
-      fetch(`/api/reports/${window.currentReportId}/pdf`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      api.get(`/api/reports/${window.currentReportId}/pdf`)
         .then(response => {
           if (!response.ok) {
             throw new Error('Failed to generate PDF');
@@ -444,12 +433,7 @@
       }
 
       // Download Excel
-      fetch(`/api/reports/${window.currentReportId}/excel`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      api.get(`/api/reports/${window.currentReportId}/excel`)
         .then(response => {
           if (!response.ok) {
             throw new Error('Failed to generate Excel file');
@@ -523,10 +507,10 @@
         }
       });
   </script>
-  <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/api.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/reports.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/api.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/reports.js') }}"></script>
 </body>
 
 </html>

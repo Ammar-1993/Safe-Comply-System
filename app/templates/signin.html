@@ -46,9 +46,9 @@
     </section>
   </main>
 
-    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/api.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
     <script>
       document.getElementById('loginForm').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -68,8 +68,8 @@
             return;
           }
 
-          // store token
-          localStorage.setItem('authToken', data.access_token);
+          // store token (standardize on access_token)
+          localStorage.setItem('access_token', data.access_token);
           localStorage.setItem('userRole', data.role || '');
           localStorage.setItem('username', data.username || '');
 

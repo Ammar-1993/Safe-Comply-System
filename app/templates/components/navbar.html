@@ -7,11 +7,10 @@
         <span aria-hidden="true">🔔</span>
         <span class="notification-badge" style="display:none;">0</span>
       </button>
-      <div class="notification-dropdown" id="notif-dropdown" aria-label="Notifications List">
+      <div class="notification-dropdown" id="notif-dropdown" aria-label="Notifications List" role="region">
         <div class="notification-header">
           <span>Notifications</span>
-          <span id="mark-read-btn" style="font-size: 11px; color: #3498db; cursor: pointer;" role="button" tabindex="0">Mark all as
-            read</span>
+          <button id="mark-read-btn" class="mark-read-btn" type="button">Mark all as read</button>
         </div>
         <div class="notification-list">
           <!-- Dynamic Content Loads Here -->

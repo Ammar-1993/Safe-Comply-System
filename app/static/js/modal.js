@@ -73,6 +73,7 @@ function showModal(options) {
     } = options;
     
     const modalId = 'sc-modal-' + Date.now();
+    const previouslyFocused = document.activeElement;
     
     const modalHTML = `
       <div class="sc-modal-overlay" id="${modalId}">
@@ -94,41 +95,68 @@ function showModal(options) {
     
     scModalContainer.insertAdjacentHTML('beforeend', modalHTML);
     const overlay = document.getElementById(modalId);
+    const modalEl = overlay.querySelector('.sc-modal');
+    const footer = overlay.querySelector('.sc-modal-footer');
+    const focusable = Array.from(overlay.querySelectorAll('button'));
+    const primaryBtn = overlay.querySelector('[data-action="confirm"]');
     
     // Trigger animation
     requestAnimationFrame(() => {
       overlay.classList.add('active');
     });
     
+    // Close + cleanup helper
+    const finalize = (result) => {
+      document.removeEventListener('keydown', handleKeydown);
+      overlay.removeEventListener('keydown', trapFocus);
+      footer.removeEventListener('click', handleClick);
+      closeModal(overlay, previouslyFocused);
+      resolve(result);
+    };
+
     // Handle button clicks
     const handleClick = (e) => {
       const action = e.target.dataset.action;
       if (action) {
-        closeModal(overlay);
-        resolve(action === 'confirm');
+        finalize(action === 'confirm');
       }
     };
     
     overlay.addEventListener('click', (e) => {
       // Close on overlay click (not on modal content)
       if (e.target === overlay && showCancel) {
-        closeModal(overlay);
-        resolve(false);
+        finalize(false);
       }
     });
     
-    overlay.querySelector('.sc-modal-footer').addEventListener('click', handleClick);
+    footer.addEventListener('click', handleClick);
+
+    // Focus management: trap focus within modal
+    const trapFocus = (e) => {
+      if (e.key !== 'Tab') return;
+      const focusables = focusable.filter(el => !el.disabled && el.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    overlay.addEventListener('keydown', trapFocus);
+    requestAnimationFrame(() => {
+      if (primaryBtn) primaryBtn.focus();
+    });
     
     // Handle escape key
     const handleKeydown = (e) => {
       if (e.key === 'Escape' && showCancel) {
-        closeModal(overlay);
-        resolve(false);
-        document.removeEventListener('keydown', handleKeydown);
+        finalize(false);
       } else if (e.key === 'Enter') {
-        closeModal(overlay);
-        resolve(true);
-        document.removeEventListener('keydown', handleKeydown);
+        finalize(true);
       }
     };
     document.addEventListener('keydown', handleKeydown);
@@ -138,10 +166,13 @@ function showModal(options) {
 /**
  * Close and remove a modal
  */
-function closeModal(overlay) {
+function closeModal(overlay, restoreFocusEl) {
   overlay.classList.remove('active');
   setTimeout(() => {
     overlay.remove();
+    if (restoreFocusEl && typeof restoreFocusEl.focus === 'function') {
+      restoreFocusEl.focus();
+    }
   }, 300);
 }
 

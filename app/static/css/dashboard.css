@@ -211,6 +211,16 @@ body {
   border: 2px solid var(--bg-white);
 }
 
+/* Accessible action in notifications header */
+.mark-read-btn {
+  font-size: 11px;
+  color: #3498db;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
 .search-box {
   padding: 8px 15px;
   border: 1px solid #dee2e6;

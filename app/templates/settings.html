@@ -380,12 +380,10 @@
     // Load profile data on page load
     async function loadProfile() {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
         if (!token) return;
 
-        const resp = await fetch(`${API_BASE}/auth/profile`, {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const resp = await api.get('/auth/profile');
 
         if (resp.ok) {
           const data = await resp.json();
@@ -465,15 +463,7 @@
 
         // Upload to server
         try {
-          const token = localStorage.getItem('authToken');
-          const resp = await fetch(`${API_BASE}/auth/profile/picture`, {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Bearer ' + token,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ picture: base64Data })
-          });
+          const resp = await api.post('/auth/profile/picture', { picture: base64Data });
 
           const data = await resp.json();
           if (resp.ok) {
@@ -500,15 +490,7 @@
       }
 
       try {
-        const token = localStorage.getItem('authToken');
-        const resp = await fetch(`${API_BASE}/auth/profile`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email: email })
-        });
+        const resp = await api.put('/auth/profile', { email });
 
         const data = await resp.json();
         if (resp.ok) {
@@ -564,17 +546,9 @@
       }
 
       try {
-        const token = localStorage.getItem('authToken');
-        const resp = await fetch(`${API_BASE}/auth/change-password`, {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            current_password: current,
-            new_password: newPwd
-          })
+        const resp = await api.post('/auth/change-password', {
+          current_password: current,
+          new_password: newPwd
         });
 
         const data = await resp.json();
@@ -595,10 +569,7 @@
       document.getElementById('historyContent').innerHTML = '<div style="text-align:center; color:#666;">Loading...</div>';
 
       try {
-        const token = localStorage.getItem('authToken');
-        const resp = await fetch(`${API_BASE}/auth/history`, {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const resp = await api.get('/auth/history');
 
         if (resp.ok) {
           const data = await resp.json();
@@ -640,10 +611,7 @@
     // ============ EXPORT ============
     document.getElementById('exportBtn').addEventListener('click', async function () {
       try {
-        const token = localStorage.getItem('authToken');
-        const resp = await fetch(`${API_BASE}/auth/export`, {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const resp = await api.get('/auth/export');
 
         if (resp.ok) {
           const blob = await resp.blob();
@@ -693,14 +661,9 @@
       }
 
       try {
-        const token = localStorage.getItem('authToken');
-        const resp = await fetch(`${API_BASE}/auth/delete-account`, {
+        const resp = await api.request('/auth/delete-account', {
           method: 'DELETE',
-          headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ password: password })
+          body: JSON.stringify({ password })
         });
 
         const data = await resp.json();
@@ -719,10 +682,7 @@
     // ============ ADMIN: LOAD USERS ============
     async function loadUsers() {
       try {
-        const token = localStorage.getItem('authToken');
-        const resp = await fetch(`${API_BASE}/admin/users`, {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const resp = await api.get('/admin/users');
 
         if (resp.ok) {
           const data = await resp.json();
@@ -764,11 +724,7 @@
       if (!await showDangerConfirm(`Are you sure you want to delete user '${username}'? This cannot be undone.`, 'Delete User?')) return;
 
       try {
-        const token = localStorage.getItem('authToken');
-        const resp = await fetch(`${API_BASE}/admin/users/${username}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const resp = await api.delete(`/admin/users/${username}`);
 
         const data = await resp.json();
         if (resp.ok) {
@@ -836,91 +792,11 @@
       if (e.target === this) closeDeleteModal();
     });
   </script>
-  <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/api.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
-  <style>
-    /* Notification Styles */
-    .header-actions {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      position: relative;
-    }
-
-    .notification-dropdown {
-      position: absolute;
-      top: 60px;
-      right: 0;
-      width: 320px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-      overflow: hidden;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s ease;
-      border: 1px solid #edf2f7;
-    }
-
-    .notification-dropdown.active {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .notification-header {
-      padding: 15px 20px;
-      border-bottom: 1px solid #f1f3f5;
-      font-weight: 600;
-      color: #2c3e50;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .notification-item {
-      padding: 15px 20px;
-      border-bottom: 1px solid #f8f9fa;
-      transition: background 0.2s;
-      cursor: pointer;
-    }
-
-    .notification-item:hover {
-      background: #f8f9fa;
-    }
-
-    .notif-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .notif-desc {
-      font-size: 12px;
-      color: #6c757d;
-      line-height: 1.4;
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: #e74c3c;
-      color: white;
-      font-size: 10px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid white;
-    }
-  </style>
+  <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/api.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
+  
 </body>
 
 </html>
