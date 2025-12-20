@@ -3,9 +3,11 @@ from app.extensions import db
 from app.models import Notification, Report, Account
 from app.auth_utils import require_auth
 from app.services.policy_service import check_password_policy, get_password_checks, calculate_strength, evaluate_backup_policy
+from app.services.analysis_service import generate_ai_analysis
 from app.utils import get_riyadh_time, mask_password
 from sqlalchemy import select, func
 import json
+from datetime import timedelta
 
 api_bp = Blueprint('api', __name__)
 
@@ -62,11 +64,7 @@ def dashboard_stats():
         active_alerts = latest.invalid if latest else 0
         
         # Pending reports (last 7 days)
-        # Note: uploaded_at is stored as string ISO format, so string comparison works for ISO dates
-        seven_days_ago = (get_riyadh_time() - datetime.timedelta(days=7)).isoformat()
-        # But wait, we need datetime import
-        import datetime
-        seven_days_ago = (get_riyadh_time() - datetime.timedelta(days=7)).isoformat()
+        seven_days_ago = get_riyadh_time() - timedelta(days=7)
         
         recent_count = db.session.execute(
             select(func.count(Report.id)).where(Report.uploaded_at > seven_days_ago)
@@ -100,17 +98,6 @@ def get_recommendations_api():
             
         # We need to reconstruct the analysis. 
         # Ideally we should store alerts/recommendations in DB, but for now we regenerate them.
-        # This requires importing generate_ai_analysis from reports.py or moving it to a service.
-        # Let's move generate_ai_analysis to policy_service.py to avoid circular imports or duplication.
-        # For now, I will import it from reports (if possible) or duplicate it.
-        # Duplication is safer to avoid circular dependency if reports imports api.
-        # Better: Move to policy_service.
-        
-        # Let's assume we moved it or duplicate it for now.
-        # I'll duplicate the logic briefly or just return empty if not critical, 
-        # but the user expects it.
-        # Let's use the one in reports via import inside function to avoid top-level circular dependency
-        from app.routes.reports import generate_ai_analysis
         
         users = report.users
         results = []

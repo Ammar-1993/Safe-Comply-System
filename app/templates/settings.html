@@ -408,27 +408,29 @@
       }
     }
 
-    if (username) {
-      document.querySelector(".profile-name").textContent = username;
-      document.querySelector(".profile-email").textContent = username + "@company.com";
-      document.getElementById('usernameInput').value = username;
+    document.addEventListener('DOMContentLoaded', () => {
+      if (username) {
+        document.querySelector(".profile-name").textContent = username;
+        document.querySelector(".profile-email").textContent = username + "@company.com";
+        document.getElementById('usernameInput').value = username;
 
-      // Load cached profile picture
-      const cachedPicture = localStorage.getItem('userProfilePicture');
-      if (cachedPicture) {
-        document.getElementById('profileImage').src = cachedPicture;
-        document.getElementById('profileImage').style.display = 'block';
-        document.getElementById('profileEmoji').style.display = 'none';
+        // Load cached profile picture
+        const cachedPicture = localStorage.getItem('userProfilePicture');
+        if (cachedPicture) {
+          document.getElementById('profileImage').src = cachedPicture;
+          document.getElementById('profileImage').style.display = 'block';
+          document.getElementById('profileEmoji').style.display = 'none';
+        }
+
+        // Admin Check for User Management
+        if (userRole === 'admin') {
+          document.getElementById('userManagementSection').style.display = 'block';
+          loadUsers();
+        }
+
+        loadProfile();
       }
-
-      // Admin Check for User Management
-      if (userRole === 'admin') {
-        document.getElementById('userManagementSection').style.display = 'block';
-        loadUsers();
-      }
-
-      loadProfile();
-    }
+    });
 
     // ============ PROFILE PICTURE UPLOAD ============
     document.getElementById('sidebarProfileImg').addEventListener('click', function () {

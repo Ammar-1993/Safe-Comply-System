@@ -5,7 +5,7 @@ class Report(db.Model):
     __tablename__ = 'reports'
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(255))
-    uploaded_at = db.Column(db.String(50)) # Storing as string to match legacy, ideally DateTime
+    uploaded_at = db.Column(db.DateTime)
     uploaded_by = db.Column(db.String(100))
     total = db.Column(db.Integer)
     valid = db.Column(db.Integer)
@@ -39,7 +39,7 @@ class LoginHistory(db.Model):
     __tablename__ = 'login_history'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100))
-    login_at = db.Column(db.String(50))
+    login_at = db.Column(db.DateTime)
     ip_address = db.Column(db.String(50))
     status = db.Column(db.String(50))
 
@@ -51,4 +51,4 @@ class Notification(db.Model):
     message = db.Column(db.Text, nullable=False)
     type = db.Column(db.String(50), default='info')
     is_read = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.String(50)) # Storing as string to match legacy
+    created_at = db.Column(db.DateTime)

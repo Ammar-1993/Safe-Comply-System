@@ -14,6 +14,10 @@ class Config:
         f"sqlite:///{os.path.join(BASE_DIR, DB_NAME)}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    @staticmethod
+    def init_app(app):
+        pass
+
 class DevelopmentConfig(Config):
     """Development configuration."""
     DEBUG = True
@@ -21,13 +25,12 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Production configuration."""
     DEBUG = False
-    # Ensure SECRET_KEY is set in production
-    @property
-    def SECRET_KEY(self):
-        key = os.environ.get('SAFE_COMPLY_SECRET')
-        if not key:
-            raise ValueError("SAFE_COMPLY_SECRET environment variable is required in production")
-        return key
+    
+    @classmethod
+    def init_app(cls, app):
+        Config.init_app(app)
+        if not os.environ.get('SAFE_COMPLY_SECRET'):
+             raise ValueError("SAFE_COMPLY_SECRET environment variable is required in production")
 
 class TestingConfig(Config):
     """Testing configuration."""

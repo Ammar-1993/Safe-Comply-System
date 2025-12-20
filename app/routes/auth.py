@@ -17,7 +17,7 @@ def login():
         username = data.get('username')
         password = data.get('password')
         ip_address = request.remote_addr or 'unknown'
-        login_at = get_riyadh_time().isoformat()
+        login_at = get_riyadh_time()
         
         if not username or not password:
             return jsonify({'error': 'Username and password required'}), 400
@@ -25,6 +25,8 @@ def login():
         account = db.session.execute(db.select(Account).filter_by(username=username)).scalar_one_or_none()
 
         if not account:
+            # Timing attack mitigation: perform a dummy check
+            check_password_hash('pbkdf2:sha256:260000$dummy$dummy', 'dummy')
             log = LoginHistory(username=username, login_at=login_at, ip_address=ip_address, status='failed_user_not_found')
             db.session.add(log)
             db.session.commit()
@@ -216,7 +218,7 @@ def export_data():
             'reports': [{
                 'id': r.id,
                 'filename': r.filename,
-                'uploaded_at': r.uploaded_at,
+                'uploaded_at': r.uploaded_at.isoformat() if r.uploaded_at else None,
                 'total': r.total,
                 'valid': r.valid,
                 'invalid': r.invalid,
