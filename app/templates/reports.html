@@ -20,6 +20,40 @@
             {% set page_title = 'AI Compliance Report Generator' %}
       {% include 'components/navbar.html' %}
       <section class="content-area">
+        <div class="section-card">
+          <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>🗄️ Reports History</span>
+            <button onclick="loadReportsArchive()"
+              style="background:none; border:none; cursor:pointer; color:#3498db; font-size:14px; display:flex; align-items:center; gap:5px;">
+              🔄 Refresh
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="result-table" id="reportsTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>File Name</th>
+                  <th>Uploaded By</th>
+                  <th>Date</th>
+                  <th>Score</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                </tbody>
+            </table>
+          </div>
+
+          <div id="paginationControls" class="pagination-container"></div>
+
+          <div id="reportsEmpty" class="empty-state-container">
+            <div class="empty-icon">📂</div>
+            <div>No reports found in the archive.</div>
+          </div>
+        </div>
+
         <div id="uploadSection" class="content-card upload-container">
           <div class="page-title">Upload Compliance Data</div>
           <div class="page-description">
@@ -179,40 +213,6 @@
             <button class="btn-export tertiary" onclick="viewDetails()">
               🔍 View Full Details
             </button>
-          </div>
-        </div>
-
-        <div class="section-card" style="margin-top: 40px;">
-          <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
-            <span>🗄️ Reports History</span>
-            <button onclick="loadReportsArchive()"
-              style="background:none; border:none; cursor:pointer; color:#3498db; font-size:14px; display:flex; align-items:center; gap:5px;">
-              🔄 Refresh
-            </button>
-          </div>
-
-          <div class="table-responsive">
-            <table class="result-table" id="reportsTable">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>File Name</th>
-                  <th>Uploaded By</th>
-                  <th>Date</th>
-                  <th>Score</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                </tbody>
-            </table>
-          </div>
-
-          <div id="paginationControls" class="pagination-container"></div>
-
-          <div id="reportsEmpty" class="empty-state-container">
-            <div class="empty-icon">📂</div>
-            <div>No reports found in the archive.</div>
           </div>
         </div>
 

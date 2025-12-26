@@ -89,6 +89,10 @@
     margin-right: auto;
 }
 
+.selected-file.show {
+    display: flex;
+}
+
 .file-info {
     display: flex;
     align-items: center;
@@ -110,28 +114,40 @@
 }
 
 .btn-remove {
-    background: none;
-    border: none;
+    background: #fee;
+    border: 1px solid #e74c3c;
     color: #e74c3c;
     cursor: pointer;
     font-size: 13px;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    margin-left: 20px;
+}
+
+.btn-remove:hover {
+    background: #e74c3c;
+    color: white;
 }
 
 .btn-analyze {
-    display: inline-flex;
-    background: var(--primary-color);
+    display: block;
+    background: linear-gradient(135deg, var(--primary-color), #2980b9);
     color: white;
     border: none;
-    padding: 12px 40px;
-    border-radius: 30px; /* More rounded for a modern look */
-    font-size: 16px;
+    padding: 15px 50px;
+    border-radius: 50px; /* More rounded for a modern look */
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-    margin-top: 20px;
+    margin: 30px auto 0;
+    text-align: center;
+    width: fit-content;
 }
 
 .btn-analyze:disabled {
@@ -142,9 +158,9 @@
 }
 
 .btn-analyze:not(:disabled):hover {
-    background: #2980b9;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    background: linear-gradient(135deg, #2980b9, #1f4e79);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
 }
 
 /* Processing Section */
@@ -155,6 +171,10 @@
     background: white;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
+}
+
+.processing-section.show {
+    display: block;
 }
 
 .processing-title {
@@ -212,6 +232,10 @@
 /* Report Section */
 .report-section {
     display: none; /* Hidden by default */
+}
+
+.report-section.show {
+    display: block;
 }
 
 .report-header {
