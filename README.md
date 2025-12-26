@@ -13,6 +13,7 @@ Flask application for password and backup compliance analysis with AI-generated 
 - [Database](#database)
 - [Run](#run)
 - [Application Pages](#application-pages)
+- [UI Highlights](#-ui-highlights)
 - [API](#api)
 - [Data Model](#data-model)
 - [Testing](#testing)
@@ -88,6 +89,19 @@ Served without auth guard at the route level (frontend enforces auth):
 - `/password-policies.html`, `/backup-policies.html`, `/policies.html`
 - `/reports.html`, `/compliance-report-view.html`
 - `/recommendations.html`, `/settings.html`
+
+## 🎨 UI Highlights
+- **Welcome Cover**: hero welcome screen with call-to-action and brief value props.
+- **Dashboard Overview**: KPI tiles, trends, and alert summaries for quick status.
+- **Password Policies**: rule editor, strength scoring, and guidance hints.
+- **Backup Policies**: schedule visibility, last-run status, and coverage indicators.
+- **Reports & Exports**: report list with filters plus PDF/Excel export actions.
+- **Compliance Report View**: detailed findings, scoring, and AI recommendations.
+- **Notifications Center**: unread indicators and mark-as-read controls.
+- **Settings & Profile**: profile updates, session/security info.
+- **Auth Flow**: sign-in and sign-up views.
+
+Add screenshot thumbnails or GIFs per card when available; keep a consistent image width for a tidy grid.
 
 ## 🔌 API
 JWT: `Authorization: Bearer <token>` for protected endpoints.
