@@ -724,7 +724,7 @@ This project is proprietary software. All rights reserved.
 
 <div align="center">
 
-**Built with ❤️ using Flask and Python**
+<p align="center">Developed by ❤️ Engineer Ammar Al-Najjar</p>
 
 [⬆ Back to Top](#️-safecomply---ai-powered-compliance-analysis-system)
 
