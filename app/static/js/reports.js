@@ -1,5 +1,6 @@
 // Pagination State
 let allReports = [];
+let filteredReports = [];
 let currentPage = 1;
 const itemsPerPage = 10;
 
@@ -87,6 +88,8 @@ async function loadReportsArchive() {
         // Sort rows by ID descending (newest first) if not already sorted
         allReports.sort((a, b) => b.id - a.id);
 
+        filteredReports = [...allReports]; // Copy for filtering
+
         renderTable(1);
 
     } catch (e) {
@@ -105,7 +108,7 @@ function renderTable(page) {
 
     tbody.innerHTML = ''; // Clear existing rows
 
-    if (allReports.length === 0) {
+    if (filteredReports.length === 0) {
         if (empty) empty.style.display = 'block';
         if (table) table.style.display = 'none';
         if (paginationControls) paginationControls.style.display = 'none';
@@ -119,7 +122,7 @@ function renderTable(page) {
 
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    const pageItems = allReports.slice(start, end);
+    const pageItems = filteredReports.slice(start, end);
 
     pageItems.forEach(r => {
         const tr = document.createElement('tr');
@@ -174,7 +177,7 @@ function renderPagination() {
     if (!paginationControls) return;
 
     paginationControls.innerHTML = '';
-    const totalPages = Math.ceil(allReports.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
 
     if (totalPages <= 1) return;
 
@@ -214,4 +217,22 @@ function renderPagination() {
 }
 
 // Auto-load on page ready
-document.addEventListener('DOMContentLoaded', loadReportsArchive);
+document.addEventListener('DOMContentLoaded', function() {
+    const searchBox = document.querySelector('.search-box');
+    if (searchBox) {
+        searchBox.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            if (query === '') {
+                filteredReports = [...allReports];
+            } else {
+                filteredReports = allReports.filter(report =>
+                    report.filename.toLowerCase().includes(query) ||
+                    (report.uploaded_by && report.uploaded_by.toLowerCase().includes(query)) ||
+                    report.uploaded_at.toLowerCase().includes(query)
+                );
+            }
+            renderTable(1);
+        });
+    }
+    loadReportsArchive();
+});
