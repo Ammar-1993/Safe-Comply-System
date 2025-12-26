@@ -1,689 +1,160 @@
 # 🛡️ SafeComply - AI-Powered Compliance Analysis System
 
-<div align="center">
-
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)
-![Flask](https://img.shields.io/badge/Flask-Latest-green.svg)
-![License](https://img.shields.io/badge/License-Proprietary-red.svg)
-![Status](https://img.shields.io/badge/Status-Development-yellow.svg)
-
-**An intelligent compliance analysis platform for password and backup policy evaluation**
-
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation) • [Troubleshooting](#-troubleshooting)
-
-</div>
+Flask application for password and backup compliance analysis with AI-generated insights, Excel ingestion, and JWT-protected user workflows.
 
 ---
 
-## 📋 Table of Contents
-
-- [About the Project](#-about-the-project)
-- [Features](#-features)
-- [Technology Stack](#-technology-stack)
-- [Prerequisites](#-prerequisites)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Quick Start](#-quick-start)
-- [Usage](#-usage)
-- [API Documentation](#-api-documentation)
-- [Project Structure](#-project-structure)
-- [Development](#-development)
-- [Security](#-security)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
-
----
-
-## 🎯 About the Project
-
-**SafeComply** is a Flask-based compliance analysis platform that leverages AI to evaluate organizational security policies. The system analyzes password strength, backup compliance, and generates intelligent recommendations to improve security posture.
-
-### Key Capabilities
-
-- 🔐 **Password Policy Analysis** - Evaluate passwords against security standards
-- 💾 **Backup Policy Compliance** - Monitor backup schedules and retention
-- 📊 **Excel Report Processing** - Bulk analysis from spreadsheet uploads
-- 🤖 **AI-Powered Insights** - Generate alerts and recommendations
-- 🔔 **Real-time Notifications** - Live updates for critical events and reports
-- 📈 **Trend Analysis** - Track compliance changes over time
-- 🎨 **Modern UI/UX** - Enhanced experience with custom modals
-- 👥 **Role-Based Access Control** - Admin, Auditor, and User roles
-- 📄 **PDF/Excel Export** - Generate professional compliance reports
+## Contents
+- [About](#about)
+- [Architecture](#architecture)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Configuration](#configuration)
+- [Database](#database)
+- [Run](#run)
+- [Application Pages](#application-pages)
+- [API](#api)
+- [Data Model](#data-model)
+- [Testing](#testing)
+- [Utilities & Scripts](#utilities--scripts)
+- [Security Notes](#security-notes)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## ✨ Features
+## About
+SafeComply ingests user credential/backups data (Excel), evaluates password and backup policies, produces compliance scores, and generates AI-driven alerts and recommendations. Users authenticate with JWTs, manage profiles, and track notifications. Reports can be exported to PDF/Excel (ReportLab optional for PDFs).
 
-### Core Functionality
+## Architecture
+- Flask app factory with blueprints for pages, auth, reports, and APIs ([app/__init__.py](app/__init__.py), [app/routes](app/routes)).
+- SQLAlchemy ORM + Flask-Migrate; default SQLite database stored beside the code ([config.py](config.py)).
+- JWT auth utilities in [app/auth_utils.py](app/auth_utils.py) with role-based guards.
+- Services for policy checks and AI analysis ([app/services/policy_service.py](app/services/policy_service.py), [app/services/analysis_service.py](app/services/analysis_service.py)).
+- Notifications persisted in DB via [app/services/notification_service.py](app/services/notification_service.py).
+- HTML/CSS/JS frontend served from [app/templates](app/templates) and [app/static](app/static).
 
-| Feature | Description |
-|---------|-------------|
-| **Single Password Check** | Validate individual passwords against policy requirements |
-| **Bulk Analysis** | Process hundreds of passwords from Excel files |
-| **Backup Monitoring** | Evaluate backup frequency, type, and retention policies |
-| **Compliance Scoring** | Calculate overall compliance rates with detailed metrics |
-| **Historical Trends** | Compare current vs. previous reports to detect regressions |
-| **Smart Alerts** | AI-generated warnings for critical compliance issues |
-| **Live Notifications** | Real-time system updates and read status tracking |
-| **Modern Interface** | Custom non-blocking modal dialogs for smoother interaction |
-| **Multi-format Export** | Download reports as PDF or Excel |
+## Requirements
+- Python 3.10+
+- pip
+- (Optional) ReportLab for PDF export: `pip install reportlab`
 
-### 👥 Role-Based Access Control (RBAC)
-
-The system implements a strict permission model with three distinct roles. The table below details the specific capabilities of each role:
-
-| Feature / Action | 🛡️ Admin | 📋 Auditor | 👤 User |
-| :--- | :---: | :---: | :---: |
-| **User Management** (List/Delete Users) | ✅ | ❌ | ❌ |
-| **View All Reports** | ✅ | ✅ | ❌ |
-| **View Own Reports** | ✅ | ✅ | ✅ |
-| **Upload New Reports** | ✅ | ✅ | ✅ |
-| **Export Any Report** (PDF/Excel) | ✅ | ✅ | ❌ |
-| **Export Own Report** (PDF/Excel) | ✅ | ✅ | ✅ |
-| **Delete Any Report** | ✅ | ❌ | ❌ |
-| **Delete Own Report** | ✅ | ✅ | ✅ |
-| **View Policies** | ✅ | ✅ | ✅ |
-| **Manage Profile** | ✅ | ✅ | ✅ |
-| **View Dashboard** | ✅ | ✅ | ✅ |
-
-#### Role Definitions
-*   **Admin:** Full system control, including user management and unrestricted report access.
-*   **Auditor:** Compliance oversight with read-only access to all reports, but can only manage their own data.
-*   **User:** Standard access limited to their own submissions and data.
-    *   **Restrictions:** No access to other users' data or system configuration.
-
----
-
-## 🛠️ Technology Stack
-
-### Backend
-- **Flask** - Lightweight WSGI web framework
-- **Flask-CORS** - Cross-Origin Resource Sharing support
-- **SQLite** - Embedded database for data persistence
-- **JWT** - Secure token-based authentication
-
-### Data Processing
-- **Pandas** - Excel file processing and data manipulation
-- **OpenPyXL** - Excel file reading/writing engine
-- **ReportLab** *(optional)* - PDF generation for reports
-
-### Security
-- **Werkzeug** - Password hashing and security utilities
-- **PyJWT** - JSON Web Token implementation
-
----
-
-## 📦 Prerequisites
-
-Before setting up SafeComply, ensure you have the following installed:
-
-### Required Software
-
-| Software | Minimum Version | Recommended | Download |
-|----------|----------------|-------------|----------|
-| **Python** | 3.8+ | 3.10+ | [python.org](https://www.python.org/downloads/) |
-| **PowerShell** | 5.1+ | 7.0+ | Built-in (Windows) |
-| **Git** | 2.0+ | Latest | [git-scm.com](https://git-scm.com/) |
-
-### Environment Setup
-
-- **Operating System**: Windows (PowerShell scripts included)
-- **Internet Connection**: Required for dependency installation
-- **Disk Space**: ~500MB for virtual environment and dependencies
-
-> [!TIP]
-> For best results, use Python 3.10 or newer. Verify your installation:
-> ```powershell
-> python --version
-> ```
-
----
-
-## 🚀 Installation
-
-### Step 1: Clone the Repository
-
+## Setup
 ```powershell
-# Navigate to your projects directory
-cd d:\projects
-
-# Clone the repository (or download as ZIP)
-git clone <repository-url> Safecomply
-cd Safecomply
-```
-
-### Step 2: Create Virtual Environment
-
-```powershell
-# Create a new virtual environment
+# from repo root
 python -m venv .venv
-
-# Set execution policy for current session (if needed)
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-
-# Activate the virtual environment
 .\.venv\Scripts\Activate.ps1
-```
-
-> [!NOTE]
-> After activation, your terminal prompt should show `(.venv)` at the beginning.
-
-### Step 3: Install Dependencies
-
-```powershell
-# Upgrade pip to latest version
 python -m pip install --upgrade pip
-
-# Install all required packages
-python -m pip install -r .\requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-#### Required Libraries
+## Configuration
+Environment variables (defaults shown from [config.py](config.py)):
 
-The following packages will be installed from `requirements.txt`:
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| SAFE_COMPLY_SECRET | dev-secret-key | Flask/JWT secret key (must change in prod) |
+| SAFE_COMPLY_DEBUG | true | Enable debug mode when truthy |
+| SAFE_COMPLY_PORT | 5002 | HTTP port used by `run.py` |
+| SAFE_COMPLY_CORS | * | Allowed CORS origins (comma-separated or `*`) |
+| DATABASE_URL | sqlite:///.../safecomply.db | Override default SQLite path |
 
-| Package | Purpose |
-|---------|---------|
-| **flask** | Web framework core |
-| **flask-cors** | Enable cross-origin requests |
-| **pandas** | Data manipulation and Excel processing |
-| **openpyxl** | Excel file format support |
-| **pyjwt** | JWT token authentication |
-| **werkzeug** | Password hashing and security |
-
-**Optional**: For PDF export functionality:
+Set for current session (PowerShell):
 ```powershell
-python -m pip install reportlab
-```
-
-### Step 4: Initialize Database
-
-The database will be automatically initialized on first run with:
-- SQLite database file: `safecomply.db`
-- Tables: `reports`, `users`, `accounts`
-- Default admin account (see [Default Credentials](#default-credentials))
-
----
-
-## ⚙️ Configuration
-
-### Environment Variables
-
-SafeComply uses environment variables for configuration. Set these before running the application:
-
-| Variable | Default Value | Description |
-|----------|---------------|-------------|
-| `SAFE_COMPLY_SECRET` | `change-this-secret` | JWT signing secret ⚠️ |
-| `SAFE_COMPLY_CORS` | `http://localhost:5500` | Allowed CORS origins |
-| `SAFE_COMPLY_PORT` | `5002` | Application port |
-
-#### Setting Environment Variables (PowerShell)
-
-```powershell
-# For current session only
-$env:SAFE_COMPLY_SECRET = 'your-strong-random-secret-here'
+$env:SAFE_COMPLY_SECRET = 'change-me'
 $env:SAFE_COMPLY_CORS = 'http://localhost:5500'
 $env:SAFE_COMPLY_PORT = '5002'
 ```
 
-#### Setting Environment Variables (Persistent)
-
+## Database
+Flask-Migrate is wired in the app factory. To create/upgrade the schema:
 ```powershell
-# For current user (persists across sessions)
-[System.Environment]::SetEnvironmentVariable('SAFE_COMPLY_SECRET', 'your-secret', 'User')
+$env:FLASK_APP = 'run.py'
+$env:FLASK_CONFIG = 'development'   # default if unset
+flask db upgrade
 ```
+The default SQLite file lives at `app/safecomply.db`. Legacy script `scripts/migrate_db.py` only adds an `uploaded_by` column and is not sufficient for a fresh setup.
 
-> [!WARNING]
-> **Never use the default secret in production!** Generate a secure random string:
-> ```powershell
-> # Generate a secure random secret (PowerShell 7+)
-> -join ((65..90) + (97..122) + (48..57) | Get-Random -Count 32 | ForEach-Object {[char]$_})
-> ```
-
----
-
-## ⚡ Quick Start
-
-### Option 1: Automated Setup (Recommended)
-
-Use the included PowerShell script for one-command setup:
-
+## Run
 ```powershell
-.\run-dev.ps1
+python run.py
 ```
+Runs on `0.0.0.0:${SAFE_COMPLY_PORT}` (default 5002). The helper script `run-dev.ps1` currently points to a non-existent `app.py` and sets port 5001; prefer `python run.py` or update the script locally to call `run.py` if you use it.
 
-**This script automatically:**
-- ✅ Creates/activates virtual environment
-- ✅ Upgrades pip
-- ✅ Installs all dependencies
-- ✅ Sets default environment variables
-- ✅ Starts the Flask development server
+## Application Pages
+Served without auth guard at the route level (frontend enforces auth):
+- `/` landing
+- `/signin.html`, `/signup.html`
+- `/dashboard.html`
+- `/password-policies.html`, `/backup-policies.html`, `/policies.html`
+- `/reports.html`, `/compliance-report-view.html`
+- `/recommendations.html`, `/settings.html`
 
-### Option 2: Manual Setup
+## API
+JWT: `Authorization: Bearer <token>` for protected endpoints.
 
+**Auth** (prefix `/auth`):
+- POST `/auth/register` (public; accepts optional `role`, default `user`)
+- POST `/auth/login`
+- POST `/auth/change-password`
+- GET/PUT `/auth/profile`
+- POST `/auth/profile/picture` (base64 data URL, ~500KB max)
+- GET `/auth/history` (last 10 logins)
+- GET `/auth/export` (JSON download of profile + reports)
+- DELETE `/auth/delete-account` (blocks deleting `admin` account)
+
+**Public policy checks**:
+- POST `/check-password`
+- POST `/check-passwords-bulk`
+- POST `/check-backup-policy`
+
+**Reports** (JWT):
+- POST `/upload-excel` (Excel ingest, stores report and users, triggers AI alerts/recs)
+- GET `/reports` (admin/auditor see all; users see own)
+- GET `/reports/<id>` (owner or role `admin|auditor`)
+- DELETE `/reports/<id>` (admin or owner)
+- GET `/api/reports/<id>/pdf` (requires ReportLab)
+- GET `/api/reports/<id>/excel`
+
+**Notifications & dashboard** (JWT):
+- GET `/api/notifications`, POST `/api/notifications/mark-read`
+- GET `/dashboard-stats`
+- GET `/api/recommendations` (latest report-based)
+
+**Admin** (JWT, role `admin`):
+- GET `/admin/users`
+- DELETE `/admin/users/<username>`
+
+## Data Model
+- `accounts`: username, password_hash, role, email, profile_picture
+- `login_history`: username, login_at, ip_address, status
+- `reports`: filename, uploaded_at, uploaded_by, total/valid/invalid, overall_score
+- `users`: per-report user rows (row_index, username, masked_password, checks JSON, strength, backup_checks JSON)
+- `notifications`: username, title, message, type, is_read, created_at
+
+## Testing
+Pytest uses the testing config with an in-memory SQLite DB.
 ```powershell
-# 1. Activate virtual environment
-.\.venv\Scripts\Activate.ps1
-
-# 2. Set environment variables (optional)
-$env:SAFE_COMPLY_SECRET = 'dev-secret-key'
-$env:SAFE_COMPLY_PORT = '5002'
-
-# 3. Run the application
-python .\app.py
+pytest
+# or
+pytest tests/test_reports.py -vv
 ```
-
-### Verify Installation
-
-Once the server starts, you should see:
-
-```
- * Running on http://127.0.0.1:5002
- * Debug mode: on
-```
-
-Test the API health endpoint:
-
-```powershell
-curl http://localhost:5002/health
-```
-
-Expected response:
-```json
-{
-  "status": "ok",
-  "message": "Backend is running"
-}
-```
-
----
-
-## 🎮 Usage
-
-### Default Credentials
-
-A default admin account is automatically created on first run:
-
-| Field | Value |
-|-------|-------|
-| **Username** | `admin` |
-| **Password** | `Admin123!` |
-
-> [!CAUTION]
-> **Change the default password immediately after first login!** Use the `/auth/change-password` endpoint or create a new admin account.
-
-### Accessing the Application
-
-1. **Open your browser** and navigate to:
-   ```
-   http://localhost:5002
-   ```
-
-2. **Sign in** with the default credentials
-
-3. **Upload a compliance report**:
-   - Navigate to the Reports page
-   - Upload an Excel file with user data
-   - View analysis results and AI recommendations
-
-### Sample Excel Format
-
-Your Excel file should contain columns such as:
-
-| Username | Password | last_backup_date | backup_frequency | backup_type | retention_days |
-|----------|----------|------------------|------------------|-------------|----------------|
-| john.doe | SecurePass123! | 2025-12-10 | daily | full | 60 |
-
-> [!TIP]
-> A sample Excel file `sample_compliance.xlsx` is included in the project directory.
-
----
-
-## 📡 API Documentation
-
-### Authentication
-
-All protected endpoints require a JWT token in the Authorization header:
-
-```http
-Authorization: Bearer <your-jwt-token>
-```
-
-### Core Endpoints
-
-#### Authentication
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/auth/register` | Create new user account | ❌ |
-| `POST` | `/auth/login` | Login and receive JWT token | ❌ |
-
-**Login Example:**
-```bash
-curl -X POST http://localhost:5002/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "Admin123!"}'
-```
-
-#### Password Checking
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/check-password` | Validate single password | ❌ |
-| `POST` | `/check-passwords-bulk` | Validate multiple passwords | ❌ |
-| `POST` | `/upload-excel` | Upload and analyze Excel file | ✅ |
-
-#### Reports
-
-| Method | Endpoint | Description | Auth Required | Roles |
-|--------|----------|-------------|---------------|-------|
-| `GET` | `/reports` | List all reports | ✅ | All |
-| `GET` | `/reports/<id>` | Get report details | ✅ | Admin, Auditor |
-| `GET` | `/api/reports/<id>/pdf` | Download PDF report | ✅ | All |
-| `GET` | `/api/reports/<id>/excel` | Download Excel report | ✅ | All |
-
-#### Admin
-
-| Method | Endpoint | Description | Auth Required | Roles |
-|--------|----------|-------------|---------------|-------|
-| `GET` | `/admin/users` | List all users | ✅ | Admin |
-| `DELETE` | `/admin/users/<username>` | Delete user | ✅ | Admin |
-
-#### Dashboard
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/dashboard-stats` | Get dashboard statistics | ✅ |
-
-### API Response Examples
-
-#### Password Check Response
-```json
-{
-  "isValid": true,
-  "checks": {
-    "length": true,
-    "uppercase": true,
-    "lowercase": true,
-    "digit": true,
-    "special": true
-  },
-  "message": "كلمة المرور صحيحة ✓"
-}
-```
-
-#### Upload Excel Response
-```json
-{
-  "total": 150,
-  "valid": 120,
-  "invalid": 30,
-  "overall_score": 78,
-  "policies_analyzed": 2,
-  "alerts_detected": 3,
-  "alerts": [...],
-  "recommendations": [...],
-  "report_id": 42
-}
-```
-
----
-
-## 📁 Project Structure
-
-```
-Safecomply/
-├── 📄 app.py                          # Main Flask application
-├── 📄 README.md                       # This file
-├── 📄 requirements.txt                # Python dependencies
-├── 📄 requirements-lock.txt           # Locked dependency versions
-├── 📄 run-dev.ps1                     # Development startup script
-├── 📄 safecomply.db                   # SQLite database (auto-generated)
-├── 📄 sample_compliance.xlsx          # Sample data file
-│
-├── 🎨 Frontend Files
-│   ├── index.html                     # Landing page
-│   ├── signin.html                    # Login page
-│   ├── Signup.html                    # Registration page
-│   ├── dashboard.html                 # Main dashboard
-│   ├── reports.html                   # Reports listing
-│   ├── compliance-report-view.html    # Report details view
-│   ├── policies.html                  # Policy management
-│   ├── password-policies.html         # Password policy view
-│   ├── backup-policies.html           # Backup policy view
-│   ├── recommendations.html           # AI recommendations
-│   ├── settings.html                  # User settings
-│   ├── style.css                      # Global styles
-│   ├── modal.css                      # Modal component styles
-│   ├── modal.js                       # Modal component logic
-│   └── notifications.js               # Real-time notification system
-│
-├── 🛠️ Utility Scripts
-│   ├── create_auditor.py              # Create auditor accounts
-│   ├── create_sample.py               # Generate sample data
-│   ├── generate_demos.py              # Generate demo scenarios (High/Low/Mixed)
-│   ├── migrate_db.py                  # Database migrations
-│   ├── test_reqs.py                   # Test requirements
-│   ├── test_notifications.py          # Test notification system
-│   └── verify_rbac.py                 # Verify role-based access
-│
-└── 📁 .venv/                          # Virtual environment (auto-generated)
-```
-
----
-
-## 🔧 Development
-
-### Helper Scripts
-
-The project includes several utility scripts for development:
-
-#### Create Auditor Account
-```powershell
-python .\create_auditor.py
-```
-
-#### Generate Sample Data
-```powershell
-python .\create_sample.py
-```
-
-#### Database Migration
-```powershell
-python .\migrate_db.py
-```
-
-#### Verify RBAC
-```powershell
-python .\verify_rbac.py
-```
-
-### Development Best Practices
-
-1. **Always use the virtual environment**
-   ```powershell
-   .\.venv\Scripts\Activate.ps1
-   ```
-
-2. **Update dependencies after adding new packages**
-   ```powershell
-   python -m pip freeze > requirements-lock.txt
-   ```
-
-3. **Test after changes**
-   ```powershell
-   python .\test_reqs.py
-   ```
-
-### Running on Different Ports
-
-```powershell
-# Temporarily change port
-$env:SAFE_COMPLY_PORT = '5010'
-python .\app.py
-
-# Or inline
-$env:SAFE_COMPLY_PORT = '8080'; python .\app.py
-```
-
----
-
-## 🔒 Security
-
-### Production Deployment
-
-> [!WARNING]
-> **The current configuration is for DEVELOPMENT ONLY!**
-
-Before deploying to production:
-
-#### 1. Change the Secret Key
-```powershell
-# Generate a cryptographically secure secret
-$env:SAFE_COMPLY_SECRET = '<strong-random-secret-32-chars-minimum>'
-```
-
-#### 2. Configure CORS Properly
-```powershell
-# Lock down to specific frontend origin(s)
-$env:SAFE_COMPLY_CORS = 'https://yourdomain.com'
-
-# Multiple origins (comma-separated)
-$env:SAFE_COMPLY_CORS = 'https://app.yourdomain.com,https://admin.yourdomain.com'
-```
-
-#### 3. Use a Production WSGI Server
-
-**Don't use Flask's built-in server in production!** Use Waitress (Windows) or Gunicorn (Linux):
-
-```powershell
-# Install Waitress
-python -m pip install waitress
-
-# Run with Waitress
-waitress-serve --port=5002 --call app:app
-```
-
-#### 4. Database Security
-- Move `safecomply.db` to a secure location outside the web root
-- Regular backups of the database
-- Implement database encryption if handling sensitive data
-
-#### 5. Change Default Credentials
-- Delete or disable the default admin account
-- Create new admin accounts with strong passwords
-- Enforce password rotation policies
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### 1. PowerShell Execution Policy Error
-
-**Error:**
-```
-cannot be loaded because running scripts is disabled on this system
-```
-
-**Solution:**
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-```
-
-#### 2. Port Already in Use
-
-**Error:**
-```
-OSError: [WinError 10048] Only one usage of each socket address is normally permitted
-```
-
-**Solution:**
-```powershell
-# Find process using the port
-netstat -aon | findstr ":5002"
-
-# Kill the process (replace PID with actual process ID)
-taskkill /PID <PID> /F
-
-# Or use a different port
-$env:SAFE_COMPLY_PORT = '5002'
-```
-
-#### 3. Port Range Excluded by Windows
-
-**Solution:**
-```powershell
-# Check excluded port ranges
-netsh interface ipv4 show excludedportrange protocol=tcp
-
-# Use a port outside the excluded ranges
-```
-
-#### 4. Module Not Found Error
-
-**Error:**
-```
-ModuleNotFoundError: No module named 'flask'
-```
-
-**Solution:**
-```powershell
-# Ensure virtual environment is activated
-.\.venv\Scripts\Activate.ps1
-
-# Reinstall dependencies
-python -m pip install -r .\requirements.txt
-```
-
-#### 5. Database Locked Error
-
-**Error:**
-```
-sqlite3.OperationalError: database is locked
-```
-
-**Solution:**
-- Close any other applications accessing `safecomply.db`
-- Restart the Flask application
-- Check file permissions
-
-#### 6. CORS Errors in Browser
-
-**Error:**
-```
-Access to XMLHttpRequest has been blocked by CORS policy
-```
-
-**Solution:**
-```powershell
-# Allow your frontend origin
-$env:SAFE_COMPLY_CORS = 'http://localhost:5500'
-
-# Or allow all origins (development only!)
-$env:SAFE_COMPLY_CORS = '*'
-```
-
-### Getting Help
-
-If you encounter issues not covered here:
-
-1. Check Flask logs in the terminal for error messages
-2. Verify all environment variables are set correctly
-3. Ensure Python version is 3.8 or higher
-4. Try with a fresh virtual environment
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-### Code Style
-- Follow PEP 8 for Python code
-- Use meaningful variable names
-- Add docstrings to functions
+Key coverage: auth/profile flows, report upload and export, dashboard stats, policy service checks, settings features.
+
+## Utilities & Scripts
+- `scripts/create_admin.py` is legacy and does not match the current models; manual role updates or registration with `role="admin"` are required for an admin user.
+- `scripts/migrate_db.py` is a narrow one-off migration; rely on Flask-Migrate instead.
+- Other scripts in `scripts/` may predate the current schema—review before use.
+
+## Security Notes
+- Change `SAFE_COMPLY_SECRET` for any non-local use.
+- Lock down `SAFE_COMPLY_CORS` to the actual frontend origins.
+- Use a production WSGI server (e.g., waitress/gunicorn) and move SQLite out of the web root or switch to a managed DB via `DATABASE_URL`.
+- No default admin is created; create an admin intentionally and protect the `register` flow if exposed publicly.
+
+## Troubleshooting
+- **Module not found**: ensure `.venv` is activated and dependencies installed.
+- **Port in use**: change `SAFE_COMPLY_PORT` or stop the other process.
+- **CORS blocked**: set `SAFE_COMPLY_CORS` to your frontend origin or `*` during development.
 - Comment complex logic
 
 ### Submitting Changes
@@ -711,9 +182,10 @@ This project is proprietary software. All rights reserved.
 
 ### Current Version
 - **Status**: Development
-- **Python**: 3.8+
-- **Flask**: Latest stable
-- **Database**: SQLite 3
+- **Python**: 3.10+
+- **Flask**: 3.1.2
+- **Database**: SQLite 3 with SQLAlchemy ORM
+- **Testing**: Pytest with 14 test cases
 
 ### Known Limitations
 - SQLite may have concurrency limitations under high load
