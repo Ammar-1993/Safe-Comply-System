@@ -28,7 +28,7 @@
 
 /* Modal Container */
 .sc-modal {
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   max-width: 420px;
@@ -90,7 +90,7 @@
 .sc-modal-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-dark);
   margin: 0;
 }
 
@@ -102,7 +102,7 @@
 
 .sc-modal-message {
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.6;
   margin: 0;
 }
@@ -110,7 +110,7 @@
 /* Modal Footer */
 .sc-modal-footer {
   padding: 16px 24px;
-  background: #f9fafb;
+  background: var(--bg-light);
   display: flex;
   justify-content: center;
   gap: 12px;
@@ -169,39 +169,16 @@
 
 /* Cancel/Secondary Button */
 .sc-modal-btn.secondary {
-  background: #e5e7eb;
-  color: #374151;
+  background: var(--neutral-200);
+  color: var(--neutral-800);
 }
 
 .sc-modal-btn.secondary:hover {
-  background: #d1d5db;
+  background: var(--neutral-300);
 }
 
 /* Dark Mode Support */
-body.dark-mode .sc-modal {
-  background: linear-gradient(145deg, #2a2a3e 0%, #1e1e2e 100%);
-}
-
-body.dark-mode .sc-modal-title {
-  color: #f3f4f6;
-}
-
-body.dark-mode .sc-modal-message {
-  color: #9ca3af;
-}
-
-body.dark-mode .sc-modal-footer {
-  background: #1e1e2e;
-}
-
-body.dark-mode .sc-modal-btn.secondary {
-  background: #3a3a4e;
-  color: #e5e7eb;
-}
-
-body.dark-mode .sc-modal-btn.secondary:hover {
-  background: #4a4a5e;
-}
+/* Dark Mode Overrides removed - handled by global variables */
 
 /* Animation for shake on error */
 @keyframes sc-shake {

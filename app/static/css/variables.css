@@ -1,51 +1,108 @@
 :root {
-  /* Colors */
-  --primary-color: #3498db;
-  --secondary-color: #2c3e50;
-  --secondary-dark: #34495e;
-  --accent-color: #e74c3c;
-  --text-light: #ecf0f1;
-  --text-dark: #334155;
-  --text-muted: #6c757d;
-  --bg-light: #f8fafc;
-  --bg-white: #ffffff;
-  --border-color: #e9ecef;
+  /* --- Primitive Colors --- */
+  /* Brand */
+  --color-brand: #3498db;
+  --color-brand-dark: #2980b9;
+  --color-accent: #e74c3c;
+  --color-success: #27ae60;
+  --color-warning: #f39c12;
+  --color-danger: #e74c3c;
+
+  /* Neutrals (Light) */
+  --neutral-50: #ffffff;
+  --neutral-100: #f8fafc;
+  --neutral-200: #ecf0f1;
+  --neutral-300: #dee2e6;
+  --neutral-400: #cbd5e1;
+  --neutral-500: #94a3b8;
+  --neutral-600: #6c757d;
+  --neutral-700: #334155;
+  --neutral-800: #2c3e50;
+  --neutral-900: #1a1a2e;
+
+  /* Neutrals (Dark) - for reference/mapping */
+  --dark-bg-body: #1a1a2e;
+  --dark-bg-surface: #1e1e2e;
+  --dark-bg-surface-2: #2a2a3e;
+  --dark-border: #3a3a4e;
+
+  /* --- Semantic Variables (Light Mode Default) --- */
   
+  /* Primary Colors */
+  --primary-color: var(--color-brand);
+  --secondary-color: var(--neutral-800);
+  --secondary-dark: #34495e; /* Legacy, keep for now */
+  --accent-color: var(--color-accent);
+  --success-color: var(--color-success);
+  --danger-color: var(--color-danger);
+
+  /* Backgrounds */
+  --bg-body: var(--neutral-100);
+  --bg-white: var(--neutral-50); /* Main surface color. "White" is legacy name, means "Surface" */
+  --bg-light: var(--neutral-100); /* Secondary surface */
+  --bg-card: rgba(255, 255, 255, 0.9);
+  
+  /* Text */
+  --text-main: #000000;
+  --text-dark: var(--neutral-700); /* Primary text color */
+  --text-secondary: var(--neutral-600);
+  --text-muted: var(--neutral-600);
+  --text-light: var(--neutral-200); /* Text on dark backgrounds */
+
+  /* Borders */
+  --border-color: var(--neutral-200);
+
   /* Gradients */
   --bg-gradient-body: linear-gradient(135deg, #cbd3df 0%, #7d90ac 100%);
   --bg-gradient-landing: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   --sidebar-gradient: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-  
-  /* Fonts */
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+  /* Spacing & Radius */
   --font-family-base: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  
-  /* Spacing */
   --spacing-sm: 8px;
   --spacing-md: 15px;
   --spacing-lg: 20px;
   --spacing-xl: 30px;
-  
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
-  
-  /* Semantic Colors */
-  --bg-card: #ffffffc9;
-  --text-main: #000000;
-  --text-secondary: #6c757d;
-
-  /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-circle: 50%;
 }
 
-/* Dark Mode Overrides */
+/* --- Dark Mode Overrides --- */
 body.dark-mode {
-  --bg-card: rgba(42, 42, 62, 0.8);
-  --text-main: #ffffff;
-  --text-secondary: #a0a0a0;
+  /* Re-mapping semantics to Dark Primitives */
+  
+  /* Backgrounds */
+  --bg-body: var(--dark-bg-body);
+  --bg-white: var(--dark-bg-surface); /* "White" now becomes Dark Surface */
+  --bg-light: var(--dark-bg-surface-2); /* "Light" now becomes slightly lighter Dark Surface */
+  --bg-card: rgba(30, 30, 46, 0.95);
+
+  /* Text */
+  --text-main: var(--neutral-50);
+  --text-dark: var(--neutral-200); /* "Text Dark" now becomes Light Text */
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  --text-light: var(--neutral-200); 
+
+  /* Semantic Color Overrides */
+  --secondary-color: var(--neutral-200); /* Flip secondary to light */
+  /* Keep primary/accent as is, or adjust if contrast is low, but usually they are fine */ 
+
+  /* Borders */
+  --border-color: var(--dark-border);
+
+  /* Gradients */
   --bg-gradient-body: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --sidebar-gradient: linear-gradient(180deg, #1e1e2e 0%, #252535 100%);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
 }

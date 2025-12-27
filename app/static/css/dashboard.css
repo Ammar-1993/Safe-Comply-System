@@ -10,6 +10,7 @@
 body {
   font-family: var(--font-family-base);
   background: var(--bg-gradient-body);
+  color: var(--text-main);
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -23,7 +24,7 @@ body {
   width: 100%;
   max-width: 1400px;
   height: 90vh;
-  background: rgba(255, 255, 255, 0.945);
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
@@ -35,13 +36,13 @@ body {
   padding: 20px 0;
   display: flex;
   flex-direction: column;
-  color: var(--bg-white);
+  color: var(--neutral-50);
 }
 
 .profile-section {
   text-align: center;
   padding: 0 20px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .profile-img {
@@ -65,6 +66,7 @@ body {
 .profile-email {
   font-size: 11px;
   opacity: 0.7;
+  color: var(--text-light);
 }
 
 .menu-item {
@@ -75,7 +77,7 @@ body {
   cursor: pointer;
   transition: all 0.3s;
   font-size: 14px;
-  color: var(--bg-white);
+  color: var(--neutral-50);
   text-decoration: none;
   margin: 2px 0;
 }
@@ -107,7 +109,7 @@ body {
 
 .main-content {
   flex: 1;
-  background: #6d8cad7e;
+  background: var(--bg-light);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -125,7 +127,7 @@ body {
 .welcome-text {
   font-size: 20px;
   font-weight: 600;
-  color: #16538f;
+  color: var(--secondary-color);
 }
 
 .header-actions {
@@ -200,7 +202,7 @@ body {
   top: -5px;
   right: -5px;
   background: var(--accent-color);
-  color: var(--bg-white);
+  color: var(--neutral-50);
   font-size: 10px;
   width: 18px;
   height: 18px;
@@ -233,13 +235,14 @@ body {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  background: #f8f9fa;
+  background: #cbd5e1;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  color: var(--secondary-color);
 }
 
 .content-area {
@@ -250,7 +253,7 @@ body {
 
 .section-title {
   font-size: 14px;
-  color: #071928;
+  color: var(--text-main);
   margin-bottom: 15px;
   font-weight: 500;
 }
@@ -301,7 +304,7 @@ body {
 .stat-number {
   font-size: 24px;
   font-weight: bold;
-  color: #000000;
+  color: var(--text-main);
   margin-bottom: 3px;
 }
 
@@ -337,7 +340,7 @@ body {
 .card-title {
   font-size: 16px;
   font-weight: 600;
-  color: #051338;
+  color: var(--text-dark);
 }
 
 .card-action {
@@ -352,26 +355,26 @@ body {
 }
 
 .alert-card {
-  background: #f8f9fa;
+  background: var(--bg-light);
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 10px;
-  border-left: 3px solid #dee2e6;
+  border-left: 3px solid var(--border-color);
 }
 
 .alert-card.high {
   border-left-color: #65629c;
-  background: #90b2d67e;
+  background: rgba(231, 76, 60, 0.1);
 }
 
 .alert-card.medium {
   border-left-color: #65629c;
-  background: #90b2d67e;
+  background: rgba(241, 196, 15, 0.1);
 }
 
 .alert-card.low {
   border-left-color: #65629c;
-  background: #90b2d67e;
+  background: rgba(46, 204, 113, 0.1);
 }
 
 .alert-top {
@@ -428,11 +431,11 @@ body {
 
 .alert-time {
   font-size: 10px;
-  color: #000000;
+  color: var(--text-muted);
 }
 
 .report-card {
-  background: #f8f9fa;
+  background: var(--bg-white);
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 10px;
@@ -548,7 +551,7 @@ body {
 .chart-label-lg {
   font-size: 20px;
   font-weight: bold;
-  color: #000000;
+  color: var(--text-main);
 }
 
 /* Legend */
@@ -594,98 +597,10 @@ body {
 }
 
 /* Dark Mode Styles */
-body.dark-mode {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-}
-
-body.dark-mode .dashboard-wrapper {
-  background: rgba(30, 30, 46, 0.945);
-}
-
-body.dark-mode .main-content {
-  background: #1e1e2e;
-}
-
-body.dark-mode .top-header {
-  background: #2a2a3e;
-  border-bottom-color: #3a3a4e;
-}
-
-body.dark-mode .welcome-text {
-  color: #a0c4ff;
-}
-
-body.dark-mode .search-box {
-  background: #ffffff;
-  border-color: #4a4a5e;
-  color: var(--bg-white);
-}
-
-body.dark-mode .icon-btn {
-  background: #a2a2bb;
-}
-
-body.dark-mode .section-title {
-  color: #ffffff;
-}
-
-
-
-body.dark-mode .card-title {
-  color: #ffffff;
-}
-
-body.dark-mode .stat-label {
-  color: #a0a0a0;
-}
-
-body.dark-mode .alert-card {
-  background: #c2c2d2;
-}
-
-body.dark-mode .report-card {
-  background: #ffffff;
-}
-
-body.dark-mode .policy-list li {
-  background: #3a3a4e;
-  color: #e0e0e0;
-}
-
-body.dark-mode .settings-card {
-  background: rgba(42, 42, 62, 0.8);
-}
-
-body.dark-mode .settings-card-title {
-  color: #ffffff;
-  border-bottom-color: #4a4a5e;
-}
-
-body.dark-mode .setting-label {
-  color: #e0e0e0;
-}
-
-body.dark-mode .setting-description {
-  color: #a0a0a0;
-}
-
-body.dark-mode .setting-item {
-  border-bottom-color: #d5d5e2;
-}
-
-body.dark-mode .setting-input,
-body.dark-mode .setting-select {
-  background: #3a3a4e;
-  border-color: #4a4a5e;
-  color: var(--bg-white);
-}
-
+/* Dark Mode Styles - Now mostly handled by variables.css */
+/* Specific overrides that are not covered by global vars */
 body.dark-mode .chart-label-lg {
-  color: #ffffff;
-}
-
-body.dark-mode .legend-text {
-  color: #a0a0a0;
+  fill: var(--text-main);
 }
 
 /* Responsive Design */

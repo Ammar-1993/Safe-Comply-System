@@ -62,6 +62,8 @@
     font-size: 14px;
     width: 200px;
     transition: border-color 0.3s;
+    background: var(--bg-light);
+    color: var(--text-main);
 }
 
 .setting-input:focus {
@@ -73,7 +75,7 @@
 .toggle-switch {
     width: 44px;
     height: 24px;
-    background: #cbd5e1;
+    background: var(--neutral-400);
     border-radius: 20px;
     position: relative;
     cursor: pointer;
@@ -82,6 +84,88 @@
 
 .toggle-switch.active {
     background: var(--success-color);
+}
+
+
+/* --- Custom Settings Modals --- */
+.custom-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.custom-modal-content {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: var(--radius-md);
+    width: 400px;
+    max-width: 90%;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+}
+
+.custom-modal-content.large {
+    width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.custom-modal-title {
+    margin: 0 0 20px;
+    color: var(--text-dark);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.custom-modal-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.custom-modal-input-wrapper {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.custom-modal-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-sizing: border-box;
+    background: var(--bg-light);
+    color: var(--text-dark);
+}
+
+.custom-modal-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.custom-modal-requirements {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: var(--bg-light);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.custom-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
 }
 
 .toggle-slider {
@@ -218,8 +302,8 @@
     display: none; /* Hidden by default */
     align-items: center;
     justify-content: space-between;
-    background: #f0f9ff;
-    border: 1px solid #bae6fd;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
     padding: 15px;
     border-radius: var(--radius-sm);
     margin-bottom: 20px;
@@ -462,6 +546,8 @@
     border-radius: var(--radius-sm);
     font-size: 14px;
     transition: border-color 0.3s;
+    background: var(--bg-light);
+    color: var(--text-main);
 }
 
 .modern-input:focus, .form-control:focus {
@@ -574,43 +660,5 @@
 }
 
 /* Dark Mode Styles */
-body.dark-mode .settings-card {
-    background: var(--secondary-dark);
-    color: var(--text-light);
-}
-
-body.dark-mode .settings-card-title {
-    color: var(--text-light);
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-}
-
-body.dark-mode .setting-item {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-}
-
-body.dark-mode .setting-label {
-    color: var(--text-light);
-}
-
-body.dark-mode .setting-description {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-body.dark-mode .setting-input {
-    background: rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-light);
-}
-
-body.dark-mode .setting-input:focus {
-    border-color: var(--primary-color);
-}
-
-body.dark-mode .toggle-switch {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-body.dark-mode .toggle-switch.active {
-    background: var(--success-color);
-}
+/* Dark Mode Overrides removed - handled by global variables */
 

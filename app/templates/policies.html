@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Policies - Compliance Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
@@ -14,11 +14,11 @@
 <body>
   <div class="dashboard-wrapper">
     <!-- SIDEBAR -->
-        {% set active_page = '' %}
+    {% set active_page = '' %}
     {% include 'components/sidebar.html' %}
     <main class="main-content">
       <!-- Top Header -->
-            {% set page_title = 'Policies Overview' %}
+      {% set page_title = 'Policies Overview' %}
       {% include 'components/navbar.html' %}
       <section class="content-area">
         <!-- POLICIES COMPLIANCE STATUS -->
@@ -42,14 +42,14 @@
                     margin-top: -70px;
                     font-size: 20px;
                     font-weight: bold;
-                    color: #333;
+                    color: var(--text-main);
                   ">
                 32%
               </div>
               <div style="
                     margin-top: 55px;
                     font-size: 14px;
-                    color: #333;
+                    color: var(--text-main);
                     font-weight: 600;
                   ">
                 Password Policy
@@ -67,14 +67,14 @@
                     margin-top: -70px;
                     font-size: 20px;
                     font-weight: bold;
-                    color: #333;
+                    color: var(--text-main);
                   ">
                 68%
               </div>
               <div style="
                     margin-top: 55px;
                     font-size: 14px;
-                    color: #333;
+                    color: var(--text-main);
                     font-weight: 600;
                   ">
                 Backup Policy

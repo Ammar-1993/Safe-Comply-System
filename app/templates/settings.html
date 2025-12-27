@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings - Compliance Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
@@ -282,45 +282,49 @@
   </div>
 
   <!-- Change Password Modal -->
-  <div id="passwordModal"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%;">
-      <h3 style="margin:0 0 20px; color:#051338;">Change Password</h3>
-      <div style="margin-bottom:15px;">
-        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">Current Password</label>
+  <div id="passwordModal" class="custom-modal-overlay">
+    <div class="custom-modal-content">
+      <h3 class="custom-modal-title">Change Password</h3>
+      <div class="custom-modal-input-wrapper">
+        <label class="custom-modal-label">Current Password</label>
         <div style="position: relative;">
-          <input type="password" id="currentPassword"
-            style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+          <input type="password" id="currentPassword" class="custom-modal-input" />
           <span class="password-toggle" onclick="togglePassword('currentPassword', this)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+            </svg>
           </span>
         </div>
       </div>
-      <div style="margin-bottom:15px;">
-        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">New Password</label>
+      <div class="custom-modal-input-wrapper">
+        <label class="custom-modal-label">New Password</label>
         <div style="position: relative;">
-          <input type="password" id="newPassword"
-            style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+          <input type="password" id="newPassword" class="custom-modal-input" />
           <span class="password-toggle" onclick="togglePassword('newPassword', this)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+            </svg>
           </span>
         </div>
       </div>
-      <div style="margin-bottom:20px;">
-        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">Confirm New Password</label>
+      <div class="custom-modal-input-wrapper">
+        <label class="custom-modal-label">Confirm New Password</label>
         <div style="position: relative;">
-          <input type="password" id="confirmPassword"
-            style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+          <input type="password" id="confirmPassword" class="custom-modal-input" />
           <span class="password-toggle" onclick="togglePassword('confirmPassword', this)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+            </svg>
           </span>
         </div>
       </div>
-      <div id="passwordRequirements"
-        style="margin-bottom:15px; padding:10px; background:#f8f9fa; border-radius:6px; font-size:12px; color:#666;">
+      <div id="passwordRequirements" class="custom-modal-requirements">
         Password must be at least 12 characters with uppercase, lowercase, number, and special character.
       </div>
-      <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <div class="custom-modal-actions">
         <button onclick="closePasswordModal()" class="btn-secondary">Cancel</button>
         <button onclick="submitPasswordChange()" class="btn-primary">Change Password</button>
       </div>
@@ -328,40 +332,38 @@
   </div>
 
   <!-- Login History Modal -->
-  <div id="historyModal"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div
-      style="background:white; padding:30px; border-radius:12px; width:600px; max-width:90%; max-height:80vh; overflow-y:auto;">
-      <h3 style="margin:0 0 20px; color:#051338;">Login History</h3>
+  <div id="historyModal" class="custom-modal-overlay">
+    <div class="custom-modal-content large">
+      <h3 class="custom-modal-title">Login History</h3>
       <div id="historyContent" style="min-height:100px;">
-        <div style="text-align:center; color:#666;">Loading...</div>
+        <div style="text-align:center; color:var(--text-muted);">Loading...</div>
       </div>
-      <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+      <div class="custom-modal-actions">
         <button onclick="closeHistoryModal()" class="btn-secondary">Close</button>
       </div>
     </div>
   </div>
 
   <!-- Delete Account Modal -->
-  <div id="deleteModal"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div
-      style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; border:2px solid #e74c3c;">
-      <h3 style="margin:0 0 20px; color:#e74c3c;">⚠️ Delete Account</h3>
-      <p style="color:#666; margin-bottom:20px;">This action is permanent and cannot be undone. All your data and
+  <div id="deleteModal" class="custom-modal-overlay">
+    <div class="custom-modal-content" style="border: 2px solid var(--danger-color);">
+      <h3 class="custom-modal-title" style="color: var(--danger-color);">⚠️ Delete Account</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">This action is permanent and cannot be undone. All your
+        data and
         reports will be deleted.</p>
-      <div style="margin-bottom:20px;">
-        <label style="display:block; margin-bottom:5px; font-weight:600; color:#2c3e50;">Enter your password to
-          confirm</label>
+      <div class="custom-modal-input-wrapper">
+        <label class="custom-modal-label">Enter your password to confirm</label>
         <div style="position: relative;">
-          <input type="password" id="deletePassword"
-            style="width:100%; padding:10px; border:1px solid #dee2e6; border-radius:6px; box-sizing:border-box;" />
+          <input type="password" id="deletePassword" class="custom-modal-input" />
           <span class="password-toggle" onclick="togglePassword('deletePassword', this)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+            </svg>
           </span>
         </div>
       </div>
-      <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <div class="custom-modal-actions">
         <button onclick="closeDeleteModal()" class="btn-secondary">Cancel</button>
         <button onclick="submitDeleteAccount()" class="btn-danger">Delete My Account</button>
       </div>
@@ -709,13 +711,13 @@
         html += `
             <div class="setting-item">
               <div class="setting-info">
-                <div class="setting-label">${u.username} <span style="font-size:11px; background:#eee; padding:2px 6px; border-radius:4px; margin-left:5px;">${u.role}</span></div>
+                <div class="setting-label">${u.username} <span style="font-size:11px; background:var(--bg-light); padding:2px 6px; border-radius:4px; margin-left:5px;">${u.role}</span></div>
                 <div class="setting-description">ID: ${u.id}</div>
               </div>
               <div class="setting-control">
                 ${u.username !== 'admin' ?
             `<button class="btn-danger" style="padding: 5px 15px; font-size: 12px;" onclick="deleteUser('${u.username}')">Delete</button>`
-            : '<span style="color:#999; font-size:12px;">Main Admin</span>'}
+            : '<span style="color:var(--text-muted); font-size:12px;">Main Admin</span>'}
               </div>
             </div>`;
       });
@@ -798,7 +800,7 @@
   <script defer src="{{ url_for('static', filename='js/api.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/notifications.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
-  
+
 </body>
 
 </html>

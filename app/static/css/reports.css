@@ -4,9 +4,9 @@
 .upload-container {
     text-align: center;
     padding: 20px !important; /* Reduced from 40px for compactness */
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef); /* Subtle gradient background */
+    background: var(--bg-white); /* Simplified for better dark mode support */
     border-radius: var(--radius-lg);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    box-shadow: var(--shadow-sm);
     margin-bottom: 20px;
 }
 
@@ -30,11 +30,11 @@
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-md);
     padding: 20px; /* Reduced from 40px */
-    background: linear-gradient(135deg, #ffffff, #f8f9fa); /* Gradient background */
+    background: var(--bg-light);
     transition: all 0.3s ease; /* Smoother transition */
     cursor: pointer;
     margin-bottom: 15px; /* Reduced margin */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    box-shadow: var(--shadow-sm);
 }
 
 .upload-box:hover {
@@ -68,7 +68,7 @@
     padding: 10px 20px; /* Adjusted padding */
     border-radius: 25px; /* More rounded */
     font-weight: 500;
-    color: white;
+    color: var(--neutral-50);
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3); /* Subtle shadow */
@@ -86,7 +86,7 @@
 
 .selected-file {
     display: none; /* Hidden by default */
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef); /* Gradient */
+    background: var(--bg-light);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 12px; /* Reduced padding */
@@ -97,7 +97,7 @@
     max-width: 450px; /* Reduced width */
     margin-left: auto;
     margin-right: auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    box-shadow: var(--shadow-sm);
 }
 
 .selected-file.show {
@@ -144,7 +144,7 @@
 .btn-analyze {
     display: block;
     background: linear-gradient(135deg, var(--primary-color), #2980b9);
-    color: white;
+    color: var(--neutral-50);
     border: none;
     padding: 15px 50px;
     border-radius: 50px; /* More rounded for a modern look */
@@ -179,7 +179,7 @@
     display: none; /* Hidden by default */
     text-align: center;
     padding: 40px;
-    background: white;
+    background: var(--bg-white);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
 }
@@ -277,7 +277,7 @@
 }
 
 .summary-card {
-    background: white;
+    background: var(--bg-white);
     padding: 20px;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
@@ -335,16 +335,16 @@
 
 .btn-export.primary {
     background: var(--primary-color);
-    color: white;
+    color: var(--neutral-50);
 }
 
 .btn-export.secondary {
     background: #27ae60;
-    color: white;
+    color: var(--neutral-50);
 }
 
 .btn-export.tertiary {
-    background: white;
+    background: var(--bg-white);
     border: 1px solid var(--border-color);
     color: var(--text-dark);
 }
@@ -425,7 +425,7 @@
 }
 
 .pagination-btn {
-    background: white;
+    background: var(--bg-white);
     border: 1px solid var(--border-color);
     color: var(--text-dark);
     padding: 8px 12px;
@@ -443,7 +443,7 @@
 
 .pagination-btn.active {
     background: var(--primary-color);
-    color: white;
+    color: var(--neutral-50);
     border-color: var(--primary-color);
 }
 
@@ -453,45 +453,5 @@
 }
 
 /* Dark Mode Styles */
-body.dark-mode .page-title {
-    color: var(--text-light);
-}
-
-body.dark-mode .page-description {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-body.dark-mode .upload-box {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-body.dark-mode .upload-box:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--primary-color);
-}
-
-body.dark-mode .upload-title {
-    color: var(--text-light);
-}
-
-body.dark-mode .upload-hint {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-body.dark-mode .btn-choose {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: var(--text-light);
-}
-
-body.dark-mode .btn-choose:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-body.dark-mode .selected-file {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-light);
-}
+/* Dark Mode Overrides removed - handled by global variables */
 

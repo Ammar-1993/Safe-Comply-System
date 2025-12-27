@@ -5,20 +5,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Backup Policy - SafeComply</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}" />
 </head>
 
 <body>
     <div class="dashboard-wrapper">
-            {% set active_page = 'backup-policies' %}
-    {% include 'components/sidebar.html' %}
-    <main class="main-content">
-                  {% set page_title = 'Backup Policies' %}
-      {% include 'components/navbar.html' %}
-      <section class="content-area">
+        {% set active_page = 'backup-policies' %}
+        {% include 'components/sidebar.html' %}
+        <main class="main-content">
+            {% set page_title = 'Backup Policies' %}
+            {% include 'components/navbar.html' %}
+            <section class="content-area">
                 <!-- Page Tabs -->
                 <div class="tabs-container">
                     <div class="tab-item active" onclick="switchTab('policy')">📜 Policy Standards</div>
@@ -183,7 +183,7 @@
 
             const resBox = document.getElementById('calcResult');
             resBox.style.display = 'block';
-            resBox.innerHTML = `Estimated Storage Required: <span style="font-size:1.2em; color:#2980b9;">${total.toFixed(2)} GB</span><br>
+            resBox.innerHTML = `Estimated Storage Required: <span style="font-size:1.2em; color:var(--primary-color);">${total.toFixed(2)} GB</span><br>
                                <span style="font-size:0.9em; font-weight:normal">Based on 1 Full backup + ${days - 1} incrementals.</span>`;
         }
 
