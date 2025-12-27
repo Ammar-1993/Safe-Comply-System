@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Compliance Report Generator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/reports.css') }}" />
@@ -14,10 +14,10 @@
 
 <body>
   <div class="dashboard-wrapper">
-        {% set active_page = 'reports' %}
+    {% set active_page = 'reports' %}
     {% include 'components/sidebar.html' %}
     <main class="main-content">
-            {% set page_title = 'AI Compliance Report Generator' %}
+      {% set page_title = 'AI Compliance Report Generator' %}
       {% include 'components/navbar.html' %}
       <section class="content-area">
         <div id="uploadSection" class="content-card upload-container">
@@ -154,7 +154,7 @@
                 required.
               </div>
             </div>
-            </div>
+          </div>
 
           <div class="section-card">
             <div class="section-title">💡 AI Recommendations</div>
@@ -167,7 +167,7 @@
                 significantly improve security posture.
               </div>
             </div>
-            </div>
+          </div>
 
           <div class="export-buttons">
             <button class="btn-export primary" onclick="exportPDF()">
@@ -185,10 +185,14 @@
         <div class="section-card" style="margin-top: 40px;">
           <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
             <span>🗄️ Reports History</span>
-            <button onclick="loadReportsArchive()"
-              style="background:none; border:none; cursor:pointer; color:#3498db; font-size:14px; display:flex; align-items:center; gap:5px;">
-              🔄 Refresh
-            </button>
+            <div style="display: flex; gap: 15px; align-items: center;">
+              <input type="text" class="search-box" placeholder="Search reports..."
+                style="padding: 6px 15px; border: 1px solid var(--border-color); border-radius: 20px; font-size: 13px; width: 220px; background: var(--bg-white); color: var(--text-dark);">
+              <button onclick="loadReportsArchive()"
+                style="background:none; border:none; cursor:pointer; color:var(--primary-color); font-size:14px; display:flex; align-items:center; gap:5px;">
+                🔄 Refresh
+              </button>
+            </div>
           </div>
 
           <div class="table-responsive">
@@ -204,7 +208,7 @@
                 </tr>
               </thead>
               <tbody>
-                </tbody>
+              </tbody>
             </table>
           </div>
 

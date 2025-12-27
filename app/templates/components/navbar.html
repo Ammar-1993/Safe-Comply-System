@@ -1,9 +1,7 @@
 <header class="top-header">
   <div class="welcome-text">{{ page_title | default('Welcome Admin!') }}</div>
   <div class="header-actions">
-    {% if active_page == 'reports' %}
-    <input type="text" class="search-box" placeholder="Search..." aria-label="Search" />
-    {% endif %}
+
     <div style="position: relative;">
       <button class="icon-btn" id="notif-btn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
         <span aria-hidden="true">🔔</span>
