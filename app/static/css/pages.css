@@ -564,6 +564,8 @@
     font-family: monospace;
     font-size: 13px;
     resize: vertical;
+    background: var(--bg-light);
+    color: var(--text-main);
 }
 
 .result-badge {
@@ -627,7 +629,7 @@
 
 .btn-check {
     background: var(--secondary-color);
-    color: white;
+    color: var(--bg-white);
     border: none;
     padding: 10px 25px;
     border-radius: var(--radius-sm);
@@ -661,4 +663,46 @@
 
 /* Dark Mode Styles */
 /* Dark Mode Overrides removed - handled by global variables */
+
+/* --- Alert Styles for Recommendations --- */
+.alert-high {
+    background: #fadbd8;
+    border-left: 4px solid #c0392b !important;
+    color: #5c1e1e;
+}
+
+.alert-medium {
+    background: #fdebd0;
+    border-left: 4px solid #e67e22 !important;
+    color: #5d3a1a;
+}
+
+.alert-low {
+    background: #d6eaf8;
+    border-left: 4px solid #3498db !important;
+    color: #1a3b5c;
+}
+
+/* Dark Mode Overrides for Alerts */
+body.dark-mode .alert-high {
+    background: rgba(192, 57, 43, 0.2);
+    color: #e6b0aa;
+}
+
+body.dark-mode .alert-medium {
+    background: rgba(211, 84, 0, 0.2);
+    color: #f5cba7;
+}
+
+body.dark-mode .alert-low {
+    background: rgba(41, 128, 185, 0.2);
+    color: #a9cce3;
+}
+
+.alert-high .recommendation-description,
+.alert-medium .recommendation-description,
+.alert-low .recommendation-description {
+    color: inherit;
+    opacity: 0.9;
+}
 

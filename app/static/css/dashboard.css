@@ -151,7 +151,7 @@ body {
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.3s ease;
-  border: 1px solid #edf2f7;
+  border: 1px solid var(--border-color);
 }
 
 .notification-dropdown.active {
@@ -162,7 +162,7 @@ body {
 
 .notification-header {
   padding: 15px 20px;
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid var(--border-color);
   font-weight: 600;
   color: var(--secondary-color);
   display: flex;
@@ -172,13 +172,13 @@ body {
 
 .notification-item {
   padding: 15px 20px;
-  border-bottom: 1px solid #f8f9fa;
+  border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
   cursor: pointer;
 }
 
 .notification-item:hover {
-  background: #f8f9fa;
+  background: var(--bg-light);
 }
 
 .notification-item:last-child {

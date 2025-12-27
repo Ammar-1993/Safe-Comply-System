@@ -594,7 +594,7 @@
       }
 
       let html = '<table style="width:100%; border-collapse:collapse;">';
-      html += '<thead><tr style="background:#f8f9fa;"><th style="padding:10px; text-align:left; border-bottom:2px solid #dee2e6;">Date & Time</th><th style="padding:10px; text-align:left; border-bottom:2px solid #dee2e6;">IP Address</th><th style="padding:10px; text-align:left; border-bottom:2px solid #dee2e6;">Status</th></tr></thead><tbody>';
+      html += '<thead><tr style="background:var(--bg-light);"><th style="padding:10px; text-align:left; border-bottom:2px solid var(--border-color);">Date & Time</th><th style="padding:10px; text-align:left; border-bottom:2px solid var(--border-color);">IP Address</th><th style="padding:10px; text-align:left; border-bottom:2px solid var(--border-color);">Status</th></tr></thead><tbody>';
 
       history.forEach(h => {
         const statusColor = h.status === 'success' ? '#27ae60' : '#e74c3c';
