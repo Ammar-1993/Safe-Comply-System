@@ -749,29 +749,77 @@
       const settingItem = element.closest(".setting-item");
       const label = settingItem.querySelector(".setting-label");
 
-      if (label && label.textContent === "Dark Mode") {
+      if (!label) return;
+      const settingName = label.textContent.trim();
+      const isActive = element.classList.contains("active");
+
+      // Handle Dark Mode specially
+      if (settingName === "Dark Mode") {
         document.body.classList.toggle("dark-mode");
-        const isDarkMode = document.body.classList.contains("dark-mode");
-        localStorage.setItem("darkMode", isDarkMode);
+        localStorage.setItem("darkMode", isActive);
+      } else {
+        // Save other settings to localStorage
+        localStorage.setItem('setting_' + settingName, isActive);
       }
     }
 
-    // ============ DARK MODE INIT ============
+    // ============ SETTINGS INIT ============
     window.addEventListener("DOMContentLoaded", function () {
+      // Load Dark Mode
       const isDarkMode = localStorage.getItem("darkMode") === "true";
       if (isDarkMode) {
         document.body.classList.add("dark-mode");
-        const settingItems = document.querySelectorAll(".setting-item");
-        settingItems.forEach((item) => {
-          const label = item.querySelector(".setting-label");
-          if (label && label.textContent === "Dark Mode") {
-            const toggle = item.querySelector(".toggle-switch");
-            if (toggle) {
-              toggle.classList.add("active");
+      }
+
+      // Load all settings
+      const settingItems = document.querySelectorAll(".setting-item");
+      settingItems.forEach((item) => {
+        const label = item.querySelector(".setting-label");
+        const toggle = item.querySelector(".toggle-switch");
+        const select = item.querySelector("select");
+
+        if (label) {
+          const settingName = label.textContent.trim();
+
+          // Handle Toggles
+          if (toggle) {
+            // Special case for Dark Mode
+            if (settingName === "Dark Mode") {
+              if (isDarkMode) toggle.classList.add("active");
+              else toggle.classList.remove("active");
+            } else {
+              // Load from storage (default to false, or true for some?)
+              // Let's assume default is 'active' for Notifications if not set
+              let val = localStorage.getItem('setting_' + settingName);
+
+              // Default values
+              if (val === null) {
+                if (settingName.includes("Notifications") || settingName === "Auto Backup") {
+                  val = "true";
+                } else {
+                  val = "false";
+                }
+              }
+
+              if (val === "true") toggle.classList.add("active");
+              else toggle.classList.remove("active");
             }
           }
-        });
-      }
+
+          // Handle Selects (Persist choices like Language/Time Zone)
+          if (select) {
+            const savedVal = localStorage.getItem('setting_' + settingName);
+            if (savedVal) {
+              select.value = savedVal;
+            }
+
+            // Add change listener to save
+            select.addEventListener('change', function () {
+              localStorage.setItem('setting_' + settingName, this.value);
+            });
+          }
+        }
+      });
     });
 
     // ============ LOGOUT ============
