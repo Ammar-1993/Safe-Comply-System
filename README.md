@@ -75,13 +75,15 @@ $env:FLASK_APP = 'run.py'
 $env:FLASK_CONFIG = 'development'   # default if unset
 flask db upgrade
 ```
-The default SQLite file lives at `app/safecomply.db`. Legacy script `scripts/migrate_db.py` only adds an `uploaded_by` column and is not sufficient for a fresh setup.
+The default SQLite file lives at `app/safecomply.db`.
 
 ## ▶️ Run
 ```powershell
 python run.py
 ```
-Runs on `0.0.0.0:${SAFE_COMPLY_PORT}` (default 5002). The helper script `run-dev.ps1` currently points to a non-existent `app.py` and sets port 5001; prefer `python run.py` or update the script locally to call `run.py` if you use it.
+Runs on `0.0.0.0:${SAFE_COMPLY_PORT}` (default 5002). 
+> [!NOTE] 
+> The helper script `run-dev.ps1` is currently not configured for the latest entry point. Please use `python run.py` directly.
 
 ## 🖥️ Application Pages
 Served without auth guard at the route level (frontend enforces auth):
@@ -104,7 +106,7 @@ Served without auth guard at the route level (frontend enforces auth):
 | **Compliance Report View** | Detailed findings, scoring, and AI recommendations. | ![Compliance Report View](docs/screenshots/safe-comply-upload-compliance-data.webp) |
 | **Notifications Center** | Unread indicators and mark-as-read controls. | *(Integrated in Dashboard)* |
 | **Settings & Profile** | Profile updates, session/security info. | ![Settings](docs/screenshots/safe-comply-settings.webp) |
-| **Auth Flow** | Sign-in and sign-up views. | ![Login](docs/screenshots/safe-comply-Login.webp) ![Register](docs/screenshots/safe-comply-register.webp) |
+| **Auth Flow** | Sign-in and sign-up views. | ![Login](docs/screenshots/safe-comply-login.webp) ![Register](docs/screenshots/safe-comply-register.webp) |
 | **Recommendations** | AI-driven insights and suggestions. | ![Recommendations](docs/screenshots/safe-comply-recommendations.webp) |
 
 ### 📄 Sample Report
