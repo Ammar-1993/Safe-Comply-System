@@ -2,7 +2,7 @@
 
 Flask application for password and backup compliance analysis with AI-generated insights, Excel ingestion, and JWT-protected user workflows.
 
-![Dashboard Overview](docs/screenshots/safe-comply-dashboard.webp)
+![Dashboard Overview](https://ms.hsoubcdn.com/uploads/thumbnails/1503826/6951a84599073/safe-comply-dashboard.png)
 
 ---
 
