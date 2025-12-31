@@ -24,7 +24,12 @@
 
         <div class="stats-row">
           <div class="stat-box">
-            <div class="stat-icon blue"></div>
+            <div class="stat-icon blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                <path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
             <div class="stat-info">
               <div class="stat-number">82%</div>
               <div class="stat-label">Compliance Rate</div>
@@ -32,7 +37,13 @@
           </div>
 
           <div class="stat-box">
-            <div class="stat-icon orange"></div>
+            <div class="stat-icon orange" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M12 2l10 18H2L12 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                <path d="M12 9v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M12 17h.01" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            </div>
             <div class="stat-info">
               <div class="stat-number">8</div>
               <div class="stat-label">Active Alerts</div>
@@ -40,7 +51,16 @@
           </div>
 
           <div class="stat-box">
-            <div class="stat-icon green"></div>
+            <div class="stat-icon green" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M6 2h8l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                <path d="M14 2v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                <path d="M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M8 15h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M18 16a4 4 0 1 1-6.4-3.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M14 14v2l1 1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
             <div class="stat-info">
               <div class="stat-number">3</div>
               <div class="stat-label">Pending Reports</div>
@@ -52,7 +72,7 @@
           <div class="content-card">
             <div class="card-header">
               <div class="card-title">Policies & Compliance Status</div>
-              <a href="policies.html" class="card-action">View All</a>
+              <a href="policies.html" class="card-action">View</a>
             </div>
             <div class="card-content chart-container">
               <div class="chart-wrapper">
@@ -195,10 +215,10 @@
     </main>
   </div>
 
-  <script defer src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/api.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 
 </html>

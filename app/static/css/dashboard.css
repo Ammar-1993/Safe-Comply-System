@@ -283,18 +283,25 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  color: var(--neutral-50);
+}
+
+.stat-icon svg {
+  width: 26px;
+  height: 26px;
+  display: block;
 }
 
 .stat-icon.blue {
-  background: #74a3c5;
+  background: var(--primary-color);
 }
 
 .stat-icon.green {
-  background: #74a3c5;
+  background: var(--success-color);
 }
 
 .stat-icon.orange {
-  background: #74a3c5;
+  background: var(--color-warning);
 }
 
 .stat-info {

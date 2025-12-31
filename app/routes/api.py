@@ -63,6 +63,49 @@ def dashboard_stats():
         compliance_rate = latest.overall_score if latest else 0
         active_alerts = latest.invalid if latest else 0
         
+        # Policy breakdown for donut chart: share of violations by policy type.
+        # This is intentionally a 2-slice breakdown that sums to 100 when there are violations.
+        password_pct = 0
+        backup_pct = 0
+        password_violations = 0
+        backup_violations = 0
+        # Per-policy compliance rates (independent percentages)
+        password_compliance_rate = 0
+        backup_compliance_rate = 0
+        if latest:
+            users = latest.users
+            if users:
+                password_compliant = 0
+                backup_compliant_count = 0
+                for u in users:
+                    if not bool(u.is_valid):
+                        password_violations += 1
+                    else:
+                        password_compliant += 1
+
+                    checks = {}
+                    try:
+                        checks = json.loads(u.backup_checks or '{}')
+                    except Exception:
+                        checks = {}
+
+                    backup_row_compliant = bool(checks) and all(bool(v) for v in checks.values())
+                    if not backup_row_compliant:
+                        backup_violations += 1
+                    else:
+                        backup_compliant_count += 1
+
+                password_compliance_rate = int(round((password_compliant / len(users)) * 100))
+                password_compliance_rate = max(0, min(100, password_compliance_rate))
+                backup_compliance_rate = int(round((backup_compliant_count / len(users)) * 100))
+                backup_compliance_rate = max(0, min(100, backup_compliance_rate))
+
+                total_violations = password_violations + backup_violations
+                if total_violations > 0:
+                    password_pct = int(round((password_violations / total_violations) * 100))
+                    password_pct = max(0, min(100, password_pct))
+                    backup_pct = 100 - password_pct
+        
         # Pending reports (last 7 days)
         seven_days_ago = get_riyadh_time() - timedelta(days=7)
         
@@ -74,9 +117,15 @@ def dashboard_stats():
             'compliance_rate': compliance_rate,
             'active_alerts': active_alerts,
             'pending_reports': recent_count,
+            'policy_compliance': {
+                'password': password_compliance_rate,
+                'backup': backup_compliance_rate
+            },
             'policy_breakdown': {
-                'password': 70, 
-                'backup': 30
+                'password': password_pct,
+                'backup': backup_pct,
+                'password_violations': password_violations,
+                'backup_violations': backup_violations
             }
         }), 200
     except Exception as e:

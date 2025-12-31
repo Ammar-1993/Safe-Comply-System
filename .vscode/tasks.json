@@ -20,6 +20,30 @@
 				"\n<script>\n  document.addEventListener('DOMContentLoaded', function() {\n    const toggleBtn = document.querySelector('.mobile-menu-toggle');\n    if (toggleBtn) {\n      toggleBtn.addEventListener('click', function() {\n        const nav = document.querySelector('.sidebar nav');\n        nav.classList.toggle('mobile-visible');\n        const isExpanded = nav.classList.contains('mobile-visible');\n        this.setAttribute('aria-expanded', isExpanded);\n      });\n    }\n  });\n</script>\n"
 			],
 			"group": "build"
+		},
+		{
+			"label": "verify_excel_metrics",
+			"type": "shell",
+			"command": "D:\\projects\\Safecomply\\.venv\\Scripts\\python.exe",
+			"args": [
+				"scripts\\verify_excel_chart_metrics.py"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "pytest_quick",
+			"type": "shell",
+			"command": "D:\\projects\\Safecomply\\.venv\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"pytest",
+				"-q"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
 		}
 	]
 }

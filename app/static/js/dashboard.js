@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Mobile menu toggle (responsive sidebar)
+    const mobileToggleBtn = document.querySelector('.mobile-menu-toggle');
+    if (mobileToggleBtn) {
+      mobileToggleBtn.addEventListener('click', function () {
+        const nav = document.querySelector('.sidebar nav');
+        if (!nav) return;
+        nav.classList.toggle('mobile-visible');
+        const isExpanded = nav.classList.contains('mobile-visible');
+        this.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+      });
+    }
+
     // Load Dashboard Stats
     async function loadDashboardStats() {
       // Personalize Welcome Message
@@ -31,14 +43,46 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.stat-box:nth-child(2) .stat-number').textContent = data.active_alerts;
         document.querySelector('.stat-box:nth-child(3) .stat-number').textContent = data.pending_reports;
 
-        // Update Pie Chart Data (Visual only for now, text update)
-        // const pwd = data.policy_breakdown.password;
-        // const backup = data.policy_breakdown.backup;
+        // Update Pie Chart Data
+        const clampPct = (value) => {
+          const num = Number(value);
+          if (!Number.isFinite(num)) return 0;
+          return Math.max(0, Math.min(100, num));
+        };
 
-        // Update the central percentage to average compliance.
-        // EDITED: Updated selector to match new CSS class instead of inline style
-        const centerText = document.querySelector('.chart-label-lg');
-        if (centerText) centerText.textContent = data.compliance_rate + '%';
+        const pwd = clampPct(data?.policy_breakdown?.password);
+        const backup = clampPct(data?.policy_breakdown?.backup);
+
+        // Update chart arcs
+        const circles = document.querySelectorAll('.chart-svg circle');
+        if (circles.length >= 2) {
+          const circumference = 342.12; // 2πr for r=80 (matches template)
+
+          const arc1Length = circumference * (pwd / 100);
+          const arc2Length = circumference * (backup / 100);
+
+          // If both are 0, render as empty (avoid weird offsets)
+          if (arc1Length === 0 && arc2Length === 0) {
+            circles[0].setAttribute('stroke-dasharray', `0 ${circumference}`);
+            circles[0].setAttribute('stroke-dashoffset', '0');
+            circles[1].setAttribute('stroke-dasharray', `0 ${circumference}`);
+            circles[1].setAttribute('stroke-dashoffset', '0');
+          } else {
+            circles[0].setAttribute('stroke-dasharray', `${arc1Length} ${circumference - arc1Length}`);
+            circles[0].setAttribute('stroke-dashoffset', '0');
+
+            circles[1].setAttribute('stroke-dasharray', `${arc2Length} ${circumference - arc2Length}`);
+            // Start the second segment where the first ends
+            circles[1].setAttribute('stroke-dashoffset', `${-arc1Length}`);
+          }
+        }
+
+        // Update the percentage texts
+        const labels = document.querySelectorAll('.chart-label-lg');
+        if (labels.length >= 2) {
+          labels[0].textContent = pwd + '%';
+          labels[1].textContent = backup + '%';
+        }
 
       } catch (e) {
         console.error('Failed to load stats', e);
@@ -50,15 +94,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dark mode
     if (localStorage.getItem("darkMode") === "true") {
       document.body.classList.add("dark-mode");
-      const moonBtn = document.querySelectorAll(".icon-btn")[1];
-      if (moonBtn) moonBtn.textContent = "☀️";
+      const darkModeBtn = document.querySelector('[aria-label="Toggle Dark Mode"]');
+      if (darkModeBtn) darkModeBtn.textContent = "☀️";
     }
 
-    const moonBtns = document.querySelectorAll(".icon-btn");
-    
     // Dark Mode Toggle
-    if (moonBtns[1]) {
-      moonBtns[1].addEventListener("click", function () {
+    const darkModeBtn = document.querySelector('[aria-label="Toggle Dark Mode"]');
+    if (darkModeBtn) {
+      darkModeBtn.addEventListener("click", function () {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
         localStorage.setItem("darkMode", isDark);
