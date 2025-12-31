@@ -32,7 +32,7 @@
             <div class="upload-icon">📁</div>
             <div class="upload-title">Choose File</div>
             <div class="upload-hint">Supports: .xlsx, .xls</div>
-            <button class="btn-choose" onclick="document.getElementById('fileInput').click()">
+            <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
               Select File
             </button>
             <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" />
@@ -46,10 +46,10 @@
                 <div class="file-size" id="fileSize">-</div>
               </div>
             </div>
-            <button class="btn-remove" onclick="removeFile()">Remove</button>
+            <button class="btn btn-outline-danger btn-sm" onclick="removeFile()">Remove</button>
           </div>
 
-          <button class="btn-analyze" id="btnAnalyze" onclick="startAnalysis()" disabled>
+          <button class="btn btn-primary btn-lg btn-block" id="btnAnalyze" onclick="startAnalysis()" disabled>
             🤖 Upload & Analyze
           </button>
         </div>
@@ -170,13 +170,13 @@
           </div>
 
           <div class="export-buttons">
-            <button class="btn-export primary" onclick="exportPDF()">
+            <button class="btn btn-primary" onclick="exportPDF()">
               📄 Download Report (PDF)
             </button>
-            <button class="btn-export secondary" onclick="exportExcel()">
+            <button class="btn btn-success" onclick="exportExcel()">
               📊 Download Raw Data (Excel)
             </button>
-            <button class="btn-export tertiary" onclick="viewDetails()">
+            <button class="btn btn-outline" onclick="viewDetails()">
               🔍 View Full Details
             </button>
           </div>
@@ -188,10 +188,7 @@
             <div style="display: flex; gap: 15px; align-items: center;">
               <input type="text" class="search-box" placeholder="Search reports..."
                 style="padding: 6px 15px; border: 1px solid var(--border-color); border-radius: 20px; font-size: 13px; width: 220px; background: var(--bg-white); color: var(--text-dark);">
-              <button onclick="loadReportsArchive()"
-                style="background:none; border:none; cursor:pointer; color:var(--primary-color); font-size:14px; display:flex; align-items:center; gap:5px;">
-                🔄 Refresh
-              </button>
+              <button class="btn btn-ghost btn-sm" onclick="loadReportsArchive()">🔄 Refresh</button>
             </div>
           </div>
 

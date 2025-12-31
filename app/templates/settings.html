@@ -56,13 +56,13 @@
                 <div class="setting-description">Change your password</div>
               </div>
               <div class="setting-control">
-                <button class="btn-secondary" id="changePasswordBtn">Change Password</button>
+                <button class="btn btn-outline" id="changePasswordBtn">Change Password</button>
               </div>
             </div>
 
             <div class="button-group">
-              <button class="btn-primary" id="saveChangesBtn">Save Changes</button>
-              <button class="btn-secondary" id="cancelBtn">Cancel</button>
+              <button class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+              <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
             </div>
           </div>
 
@@ -235,7 +235,7 @@
                 </div>
               </div>
               <div class="setting-control">
-                <button class="btn-secondary" id="viewHistoryBtn">View History</button>
+                <button class="btn btn-outline" id="viewHistoryBtn">View History</button>
               </div>
             </div>
           </div>
@@ -260,7 +260,7 @@
                 <div class="setting-description">Download all your data</div>
               </div>
               <div class="setting-control">
-                <button class="btn-secondary" id="exportBtn">Export</button>
+                <button class="btn btn-outline" id="exportBtn">Export</button>
               </div>
             </div>
 
@@ -272,7 +272,7 @@
                 </div>
               </div>
               <div class="setting-control">
-                <button class="btn-danger" id="deleteAccountBtn">Delete Account</button>
+                <button class="btn btn-danger" id="deleteAccountBtn">Delete Account</button>
               </div>
             </div>
           </div>
@@ -325,8 +325,8 @@
         Password must be at least 12 characters with uppercase, lowercase, number, and special character.
       </div>
       <div class="custom-modal-actions">
-        <button onclick="closePasswordModal()" class="btn-secondary">Cancel</button>
-        <button onclick="submitPasswordChange()" class="btn-primary">Change Password</button>
+        <button onclick="closePasswordModal()" class="btn btn-ghost">Cancel</button>
+        <button onclick="submitPasswordChange()" class="btn btn-primary">Change Password</button>
       </div>
     </div>
   </div>
@@ -339,7 +339,7 @@
         <div style="text-align:center; color:var(--text-muted);">Loading...</div>
       </div>
       <div class="custom-modal-actions">
-        <button onclick="closeHistoryModal()" class="btn-secondary">Close</button>
+        <button onclick="closeHistoryModal()" class="btn btn-outline">Close</button>
       </div>
     </div>
   </div>
@@ -364,8 +364,8 @@
         </div>
       </div>
       <div class="custom-modal-actions">
-        <button onclick="closeDeleteModal()" class="btn-secondary">Cancel</button>
-        <button onclick="submitDeleteAccount()" class="btn-danger">Delete My Account</button>
+        <button onclick="closeDeleteModal()" class="btn btn-ghost">Cancel</button>
+        <button onclick="submitDeleteAccount()" class="btn btn-danger">Delete My Account</button>
       </div>
     </div>
   </div>
@@ -716,7 +716,7 @@
               </div>
               <div class="setting-control">
                 ${u.username !== 'admin' ?
-            `<button class="btn-danger" style="padding: 5px 15px; font-size: 12px;" onclick="deleteUser('${u.username}')">Delete</button>`
+              `<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.username}')">Delete</button>`
             : '<span style="color:var(--text-muted); font-size:12px;">Main Admin</span>'}
               </div>
             </div>`;

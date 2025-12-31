@@ -7,38 +7,11 @@
     background: var(--bg-white); /* Simplified for better dark mode support */
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    margin-bottom: 20px;
-}
 
-.page-title {
-    font-size: 20px; /* Reduced from 24px */
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 8px; /* Reduced margin */
+.export-buttons .btn {
+    min-width: 190px;
+    justify-content: center;
 }
-
-.page-description {
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    max-width: 500px; /* Reduced max-width */
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 14px; /* Smaller font */
-}
-
-.upload-box {
-    border: 2px dashed var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 20px; /* Reduced from 40px */
-    background: var(--bg-light);
-    transition: all 0.3s ease; /* Smoother transition */
-    cursor: pointer;
-    margin-bottom: 15px; /* Reduced margin */
-    box-shadow: var(--shadow-sm);
-}
-
-.upload-box:hover {
-    border-color: var(--primary-color);
     background: linear-gradient(135deg, #f0f7fc, #e3f2fd); /* Lighter gradient on hover */
     transform: translateY(-2px); /* Slight lift */
     box-shadow: 0 4px 16px rgba(52, 152, 219, 0.2); /* Enhanced shadow */
@@ -60,24 +33,6 @@
     font-size: 12px; /* Reduced from 13px */
     color: var(--text-muted);
     margin-bottom: 15px; /* Reduced */
-}
-
-.btn-choose {
-    background: linear-gradient(135deg, var(--primary-color), #2980b9); /* Gradient */
-    border: none;
-    padding: 10px 20px; /* Adjusted padding */
-    border-radius: 25px; /* More rounded */
-    font-weight: 500;
-    color: var(--neutral-50);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3); /* Subtle shadow */
-}
-
-.btn-choose:hover {
-    background: linear-gradient(135deg, #2980b9, #1f4e79); /* Darker gradient */
-    transform: translateY(-1px); /* Slight lift */
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4); /* Enhanced shadow */
 }
 
 .file-input {
@@ -110,6 +65,11 @@
     gap: 15px;
 }
 
+.selected-file .btn {
+    margin-left: 20px;
+    flex-shrink: 0;
+}
+
 .file-icon {
     font-size: 24px;
 }
@@ -122,56 +82,6 @@
 .file-size {
     font-size: 12px;
     color: var(--text-muted);
-}
-
-.btn-remove {
-    background: #fee;
-    border: 1px solid #e74c3c;
-    color: #e74c3c;
-    cursor: pointer;
-    font-size: 13px;
-    padding: 5px 10px;
-    border-radius: var(--radius-sm);
-    transition: all 0.2s;
-    margin-left: 20px;
-}
-
-.btn-remove:hover {
-    background: #e74c3c;
-    color: white;
-}
-
-.btn-analyze {
-    display: block;
-    background: linear-gradient(135deg, var(--primary-color), #2980b9);
-    color: var(--neutral-50);
-    border: none;
-    padding: 15px 50px;
-    border-radius: 50px; /* More rounded for a modern look */
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-    margin: 30px auto 0;
-    text-align: center;
-    width: fit-content;
-}
-
-.btn-analyze:disabled {
-    background: #bdc3c7;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.btn-analyze:not(:disabled):hover {
-    background: linear-gradient(135deg, #2980b9, #1f4e79);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
 }
 
 /* Processing Section */
@@ -315,38 +225,6 @@
     justify-content: center;
     gap: 15px;
     margin-top: 30px;
-}
-
-.btn-export {
-    padding: 12px 20px;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: transform 0.2s;
-}
-
-.btn-export:hover {
-    transform: translateY(-2px);
-}
-
-.btn-export.primary {
-    background: var(--primary-color);
-    color: var(--neutral-50);
-}
-
-.btn-export.secondary {
-    background: #27ae60;
-    color: var(--neutral-50);
-}
-
-.btn-export.tertiary {
-    background: var(--bg-white);
-    border: 1px solid var(--border-color);
-    color: var(--text-dark);
 }
 
 /* Table Badges & Actions */
