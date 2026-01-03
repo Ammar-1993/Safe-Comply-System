@@ -7,9 +7,20 @@ from app.services.analysis_service import generate_ai_analysis
 from app.utils import get_riyadh_time, mask_password
 from sqlalchemy import select, func
 import json
-from datetime import timedelta
+from datetime import timedelta, timezone
 
 api_bp = Blueprint('api', __name__)
+
+RIYADH_TZ = timezone(timedelta(hours=3))
+
+
+def _as_riyadh_iso(dt):
+    """Return ISO 8601 string with +03:00 offset for naive Riyadh datetimes."""
+    if not dt:
+        return None
+    if getattr(dt, 'tzinfo', None) is None:
+        dt = dt.replace(tzinfo=RIYADH_TZ)
+    return dt.isoformat()
 
 @api_bp.route('/api/notifications', methods=['GET'])
 @require_auth(roles=['admin','auditor','user'])
@@ -30,10 +41,45 @@ def get_notifications():
                 'message': n.message,
                 'type': n.type,
                 'is_read': n.is_read,
-                'created_at': n.created_at
+                'created_at': _as_riyadh_iso(n.created_at)
             } for n in notifs],
             'unread_count': len(notifs)
         })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/api/alerts', methods=['GET'])
+@require_auth(roles=['admin','auditor','user'])
+def get_alerts():
+    """Dashboard Alerts: return recent notifications (read + unread) so the panel never goes empty."""
+    try:
+        username = request.user.get('sub')
+
+        alerts = db.session.execute(
+            select(Notification)
+            .filter_by(username=username)
+            .order_by(Notification.created_at.desc())
+            .limit(4)
+        ).scalars().all()
+
+        unread_count = db.session.execute(
+            select(func.count(Notification.id))
+            .where(Notification.username == username)
+            .where(Notification.is_read == False)  # noqa: E712
+        ).scalar() or 0
+
+        return jsonify({
+            'alerts': [{
+                'id': n.id,
+                'title': n.title,
+                'message': n.message,
+                'type': n.type,
+                'is_read': n.is_read,
+                'created_at': _as_riyadh_iso(n.created_at)
+            } for n in alerts],
+            'unread_count': int(unread_count)
+        }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

@@ -100,60 +100,11 @@
           <div class="content-card">
             <div class="card-header">
               <div class="card-title">Alerts</div>
-              <span class="header-badge">8</span>
+              <span class="header-badge" id="dashboardAlertsBadge" style="display:none;">0</span>
             </div>
             <div class="card-content">
-              <div class="alert-card high">
-                <div class="alert-top">
-                  <div class="alert-text">
-                    <div class="alert-title">Nightly Backup Failed</div>
-                    <div class="alert-desc">Main server backup failed</div>
-                  </div>
-                </div>
-                <div class="alert-bottom">
-                  <span class="alert-badge high">High</span>
-                  <span class="alert-time">2 hours ago</span>
-                </div>
-              </div>
-
-              <div class="alert-card medium">
-                <div class="alert-top">
-                  <div class="alert-text">
-                    <div class="alert-title">Unauthorized Login Attempt</div>
-                    <div class="alert-desc">5 failed login attempts</div>
-                  </div>
-                </div>
-                <div class="alert-bottom">
-                  <span class="alert-badge medium">Medium</span>
-                  <span class="alert-time">4 hours ago</span>
-                </div>
-              </div>
-
-              <div class="alert-card high">
-                <div class="alert-top">
-                  <div class="alert-text">
-                    <div class="alert-title">Weak Password Detected</div>
-                    <div class="alert-desc">3 weak passwords found</div>
-                  </div>
-                </div>
-                <div class="alert-bottom">
-                  <span class="alert-badge high">High</span>
-                  <span class="alert-time">6 hours ago</span>
-                </div>
-              </div>
-
-              <div class="alert-card low">
-                <div class="alert-top">
-                  <div class="alert-text">
-                    <div class="alert-title">Policy Update Required</div>
-                    <div class="alert-desc">Backup policy needs review</div>
-                  </div>
-                </div>
-                <div class="alert-bottom">
-                  <span class="alert-badge low">Low</span>
-                  <span class="alert-time">1 day ago</span>
-                </div>
-              </div>
+              <div id="dashboardAlertsList"></div>
+              <div id="dashboardAlertsEmpty" style="display:none; padding: 14px; color: var(--text-muted); font-size: 13px; text-align:center;">No alerts</div>
             </div>
           </div>
 
@@ -213,7 +164,7 @@
   <script defer src="{{ url_for('static', filename='js/api.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/notifications.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/dashboard.js', v=static_version) }}"></script>
 </body>
 
 </html>

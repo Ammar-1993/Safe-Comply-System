@@ -10,6 +10,10 @@ def create_app(config_name='default'):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
+    @app.context_processor
+    def inject_static_version():
+        return {'static_version': app.config.get('STATIC_VERSION', '1')}
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)

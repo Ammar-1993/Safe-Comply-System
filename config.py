@@ -6,6 +6,8 @@ class Config:
     DEBUG = os.environ.get('SAFE_COMPLY_DEBUG', 'true').lower() in ('1', 'true', 'yes')
     PORT = int(os.environ.get('SAFE_COMPLY_PORT', '5002'))
     CORS_ORIGINS = os.environ.get('SAFE_COMPLY_CORS', '*')
+    # Bump this (or set env SAFE_COMPLY_STATIC_VERSION) to force browsers to reload static assets.
+    STATIC_VERSION = os.environ.get('SAFE_COMPLY_STATIC_VERSION', '1')
     
     # Database
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
