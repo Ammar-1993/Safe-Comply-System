@@ -75,6 +75,128 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadDashboardStats();
 
+    // Load Reports (dynamic) from reports archive API
+    async function downloadDashboardReportExcel(reportId) {
+      const endpoint = `/api/reports/${reportId}/excel`;
+      try {
+        const res = await api.get(endpoint);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          showError('Download failed: ' + (err.error || res.statusText), 'Download Error');
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const contentDisposition = res.headers.get('Content-Disposition');
+        let filename = `report_${reportId}.xlsx`;
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match && match[1]) filename = match[1];
+        }
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (e) {
+        console.error('Download error:', e);
+        showError('An error occurred while downloading the file.', 'System Error');
+      }
+    }
+
+    const formatReportDate = (dateValue) => {
+      try {
+        const d = new Date(dateValue);
+        if (!Number.isFinite(d.getTime())) return '';
+        return d.toLocaleDateString('en-CA'); // YYYY-MM-DD
+      } catch (e) {
+        return '';
+      }
+    };
+
+    async function loadDashboardReports() {
+      const listEl = document.getElementById('dashboardReportsList');
+      const emptyEl = document.getElementById('dashboardReportsEmpty');
+      if (!listEl || !emptyEl) return;
+
+      try {
+        const res = await api.get('/reports');
+        if (!res.ok) {
+          if (res.status === 401) window.location.href = 'signin.html';
+          return;
+        }
+
+        const data = await res.json();
+        const reports = Array.isArray(data?.reports) ? data.reports : [];
+
+        listEl.innerHTML = '';
+        if (reports.length === 0) {
+          emptyEl.style.display = '';
+          return;
+        }
+        emptyEl.style.display = 'none';
+
+        // List endpoint is already ordered by uploaded_at desc
+        const items = reports.slice(0, 5);
+        for (const r of items) {
+          const card = document.createElement('div');
+          card.className = 'report-card';
+
+          const left = document.createElement('div');
+          left.className = 'report-left';
+
+          const icon = document.createElement('span');
+          icon.className = 'report-icon';
+          icon.textContent = '📋';
+
+          const meta = document.createElement('div');
+          const title = document.createElement('div');
+          title.className = 'report-title';
+          title.textContent = r.filename || `Report #${r.id}`;
+
+          const date = document.createElement('div');
+          date.className = 'report-date';
+          date.textContent = formatReportDate(r.uploaded_at);
+
+          meta.appendChild(title);
+          if (date.textContent) meta.appendChild(date);
+
+          left.appendChild(icon);
+          left.appendChild(meta);
+
+          const right = document.createElement('div');
+          right.className = 'report-right';
+
+          const status = document.createElement('span');
+          status.className = 'report-status ready';
+          status.textContent = 'Ready';
+
+          const download = document.createElement('button');
+          download.type = 'button';
+          download.className = 'download-icon';
+          download.textContent = '⬇️';
+          download.setAttribute('aria-label', 'Download report (Excel)');
+          download.addEventListener('click', (e) => {
+            e.preventDefault();
+            downloadDashboardReportExcel(r.id);
+          });
+
+          right.appendChild(status);
+          right.appendChild(download);
+
+          card.appendChild(left);
+          card.appendChild(right);
+
+          listEl.appendChild(card);
+        }
+      } catch (e) {
+        console.error('Failed to load dashboard reports', e);
+      }
+    }
+
     // Load Alerts (dynamic) from notifications API
     const formatRelativeTime = (dateValue) => {
       const date = new Date(dateValue);
@@ -207,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // we keep this lightweight and only refresh once on dashboard load.
     if (typeof api !== 'undefined') {
       loadDashboardAlerts();
+      loadDashboardReports();
     }
 
     // Dark mode

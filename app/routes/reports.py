@@ -6,12 +6,23 @@ from app.services.policy_service import check_password_policy, get_password_chec
 from app.services.analysis_service import generate_ai_analysis
 from app.services.notification_service import create_notification
 from app.utils import get_riyadh_time, mask_password
+from datetime import timedelta, timezone
 import pandas as pd
 import json
 from io import BytesIO
 from sqlalchemy import select
 
 reports_bp = Blueprint('reports', __name__)
+
+RIYADH_TZ = timezone(timedelta(hours=3))
+
+
+def _as_riyadh_iso(dt):
+    if not dt:
+        return None
+    if getattr(dt, 'tzinfo', None) is None:
+        dt = dt.replace(tzinfo=RIYADH_TZ)
+    return dt.isoformat()
 
 @reports_bp.route('/upload-excel', methods=['POST'])
 @require_auth(roles=['admin','auditor','user'])
@@ -148,7 +159,7 @@ def list_reports():
     return jsonify({'reports': [{
         'id': r.id, 
         'filename': r.filename, 
-        'uploaded_at': r.uploaded_at, 
+        'uploaded_at': _as_riyadh_iso(r.uploaded_at), 
         'total': r.total, 
         'valid': r.valid, 
         'invalid': r.invalid, 
@@ -184,7 +195,7 @@ def get_report(report_id):
     report_obj = {
         'id': report.id, 
         'filename': report.filename, 
-        'uploaded_at': report.uploaded_at, 
+        'uploaded_at': _as_riyadh_iso(report.uploaded_at), 
         'total': report.total, 
         'valid': report.valid, 
         'invalid': report.invalid, 
