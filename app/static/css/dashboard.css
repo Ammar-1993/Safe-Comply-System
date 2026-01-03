@@ -527,45 +527,81 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 15px;
+  gap: var(--spacing-md);
+
+  /* Shared chart palette + values (used by donut + legend) */
+  --policy-password-color: #5a7a99;
+  --policy-backup-color: #c4d0dd;
+  --policy-password-pct: 50;
+  --donut-thickness: 24px;
 }
 
 .chart-wrapper {
   position: relative;
-  width: 180px;
-  height: 180px;
-  margin-bottom: 10px;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 0;
 }
 
-.chart-svg {
-  transform: rotate(-90deg);
+.chart-donut {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from -90deg,
+      var(--policy-password-color) 0 calc(var(--policy-password-pct) * 1%),
+      var(--policy-backup-color) 0 100%
+    );
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-donut::after {
+  content: "";
+  position: absolute;
+  inset: var(--donut-thickness);
+  border-radius: 50%;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
 }
 
 .chart-percentage {
   position: absolute;
-  top: 130px;
-  left: 10px;
+  top: 145px;
+  left: 12px;
   text-align: center;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: var(--shadow-sm);
 }
 
 .chart-percentage-secondary {
   position: absolute;
-  top: 5px;
-  right: 15px;
+  top: 18px;
+  right: 12px;
   text-align: center;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: var(--shadow-sm);
 }
 
 .chart-label-lg {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--text-main);
 }
 
 /* Legend */
 .legend-container {
   display: flex;
-  gap: 20px;
+  gap: var(--spacing-lg);
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .legend-item {
@@ -577,20 +613,22 @@ body {
 .legend-color-box {
   width: 14px;
   height: 14px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
 }
 
 .legend-color-box.backup {
-  background: #c4d0dd;
+  background: var(--policy-backup-color);
 }
 
 .legend-color-box.password {
-  background: #5a7a99;
+  background: var(--policy-password-color);
 }
 
 .legend-text {
   font-size: 12px;
-  color: #6c757d;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 /* Header Badge */
@@ -607,7 +645,7 @@ body {
 /* Dark Mode Styles - Now mostly handled by variables.css */
 /* Specific overrides that are not covered by global vars */
 body.dark-mode .chart-label-lg {
-  fill: var(--text-main);
+  color: var(--text-main);
 }
 
 /* Responsive Design */

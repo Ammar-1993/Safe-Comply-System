@@ -53,36 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const pwd = clampPct(data?.policy_breakdown?.password);
         const backup = clampPct(data?.policy_breakdown?.backup);
 
-        // Update chart arcs
-        const circles = document.querySelectorAll('.chart-svg circle');
-        if (circles.length >= 2) {
-          const circumference = 342.12; // 2πr for r=80 (matches template)
-
-          const arc1Length = circumference * (pwd / 100);
-          const arc2Length = circumference * (backup / 100);
-
-          // If both are 0, render as empty (avoid weird offsets)
-          if (arc1Length === 0 && arc2Length === 0) {
-            circles[0].setAttribute('stroke-dasharray', `0 ${circumference}`);
-            circles[0].setAttribute('stroke-dashoffset', '0');
-            circles[1].setAttribute('stroke-dasharray', `0 ${circumference}`);
-            circles[1].setAttribute('stroke-dashoffset', '0');
-          } else {
-            circles[0].setAttribute('stroke-dasharray', `${arc1Length} ${circumference - arc1Length}`);
-            circles[0].setAttribute('stroke-dashoffset', '0');
-
-            circles[1].setAttribute('stroke-dasharray', `${arc2Length} ${circumference - arc2Length}`);
-            // Start the second segment where the first ends
-            circles[1].setAttribute('stroke-dashoffset', `${-arc1Length}`);
-          }
+        // Update donut (continuous) via CSS variables
+        const chartContainer = document.querySelector('.chart-container');
+        if (chartContainer) {
+          chartContainer.style.setProperty('--policy-password-pct', String(pwd));
         }
 
         // Update the percentage texts
-        const labels = document.querySelectorAll('.chart-label-lg');
-        if (labels.length >= 2) {
-          labels[0].textContent = pwd + '%';
-          labels[1].textContent = backup + '%';
-        }
+        // Positions are fixed in CSS:
+        // - .chart-percentage is bottom-left (Backup)
+        // - .chart-percentage-secondary is top-right (Password)
+        const backupLabel = document.querySelector('.chart-percentage .chart-label-lg');
+        const passwordLabel = document.querySelector('.chart-percentage-secondary .chart-label-lg');
+        if (backupLabel) backupLabel.textContent = `${backup}%`;
+        if (passwordLabel) passwordLabel.textContent = `${pwd}%`;
 
       } catch (e) {
         console.error('Failed to load stats', e);
