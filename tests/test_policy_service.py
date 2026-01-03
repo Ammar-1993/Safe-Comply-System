@@ -1,5 +1,4 @@
 from app.services.policy_service import check_password_policy, get_password_checks, calculate_strength, evaluate_backup_policy
-import pandas as pd
 from datetime import datetime, timedelta
 
 def test_check_password_policy():

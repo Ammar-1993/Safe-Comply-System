@@ -1,7 +1,6 @@
 import pytest
-from app.models import Account, LoginHistory
+from app.models import Account
 from app.extensions import db
-from werkzeug.security import check_password_hash
 
 @pytest.fixture
 def user_token(client):

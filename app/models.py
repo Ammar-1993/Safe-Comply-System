@@ -1,5 +1,4 @@
 from app.extensions import db
-from datetime import datetime
 
 class Report(db.Model):
     __tablename__ = 'reports'

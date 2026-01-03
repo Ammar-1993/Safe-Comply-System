@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, current_app, jsonify, send_from_directory
-import os
+from flask import Blueprint, render_template
 
 main_bp = Blueprint('main', __name__)
 

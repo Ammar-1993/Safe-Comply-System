@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, send_file
 from app.extensions import db
-from app.models import Report, User, Notification
+from app.models import Report, User
 from app.auth_utils import require_auth
 from app.services.policy_service import check_password_policy, get_password_checks, calculate_strength, evaluate_backup_policy
 from app.services.analysis_service import generate_ai_analysis
@@ -244,9 +244,9 @@ def export_report_pdf(report_id):
             from reportlab.lib.pagesizes import letter
             from reportlab.lib import colors
             from reportlab.lib.units import inch
-            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether
+            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
             from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-            from reportlab.lib.enums import TA_CENTER, TA_LEFT
+            from reportlab.lib.enums import TA_CENTER
             
             buffer = BytesIO()
             doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)

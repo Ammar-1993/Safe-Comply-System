@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db
-from app.models import Account, LoginHistory, Report, User
+from app.models import Account, LoginHistory, Report
 from app.auth_utils import require_auth, generate_token
 from app.services.policy_service import check_password_policy, get_password_checks
 from app.utils import get_riyadh_time
@@ -61,14 +61,19 @@ def register():
         if not check_password_policy(password):
             checks = get_password_checks(password)
             errors = []
-            if not checks['length']: errors.append("at least 12 characters")
-            if not checks['uppercase']: errors.append("an uppercase letter")
-            if not checks['lowercase']: errors.append("a lowercase letter")
-            if not checks['digit']: errors.append("a number")
-            if not checks['special']: errors.append("a special character")
-            
+            if not checks["length"]:
+                errors.append("at least 12 characters")
+            if not checks["uppercase"]:
+                errors.append("an uppercase letter")
+            if not checks["lowercase"]:
+                errors.append("a lowercase letter")
+            if not checks["digit"]:
+                errors.append("a number")
+            if not checks["special"]:
+                errors.append("a special character")
+
             error_msg = "Password is too weak. It must contain: " + ", ".join(errors)
-            return jsonify({'error': error_msg}), 400
+            return jsonify({'error': error_msg, 'checks': checks}), 400
 
         existing = db.session.execute(db.select(Account).filter_by(username=username)).scalar_one_or_none()
         if existing:

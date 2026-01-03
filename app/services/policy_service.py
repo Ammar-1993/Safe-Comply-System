@@ -36,13 +36,19 @@ def get_password_checks(password):
 def calculate_strength(password, checks):
     """Calculate password strength score"""
     score = 0
-    if checks.get('length'): score += 25
-    if checks.get('uppercase'): score += 20
-    if checks.get('lowercase'): score += 15
-    if checks.get('digit'): score += 20
-    if checks.get('special'): score += 20
+    if checks.get("length"):
+       score += 25
+    if checks.get("uppercase"):
+       score += 20
+    if checks.get("lowercase"):
+       score += 15   
+    if checks.get("digit"):
+       score += 20
+    if checks.get("special"):
+       score += 20
+    if len(password) >= 16:
+       score += 5
 
-    if len(password) >= 16: score += 5
 
     return min(score, 100)
 
@@ -52,7 +58,6 @@ def evaluate_backup_policy(row):
     last_backup = get_value_from_row(row, ['last_backup_date', 'LastBackup', 'last_backup', 'last_backup_dt'])
     freq = get_value_from_row(row, ['backup_frequency', 'BackupFrequency', 'backup_freq']) or ''
     btype = get_value_from_row(row, ['backup_type', 'BackupType', 'type_of_backup']) or ''
-    status = get_value_from_row(row, ['backup_status', 'BackupStatus', 'status']) or ''
     retention = get_value_from_row(row, ['retention_days', 'retention', 'retention_period'])
 
     # normalize last backup date
