@@ -1,10 +1,10 @@
 name: CI
 
-on:
+"on":
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -27,12 +27,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install ruff pytest
-          ruff --version
 
       - name: Lint (ruff)
         run: |
+          ruff --version
           ruff check .
 
-      - name: Run tests (if any)
+      - name: Run tests
         run: |
           pytest -q
