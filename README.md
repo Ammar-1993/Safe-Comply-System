@@ -39,7 +39,6 @@ SafeComply ingests user credential/backups data (Excel), evaluates password and 
 ## 🧰 Requirements
 - Python 3.10+
 - pip
-- (Optional) ReportLab for PDF export: `pip install reportlab`
 
 ## ⚙️ Setup
 ```powershell
