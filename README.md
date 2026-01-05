@@ -98,8 +98,8 @@ Served without auth guard at the route level (frontend enforces auth):
 | Interface | Description | Screenshot |
 |-----------|-------------|------------|
 | **Welcome Cover** | Hero welcome screen with call-to-action and brief value props. | ![Welcome Screen](https://ms.hsoubcdn.com/uploads/portfolios/1503826/695b182d1b7c2/Screenshot-2026-01-05-042832.png) |
-| **Auth Flow** | Sign-in and sign-up views. | ![Login]https://ms.hsoubcdn.com/uploads/portfolios/1503826/695b182d4cb0d/screencapture-127-0-0-1-5002-signin-html-2026-01-05-042901.png) |
-| **Dashboard Overview** | KPI tiles, trends, and alert summaries for quick status. | ![Dashboard](https://ms.hsoubcdn.com/uploads/thumbnails/1503826/6951a84599073/safe-comply-dashboard.png) |
+| **Auth Flow** | Sign-in and sign-up views. | ![Login](https://ms.hsoubcdn.com/uploads/portfolios/1503826/695b182d4cb0d/screencapture-127-0-0-1-5002-signin-html-2026-01-05-042901.png) |
+| **Dashboard Overview** | KPI tiles, trends, and alert summaries for quick status. | ![Dashboard](https://ms.hsoubcdn.com/uploads/thumbnails/1503826/695b182c9a10a/screencapture-127-0-0-1-5002-dashboard-html-2026-01-05-042934.png) |
 | **Password Policies** | Rule editor, strength scoring, and guidance hints. | ![Password Policies](https://ms.hsoubcdn.com/uploads/portfolios/1503826/695b182dc00bc/screencapture-127-0-0-1-5002-password-policies-html-2026-01-05-043004.png) |
 | **Backup Policies** | Schedule visibility, last-run status, and coverage indicators. | ![Backup Policies](https://ms.hsoubcdn.com/uploads/portfolios/1503826/695b182e008bc/screencapture-127-0-0-1-5002-backup-policies-html-2026-01-05-043035.png) |
 | **Compliance Report View** | Detailed findings, scoring, and AI recommendations. | ![Compliance Report View](https://ms.hsoubcdn.com/uploads/portfolios/1503826/695b182e39b7f/Screenshot-2026-01-05-043117.png) |
